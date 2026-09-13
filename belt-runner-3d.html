@@ -62,7 +62,8 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);fon
 .target .t-sub{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:2px;}
 .target .t-warn{font-size:12px;color:var(--amber);margin-top:6px;}
 .target .t-hp{display:flex;align-items:center;gap:8px;margin-top:7px;} .target .t-hp .bar{flex:1;} .target .t-hp .bar i{background:var(--amber2);} .target .t-hp span{font-size:11px;color:var(--muted);white-space:nowrap;}
-.target.pirate .t-hp{display:none;}
+.target .t-rows{display:flex;gap:16px;justify-content:center;margin-top:5px;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--hud-dim);white-space:nowrap;}
+.target .t-rows b{color:#dff7ff;font-weight:500;text-shadow:0 0 6px rgba(94,211,240,.45);}
 .hud-bl{bottom:18px;left:20px;display:flex;flex-direction:column;gap:6px;}
 .controls{font-size:12px;color:var(--muted);display:grid;grid-template-columns:auto auto;gap:4px 12px;align-items:center;}
 kbd{font-family:var(--mono);font-size:11px;color:var(--text);background:#151A30;border:1px solid var(--line2);border-bottom-width:2px;padding:1px 6px;display:inline-block;min-width:14px;text-align:center;}
@@ -371,7 +372,7 @@ table.manifest td.dimmed{color:var(--dim);}
   <div class="target" id="target">
     <div class="eyebrow" id="tEyebrow">Target</div>
     <div class="t-name" id="tName"></div>
-    <div class="t-sub" id="tSub"></div>
+    <div class="t-rows"><span>SIZE <b id="tSize"></b></span><span>ORE <b id="tOre"></b></span><span>RANGE <b id="tRange"></b></span></div>
     <div class="t-hp" id="tHpRow"><div class="bar"><i id="tHp"></i></div><span class="mono" id="tHpT"></span></div>
     <div class="t-warn" id="tWarn"></div>
   </div>
@@ -388,7 +389,6 @@ table.manifest td.dimmed{color:var(--dim);}
     <span><kbd>â†‘</kbd> <kbd>â†“</kbd></span><span>Pitch</span>
     <span><kbd>LMB</kbd></span><span>Hold to fire the mining laser (<kbd>Space</kbd> or <kbd>L</kbd> too). It cuts only what the crosshair is on: aim the nose at a rock</span>
     <span><kbd>Q</kbd></span><span>Lock the crosshair on whatever the mouse is over: the ship steers itself to keep it centred Â· press again to release</span>
-    <span><kbd>P</kbd></span><span>Park Â· release</span>
     <span><kbd>R</kbd></span><span>Radar pulse</span>
     <span><kbd>F</kbd></span><span>Flashlight on Â· off in flight Â· cargo ship services when docked (store ore, refit, sell at the Hub)</span>
     <span><kbd>Tab</kbd> <kbd>I</kbd></span><span>Inventory Â· slots of 25 Â· jettison stacks</span>
@@ -502,7 +502,6 @@ table.manifest td.dimmed{color:var(--dim);}
       <span><kbd>LMB</kbd></span><span>Hold to fire the mining laser (Space or L too). While you hold it, the dish under the nose swings onto whatever the crosshair is on and cuts it until it breaks. It never picks targets by itself: keep the nose on the rock.</span>
       <span><kbd>Q</kbd></span><span>Hover the mouse over a rock or raider to see how far away it is, then press Q to lock the crosshair on it. The ship steers itself to keep it in the crosshair (you keep the throttle and roll) until you press Q again, or it breaks up or goes beyond 100,000 units. A locked object always shows its range, and its details sit top centre.</span>
       <span><kbd>F</kbd></span><span>Flashlight: a spot beam from the nose, on or off. While docked F opens the cargo ship services instead.</span>
-      <span><kbd>P</kbd></span><span>Park beside a rock or planet Â· thrust to leave</span>
       <span>Docking</span><span>Fly slowly into either mouth of the cargo ship's through-hangar, or press <kbd>E</kbd> within 4,500 of it and approach control flies you in. You taxi to the pad at the far end and park nose-out, so you leave straight ahead. Fuel and repairs flow while you sit on the pad, and the services panel moves ore between your hold and the cargo ship's 50-slot storage. The cargo ship warps with you; ore only sells at the Hub.</span>
       <span><kbd>N</kbd></span><span>Open the nav map. The cargo ship makes the jump between zones, so dock in its hangar first; you ride along and arrive in Dock 1.</span>
       <span><kbd>K</kbd></span><span>Sound on or off</span>
@@ -719,7 +718,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.32';
+const GAME_VERSION = '0.9.33';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D Â· v' + GAME_VERSION;
 
@@ -2638,7 +2637,7 @@ function resetSave(){ resetting=true; try{ localStorage.removeItem(SAVE_KEY); }c
 const $=id=>document.getElementById(id);
 const BLIPS=36; { const c=$('blips'); for (let i=0;i<BLIPS;i++){ const d=document.createElement('div'); d.className='blip'; d.innerHTML='<i></i><span></span>'; c.appendChild(d); } }
 const el={credits:$('credits'),goalFill:$('goalFill'),goalPct:$('goalPct'),fuelText:$('fuelText'),fuelFill:$('fuelFill'),cargoText:$('cargoText'),cargoFill:$('cargoFill'),chips:$('chips'),
-  spd:$('spd'),dist:$('dist'),inv:$('inv'),invBody:$('invBody'),invCap:$('invCap'),invFill:$('invFill'),invClose:$('invClose'),target:$('target'),tEyebrow:$('tEyebrow'),tName:$('tName'),tSub:$('tSub'),tWarn:$('tWarn'),tHp:$('tHp'),tHpT:$('tHpT'),prompt:$('prompt'),toasts:$('toasts'),
+  spd:$('spd'),dist:$('dist'),inv:$('inv'),invBody:$('invBody'),invCap:$('invCap'),invFill:$('invFill'),invClose:$('invClose'),target:$('target'),tEyebrow:$('tEyebrow'),tName:$('tName'),tSize:$('tSize'),tOre:$('tOre'),tRange:$('tRange'),tWarn:$('tWarn'),tHp:$('tHp'),tHpT:$('tHpT'),prompt:$('prompt'),toasts:$('toasts'),
   center:$('center'),reticle:$('reticle'),rLbl:$('rLbl'),hoverLbl:$('hoverLbl'),marker:$('marker'),mArr:$('mArr'),mLbl:$('mLbl'),fullNotice:$('fullNotice'),
   station:$('station'),pCredits:$('pCredits'),manifest:$('manifest'),upgrades:$('upgrades'),closeSvc:$('closeSvc'),reset:$('reset'),
   dockbox:$('dockbox'),dbTitle:$('dbTitle'),dbCargo:$('dbCargo'),dbCargoT:$('dbCargoT'),dbFuel:$('dbFuel'),dbFuelT:$('dbFuelT'),dbHull:$('dbHull'),dbHullT:$('dbHullT'),
@@ -2662,7 +2661,6 @@ window.addEventListener('keydown', e => {
   if (k==='t' && !e.repeat) callTow();
   if (k==='n' && !e.repeat) toggleMap();
   if (k==='k' && !e.repeat) toggleSound();
-  if (k==='p' && !e.repeat) togglePark();
   if (k==='q' && !e.repeat && !docked) toggleLock();
   if (k==='r' && !e.repeat) radarPulse();
   if ((k==='i' || e.key==='Tab') && !e.repeat) toggleInventory();
@@ -3146,13 +3144,7 @@ function renderPanel(){
   el.upgrades.querySelectorAll('[data-dup]').forEach(b=>b.addEventListener('click',()=>buyDepot(b.dataset.dup)));
   el.upgrades.querySelectorAll('[data-jump]').forEach(b=>b.addEventListener('click',buyJump));
 }
-function togglePark(){
-  if (!started || docked || mapOpen || warping) return;
-  if (parked){ releasePark(); return; }
-  if (target && target.type!=='pirate'){ const obj=target.obj; parked={obj, offset:ship.pos.clone().sub(obj.pos)}; toast(`Parked at ${rockName(obj).toLowerCase()}`); }
-  else { parked={obj:null}; toast('Holding position'); }
-  ship.vel.set(0,0,0);
-}
+// parking (P) is retired: nothing sets `parked` any more; releasePark and the hold-station branch in the physics stay inert
 function releasePark(){ if (!parked) return; parked=null; toast('Released Â· drifting'); }
 function radarPulse(force){
   if (!started || docked || warping) return;
@@ -4095,12 +4087,18 @@ function updateHud(dt){
   el.laserState.textContent=(laserOn?`CUTTING Â· ${Math.round(heatFx.heat*100)}% heat Â· ${Math.round(laserPower(target.dist)*100)}% power`:firing?'FIRING':heatFx.heat>0.01?`ready Â· ${Math.round(heatFx.heat*100)}% heat`:'ready'); el.laserState.style.color=laserOn?'var(--amber2)':''; el.radarState.textContent=pulseCd>0?`${pulseCd.toFixed(1)}s`:'READY';
   const T=lock?{type:lockType, obj:lock, dist:lockDist, locked:true}:target;   // the panel (top centre) follows the lock when there is one, else the crosshair target
   if (T && !docked){
-    const t=T.obj; el.target.classList.add('on');
+    const t=T.obj, reach=stat('scanner').mine; el.target.classList.add('on');
     el.target.classList.toggle('pirate', T.type==='pirate');
-    el.tEyebrow.textContent=T.locked?`Locked Â· ${Math.round(T.dist).toLocaleString()} u${T.dist<=stat('scanner').mine?' Â· in reach':''}`:'Target';
-    if (T.type==='pirate'){ el.tName.textContent='Pirate raider'; el.tSub.textContent=`${Math.max(0,Math.ceil(t.hp))} / ${t.maxHp} hp Â· bounty ${fmt(t.bounty)} cr`; el.tWarn.textContent=t.state==='attack'?'Hostile Â· laser cuts it':''; el.tWarn.style.display=t.state==='attack'?'block':'none'; }
-    else {
-      el.tName.textContent=rockName(t); el.tSub.textContent=t.barren?'plain stone Â· scrap only':`${Math.round(t.max)} u ${ORES[t.ore].name} inside Â· hardness ${ORES[t.ore].hardness}`;
+    el.tEyebrow.textContent=T.locked?'Locked target':'Target';
+    el.tRange.textContent=`${Math.round(T.dist).toLocaleString()} u`+(T.dist<=reach?'':' Â· beyond reach');
+    if (T.type==='pirate'){
+      el.tName.textContent='Pirate raider'; el.tSize.textContent=`${Math.round(t.r*2)} u`; el.tOre.textContent=`bounty ${fmt(t.bounty)} cr`;
+      el.tHp.style.width=(100*Math.max(0,t.hp)/t.maxHp)+'%'; el.tHpT.textContent=`${Math.max(0,Math.ceil(t.hp))} / ${t.maxHp}`;
+      el.tWarn.textContent=t.state==='attack'?'Hostile Â· laser cuts it':''; el.tWarn.style.display=t.state==='attack'?'block':'none';
+    } else {
+      // name, size (class and width), ore (what and how much is left), range, then the health bar; warnings only when the laser cannot cut it
+      el.tName.textContent=rockName(t); el.tSize.textContent=`${t.cls} Â· ${Math.round((t.asset?t.boundR:t.r)*2)} u across`;
+      el.tOre.textContent=t.barren?'none Â· scrap only':`${ORES[t.ore].name} Â· ${Math.round(t.amount)} of ${Math.round(t.max)} u`;
       el.tHp.style.width=(100*Math.max(0,t.hp)/t.hpMax)+'%'; el.tHpT.textContent=`${Math.ceil(Math.max(0,t.hp))} / ${t.hpMax}`;
       const r=mineReason(T); el.tWarn.textContent=r||''; el.tWarn.style.display=r?'block':'none';
     }
@@ -4114,8 +4112,7 @@ function updateHud(dt){
     else if (nearStation()) segs.push(`<kbd>E</kbd>Auto-dock with the ${CARGO_SHIP.toLowerCase()} Â· or fly in through either hangar mouth`);
     else if (state.fuel<=0.5 && !parked) segs.push('<kbd>T</kbd>Out of fuel Â· call a tow (15% of credits)');
     if (target && target.type==='pirate'){ segs.push(trigger?'Laser on the raider':'<kbd>LMB</kbd>Hold to fire at raider'); }
-    else if (target){ segs.push(!trigger?'<kbd>LMB</kbd>Hold to mine':target.obj.barren?'Breaking rock Â· scrap only':`${laserOn?'Cutting':'Aiming at'} ${ORES[target.obj.ore].name}`); segs.push(parked?'<kbd>P</kbd>Release':'<kbd>P</kbd>Park at rock'); }
-    else if (parked) segs.push('<kbd>P</kbd>Release');
+    else if (target){ segs.push(!trigger?'<kbd>LMB</kbd>Hold to mine':target.obj.barren?'Breaking rock Â· scrap only':`${laserOn?'Cutting':'Aiming at'} ${ORES[target.obj.ore].name}`); }
   }
   if (started && !docked && !pilotingCarrier()){ if (lock) segs.push('<kbd>Q</kbd>Release lock'); else if (hover) segs.push(`<kbd>Q</kbd>Lock on ${hoverName(hover)}`); }
   const p=segs.join('<span class="sep">Â·</span>');
@@ -4160,7 +4157,7 @@ const TUT=[
   {id:'upgrades', title:'The refit list', ring:['#upgrades'],
     text:'Each refit shows its current level and the next. Laser, engine, tank, cargo, scanner and hull all pay for themselves; a bigger hold and a stronger laser fastest. Below them are the cargo ship upgrades: radar, the mining dish and collector drones that stow what they gather in its storage. The jump drive at the bottom is the long game.'},
   {id:'depart', title:'Back out', ring:['#depart'], wait:'press Depart',
-    text:'Press <b>Depart</b> (or <kbd>W</kbd> on the pad) to launch. Worth knowing: <kbd>N</kbd> opens the nav map for warping between zones, <kbd>T</kbd> calls a tow if you run dry (15% of credits), <kbd>P</kbd> parks by a rock, <kbd>I</kbd> opens your inventory, <kbd>Esc</kbd> pauses. Raiders roam the richer fields; the laser cuts them too.', auto:()=>!docked && !cut},
+    text:'Press <b>Depart</b> (or <kbd>W</kbd> on the pad) to launch. Worth knowing: <kbd>N</kbd> opens the nav map for warping between zones, <kbd>T</kbd> calls a tow if you run dry (15% of credits), <kbd>I</kbd> opens your inventory, <kbd>Esc</kbd> pauses. Raiders roam the richer fields; the laser cuts them too.', auto:()=>!docked && !cut},
   {id:'done', title:'Tutorial complete', text:'You are on your own now. Fill the hold, stow it aboard the cargo ship, warp to the Hub to sell, refit, repeat. Good hunting.', final:true},
 ];
 const tutEl={box:$('tut'), step:$('tutStep'), title:$('tutTitle'), text:$('tutText'), next:$('tutNext'), wait:$('tutWait'), skip:$('tutSkip'), rings:[$('tutRing'),$('tutRing2')]};
