@@ -563,7 +563,6 @@ table.manifest td.dimmed{color:var(--dim);}
 <script src="assets/cargo_carrier/load-carrier.js"></script>
 <script src="assets/player_ship/assemble-player-ship.global.js"></script>
 <script src="assets/player_ship/load-player-ship.js"></script>
-<script src="assets/ore_clusters/load-ore-clusters.js"></script>
 <script src="assets/asteroid_surface/load-rock-texture.js"></script>
 <script>
 (() => {
@@ -703,7 +702,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.9';
+const GAME_VERSION = '0.9.10';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -1474,23 +1473,6 @@ for (const k of ORE_KEYS){
   };
 }
 function rockMaterialFor(ore, S){ return S.cave ? oreRockMats[ore].cave : S.smooth ? oreRockMats[ore].smooth : oreRockMats[ore].flat; }
-// ore crystals jutting from the surface: a handful of elongated shards of the ore itself, rooted in the stone and pointing
-// outward, all welded into one mesh per rock so they cost a single draw call
-const spikeBase=new THREE.OctahedronGeometry(1,0); spikeBase.scale(.42,.42,1.25); spikeBase.translate(0,0,.55);
-function oreSpikeMesh(bodyGeo, ore, cls, baseR){
-  const n=(cls==='colossal'?18:cls==='giant'?10:cls==='large'?6:2)+Math.floor(Math.random()*4);
-  const sp=spikeBase.attributes.position, sn=spikeBase.attributes.normal, cnt=sp.count;
-  const pos=new Float32Array(n*cnt*3), nor=new Float32Array(n*cnt*3), m=new THREE.Matrix4(), q=new THREE.Quaternion(), roll=new THREE.Quaternion(), v=V3(), nv=V3(), up=V3(0,0,1);
-  let o=0;
-  for (let i=0;i<n;i++){
-    const p=surfacePoint(bodyGeo), dir=p.clone().normalize(), s=Math.min(120, baseR*rand(.12,.26));
-    q.setFromUnitVectors(up, dir); roll.setFromAxisAngle(dir, Math.random()*6.28); q.premultiply(roll);
-    m.compose(p.multiplyScalar(.9), q, V3(s*rand(.7,1.3), s*rand(.7,1.3), s));
-    for (let k=0;k<cnt;k++){ v.set(sp.getX(k),sp.getY(k),sp.getZ(k)).applyMatrix4(m); nv.set(sn.getX(k),sn.getY(k),sn.getZ(k)).applyQuaternion(q); pos[o]=v.x; pos[o+1]=v.y; pos[o+2]=v.z; nor[o]=nv.x; nor[o+1]=nv.y; nor[o+2]=nv.z; o+=3; }
-  }
-  const g=new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos,3)); g.setAttribute('normal', new THREE.BufferAttribute(nor,3));
-  const mesh=new THREE.Mesh(g, oreMats[ore]); mesh.userData.own=true; return mesh;
-}
 // Rock surfaces heat where a laser sits on them: every rock material carries a small shader patch that adds an emissive
 // glow falling off around up to two heat points (the ship's laser and the depot's), so the stone itself reddens, then
 // whitens, around the beam. The points are fed each frame by the heat effects.
@@ -1622,12 +1604,6 @@ function makeAsteroid(belt, avoid, field, opts){
     const n=2+Math.floor(Math.random()*3);
     for (let i=0;i<n;i++){ const lr=baseR*rand(.35,.6); const lg=rockGeometry(lr, 'lumpy', seed+i+1, 0); const lump=new THREE.Mesh(lg, mat); lump.userData.own=true; lump.position.copy(surfacePoint(bodyGeo)).multiplyScalar(0.85); lump.rotation.set(Math.random()*3,Math.random()*3,Math.random()*3); group.add(lump); lumps.push({local:lump.position.clone(), r:lr*.92}); }
   }
-  let oreDetail=null;
-  if (!barren && !S.cave && Math.random()<0.6){
-    const fallback=oreSpikeMesh(bodyGeo,ore,cls,baseR);
-    oreDetail=window.BeltRunnerOreClusters?BeltRunnerOreClusters.detail(bodyGeo,ore,ORES[ore].hex,cls,baseR,fallback):fallback;
-    group.add(oreDetail);
-  }
   group.rotation.set(Math.random()*6,Math.random()*6,Math.random()*6);
   // not added to the scene here: rocks join the scene graph only while within draw range (see the update loop)
   const spin=cls==='colossal'?rand(.004,.015):S.cave?rand(.01,.04):cls==='giant'?rand(.02,.06):cls==='large'?rand(.05,.15):rand(.1,.5);
@@ -1635,7 +1611,7 @@ function makeAsteroid(belt, avoid, field, opts){
   // bar is gone, dropping its ore as pickups and the rest as scrap. Bigger rocks take far longer: hp grows a little faster than radius.
   const hpMax=Math.round(40+2.2*Math.pow(baseR,1.15));
   const a={id:rockId++, ang, orbit, y, pos:group.position, ore, baseR, r:baseR, amount:barren?0:amount, max:barren?0:amount, hp:hpMax, hpMax, group, bodyGeo, axis:V3(rand(-1,1),rand(-1,1),rand(-1,1)).normalize(), spin, belt, dead:false, respawnAt:0, cls, shape, field:field||null, off, seed, craters:cave.craters, lumps,
-    cave:S.cave?cave:null, barren, mat, oreDetail};
+    cave:S.cave?cave:null, barren, mat};
   return a;
 }
 const SHAPE_WORD={cluster:'cluster', shard:'shard', hollow:'hollow', slab:'slab', spindle:'spindle', bean:'bean', boulder:'boulder', jagged:'jag', wedge:'wedge', pancake:'plate'};
@@ -1799,7 +1775,7 @@ function rebuildBurns(rock){
   if (!rock.burnMesh){ rock.burnMesh=new THREE.Mesh(g, burnMat); rock.burnMesh.userData.own=true; rock.burnMesh.frustumCulled=false; rock.burnMesh.renderOrder=1; rock.group.add(rock.burnMesh); }
   else { rock.burnMesh.geometry.dispose(); rock.burnMesh.geometry=g; }
 }
-function removeAsteroid(a){ if(a.oreDetail)window.BeltRunnerOreClusters?.release(a.oreDetail);scene.remove(a.group); a.group.traverse(o=>{ if (o.userData.own && o.geometry) o.geometry.dispose(); }); if (a.hotMat){ a.hotMat.dispose(); a.hotMat=null; } hotRocks.delete(a); }
+function removeAsteroid(a){ scene.remove(a.group); a.group.traverse(o=>{ if (o.userData.own && o.geometry) o.geometry.dispose(); }); if (a.hotMat){ a.hotMat.dispose(); a.hotMat=null; } hotRocks.delete(a); }
 // Barren scenery rocks: big, resource-free boulders scattered across the whole zone so the space between belts is not empty.
 let scenery=[];
 function buildScenery(z){
@@ -3697,7 +3673,6 @@ function update(dt){
   // so ten thousand parked groups would cost more than the visible ones). Rocks well beyond range only move every
   // eighth frame, catching up the skipped time in one step; at 28 u/s that is invisible.
   frameNo++; nearRocks.length=0;
-  window.BeltRunnerOreClusters?.beginFrame();
   for (let i=0;i<asteroids.length;i++){
     const a=asteroids[i];
     if (a.dead){   // a broken belt rock grows back elsewhere in its belt after five minutes; a broken fragment is simply gone
@@ -3709,7 +3684,6 @@ function update(dt){
     if (a.far && (i+frameNo)%8){ a.lag=(a.lag||0)+dt; continue; }
     const vis=(12000+a.r*400)*lodScale, dSq=a.pos.distanceToSquared(ship.pos), near=dSq<vis*vis;
     a.far=dSq>vis*vis*4;
-    if(a.oreDetail)window.BeltRunnerOreClusters?.update(a.oreDetail,Math.sqrt(dSq));
     if (near){ if (!a.inScene){ scene.add(a.group); a.inScene=true; } nearRocks.push(a); }
     else if (a.inScene){ scene.remove(a.group); a.inScene=false; }
     const step=dt+(a.lag||0); a.lag=0;
@@ -4213,7 +4187,6 @@ camQ.copy(ship.q); camPos.copy(ship.pos).addScaledVector(shipForward(),-88*SHIP_
 target=findTarget();
 if(window.loadBeltRunnerPlayerShip)window.loadBeltRunnerPlayerShip({renderer,install:installPlayerModel,status:playerAsset});
 else {playerAsset.state='fallback';playerAsset.error='Player asset script unavailable';}
-if(window.BeltRunnerOreClusters)BeltRunnerOreClusters.load(renderer);
 if(window.BeltRunnerRockSurface)BeltRunnerRockSurface.load({renderer,baseMaterials:[rockMat,rockMatSmooth,rockMatCave,barrenMat],oreMaterials:oreRockMats,ores:ORES,veinMask,veinSize:VEIN_N,asteroids:()=>asteroids,heatable});
 if (window.loadBeltRunnerCarrier) window.loadBeltRunnerCarrier({station, renderer, install:installCarrierModel, status:carrierAsset});
 else { carrierAsset.state='fallback'; carrierAsset.error='Carrier asset script unavailable'; }

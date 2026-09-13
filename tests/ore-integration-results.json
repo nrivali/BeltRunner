@@ -1,44 +1,24 @@
 [
   {
     "mode": "http",
-    "state": "ready",
-    "checkedMaterialBatches": 288,
-    "variants": [
-      "01_needle",
-      "02_fan",
-      "03_crown",
-      "06_bloom",
-      "04_split_spire",
-      "05_ridge"
-    ],
-    "activeLimit": 96,
-    "buildsPerFrame": 2,
-    "lodRelease": true,
-    "miningCleanup": true,
+    "checkedRocks": 21451,
+    "protrusions": 0,
+    "texturedSurfaces": true,
+    "oreVeins": true,
+    "miningDrops": true,
+    "version": "v0.9.10",
+    "clusterRequests": 0,
     "errors": []
   },
   {
     "mode": "file",
-    "state": "ready",
-    "checkedMaterialBatches": 288,
-    "variants": [
-      "05_ridge",
-      "01_needle",
-      "03_crown",
-      "02_fan",
-      "04_split_spire",
-      "06_bloom"
-    ],
-    "activeLimit": 96,
-    "buildsPerFrame": 2,
-    "lodRelease": true,
-    "miningCleanup": true,
-    "errors": []
-  },
-  {
-    "mode": "missing",
-    "state": "fallback",
-    "fallback": true,
+    "checkedRocks": 21919,
+    "protrusions": 0,
+    "texturedSurfaces": true,
+    "oreVeins": true,
+    "miningDrops": true,
+    "version": "v0.9.10",
+    "clusterRequests": 0,
     "errors": []
   }
 ]

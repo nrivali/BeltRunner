@@ -28,6 +28,8 @@ Run `build_ore_clusters.py` with Blender in background mode to regenerate all fi
 
 ## Game integration
 
+As of game v0.9.10, protruding ore clusters are disabled at the user's request. The game uses surface veins only and no longer loads this asset library. The description below is retained as a reference for the optional assets; it describes v0.9.8 behavior. The current `tests/ore-integration.cjs` verifies that protrusions stay absent while textured surfaces and mining drops work.
+
 `belt-runner-3d.html` loads `load-ore-clusters.js`. Ore-bearing, non-cave asteroids retain their existing 60% detail chance. Each decorated rock receives one of the six shapes and its ore's color, aligned to actual surface triangles. Small rocks use one cluster, large rocks two, giants three, and colossals four. Props retain their authored size unless a small asteroid requires scaling down.
 
 High detail activates within 3,500 units of the rock's base radius and releases beyond 4,500. A maximum of 96 rocks use detailed clusters, with two built per frame; each uses three instanced draw calls. Geometry, textures, and tinted materials are shared. Placements persist across detail changes. Distant rocks and failed asset loads use the original procedural crystals. Breaking rocks and zone changes release instance buffers. Mineral transmission is disabled in gameplay to avoid its extra render pass; normal maps, reflections, and separate emission remain active.
