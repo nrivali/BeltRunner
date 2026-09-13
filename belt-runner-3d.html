@@ -181,17 +181,6 @@ kbd{font-family:var(--mono);font-size:11px;color:var(--text);background:#151A30;
 table.manifest tr.held td{color:var(--dim);}
 .link.hold{color:var(--muted);text-decoration:none;font-family:var(--display);font-size:10px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--line2);padding:2px 7px;}
 .link.hold.on{color:var(--amber2);border-color:var(--amber);}
-.hangar-h{margin-top:24px!important;}
-.hangar{display:flex;flex-direction:column;gap:10px;}
-.hrow{display:grid;grid-template-columns:72px 1fr;align-items:center;gap:10px;}
-.hrow input{font-family:var(--mono);font-size:13px;color:var(--text);background:var(--panel2);border:1px solid var(--line2);padding:6px 8px;width:100%;box-sizing:border-box;}
-.hrow input:focus{outline:2px solid var(--cyan);outline-offset:1px;}
-.swatches{display:flex;gap:6px;flex-wrap:wrap;}
-.sw{width:22px;height:22px;border:1px solid rgba(255,255,255,.18);cursor:pointer;padding:0;clip-path:polygon(4px 0,100% 0,100% calc(100% - 4px),calc(100% - 4px) 100%,0 100%,0 4px);}
-.sw.sel{outline:2px solid var(--amber2);outline-offset:2px;}
-.segs{display:flex;gap:6px;flex-wrap:wrap;}
-.seg{font-family:var(--display);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--panel2);border:1px solid var(--line2);padding:5px 9px;cursor:pointer;}
-.seg.sel{color:var(--amber2);border-color:var(--amber);}
 .hangar .hint{margin:0;}
 
 .map-panel{width:min(1060px,100%);}
@@ -422,14 +411,6 @@ table.manifest td.dimmed{color:var(--dim);}
       <section class="col">
         <h3 id="manifestH">Cargo transfer</h3>
         <div id="manifest"></div>
-        <h3 class="hangar-h">Hangar</h3>
-        <div class="hangar">
-          <label class="hrow"><span class="eyebrow">Callsign</span><input id="callsign" maxlength="18" spellcheck="false"></label>
-          <div class="hrow"><span class="eyebrow">Hull</span><div class="swatches" id="hullSw"></div></div>
-          <div class="hrow"><span class="eyebrow">Trim</span><div class="swatches" id="trimSw"></div></div>
-          <div class="hrow"><span class="eyebrow">Wings</span><div class="segs" id="wingSeg"></div></div>
-          <p class="hint">Refits show on the hull: laser barrels, cargo pods, engine nacelles and the scanner dish all grow with their level.</p>
-        </div>
       </section>
       <section class="col">
         <h3>Refit</h3>
@@ -709,7 +690,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.44';
+const GAME_VERSION = '0.9.45';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -2632,7 +2613,7 @@ const el={credits:$('credits'),goalFill:$('goalFill'),goalPct:$('goalPct'),fuelT
   menuMain:$('menuMain'),menuSettings:$('menuSettings'),menuControls:$('menuControls'),mContinue:$('mContinue'),mNew:$('mNew'),mSaveInfo:$('mSaveInfo'),mNewInfo:$('mNewInfo'),mControls:$('mControls'),mSettings:$('mSettings'),sSound:$('sSound'),sMusic:$('sMusic'),sQuality:$('sQuality'),sHud:$('sHud'),sHudT:$('sHudT'),sReset:$('sReset'),
   zoneName:$('zoneName'),depotName:$('depotName'),laserState:$('laserState'),laserRange:$('laserRange'),radarState:$('radarState'),
   cine:$('cine'),cineCap:$('cineCap'),depart:$('depart'),fieldMarker:$('fieldMarker'),fArr:$('fArr'),fieldLbl:$('fieldLbl'),fieldState:$('fieldState'),threatState:$('threatState'),
-  callsign:$('callsign'),hullSw:$('hullSw'),trimSw:$('trimSw'),wingSeg:$('wingSeg'),dockedEyebrow:$('dockedEyebrow'),blips:[...document.querySelectorAll('.blip')],map:$('map'),chart:$('chart'),zinfo:$('zinfo'),mFuel:$('mFuel'),mapClose:$('mapClose'),warp:$('warp'),wName:$('wName'),wSub:$('wSub')};
+  dockedEyebrow:$('dockedEyebrow'),blips:[...document.querySelectorAll('.blip')],map:$('map'),chart:$('chart'),zinfo:$('zinfo'),mFuel:$('mFuel'),mapClose:$('mapClose'),warp:$('warp'),wName:$('wName'),wSub:$('wSub')};
 function toast(msg,bad){ const d=document.createElement('div'); d.className='toast'+(bad?' bad':''); d.textContent=msg; el.toasts.appendChild(d); setTimeout(()=>d.remove(),3300); }
 
 // ---------------------------------------------------------------- input
@@ -3013,17 +2994,8 @@ function buy(k){
   if (k==='hull'){ state.hull=stat('hull').hp; lowHullWarned=false; }   // new plating goes on whole: the hull is full after the refit
   buildShip(); renderPanel(); save();
 }
-function renderHangar(){
-  const c=state.custom;
-  el.callsign.value=c.callsign;
-  el.hullSw.innerHTML=HULL_PAINTS.map(h=>`<button class="sw${h===c.hull?' sel':''}" data-hull="${h}" style="background:${h}" aria-label="Hull ${h}"></button>`).join('');
-  el.trimSw.innerHTML=TRIM_PAINTS.map(h=>`<button class="sw${h===c.trim?' sel':''}" data-trim="${h}" style="background:${h}" aria-label="Trim ${h}"></button>`).join('');
-  el.wingSeg.innerHTML=Object.entries(WING_STYLES).map(([k,v])=>`<button class="seg${k===c.wings?' sel':''}" data-wings="${k}">${v}</button>`).join('');
-  el.hullSw.querySelectorAll('[data-hull]').forEach(b=>b.addEventListener('click',()=>{ c.hull=b.dataset.hull; buildShip(); renderHangar(); save(); }));
-  el.trimSw.querySelectorAll('[data-trim]').forEach(b=>b.addEventListener('click',()=>{ c.trim=b.dataset.trim; buildShip(); renderHangar(); save(); }));
-  el.wingSeg.querySelectorAll('[data-wings]').forEach(b=>b.addEventListener('click',()=>{ c.wings=b.dataset.wings; buildShip(); renderHangar(); save(); }));
-  el.dockedEyebrow.textContent=`Docked · ${c.callsign}`;
-}
+// the ship-design controls (callsign, paint, wings) are gone from the panel; the saved look still applies to the ship
+function renderHangar(){ el.dockedEyebrow.textContent=`Docked · ${state.custom.callsign}`; }
 function buyJump(){
   if (state.credits<JUMP_COST){ toast('Not enough credits', true); return; }
   state.credits-=JUMP_COST; state.jump=true; save(); renderPanel();
@@ -3076,12 +3048,14 @@ function sellOre(keys, fromHold, fromStore){
 }
 // the services panel only summarises the cargo: moving stacks between the hold and the storage is done in the inventory (Tab)
 let fuelDryWarned=false;
+// the cargo ship's own state as two gauges in the style of the bottom HUD: storage slots and the fuel supply
 function renderCargoSummary(){
-  const sf=state.shipFuel;
-  return `<div class="inv-total" style="border-top:none;padding-top:0"><span>Ship hold</span><b style="color:var(--text)">${usedSlots()} / ${cargoSlots()} slots · ${Math.floor(cargoTotal())} u</b></div>`
-       + `<div class="inv-total" style="border-top:none;padding-top:4px"><span>${CARGO_SHIP} storage</span><b style="color:var(--text)">${storeUsed()} / ${STORE_SLOTS} slots · ${Math.floor(storeTotal())} u</b></div>`
-       + `<div class="inv-total" style="border-top:none;padding-top:4px"><span>${CARGO_SHIP} fuel supply</span><b style="color:${sf<CARGO_FUEL_CAP*0.2?'var(--amber)':'var(--text)'}">${Math.floor(sf)} / ${CARGO_FUEL_CAP} u${zone.hub?(sf<CARGO_FUEL_CAP-0.5?` · resupplying at ${CARGO_FUEL_PRICE} cr/u`:' · full'):' · your tank fills from it'}</b></div>`
-       + `<p class="hint" style="margin:8px 0 0">Open the inventory (<kbd>Tab</kbd>) to move stacks between your hold and the cargo ship's storage. ${zone.hub?'The colony market below buys from both.':'Nothing sells here: the storage rides with the cargo ship, and the Hub buys the lot.'}</p>`;
+  const sf=state.shipFuel, su=storeUsed(), low=sf<CARGO_FUEL_CAP*0.2;
+  const gauge=(label, text, pct, color, cls)=>`<div class="gauge"><div class="gauge-head"><span>${label}</span><span class="mono${cls?' '+cls:''}">${text}</span></div><div class="bar"><i style="width:${Math.max(0,Math.min(100,pct))}%;background:${color};color:${color}"></i></div></div>`;
+  return `<div style="display:flex;flex-direction:column;gap:12px;margin-bottom:4px">`
+       + gauge(`${CARGO_SHIP} storage`, su>=STORE_SLOTS?`${su} / ${STORE_SLOTS} slots · FULL`:`${su} / ${STORE_SLOTS} slots`, storeTotal()/(STORE_SLOTS*STACK)*100, su>=STORE_SLOTS?'var(--amber)':'#B8C0DA', su>=STORE_SLOTS?'full':'')
+       + gauge(`${CARGO_SHIP} fuel supply`, `${Math.floor(sf)} / ${CARGO_FUEL_CAP}${zone.hub?(sf<CARGO_FUEL_CAP-0.5?` · resupplying at ${CARGO_FUEL_PRICE} cr/u`:' · full'):''}`, sf/CARGO_FUEL_CAP*100, low?'var(--amber)':'var(--cyan)', low?'full':'')
+       + `</div><p class="hint" style="margin:8px 0 0">Open the inventory (<kbd>Tab</kbd>) to move stacks between your hold and the cargo ship's storage. ${zone.hub?'The colony market below buys from both.':'Nothing sells here: the storage rides with the cargo ship, and the Hub buys the lot.'}</p>`;
 }
 function renderMarket(){
   const z=zone; let rows='', total=0, any=false;
@@ -4065,7 +4039,7 @@ function updateHud(dt){
   el.spdBig.textContent=docked?(pilotingCarrier()?'HOLD':'DOCK'):fmt(ship.vel.length());   // the bottom gauge: the same reading, in m/s
   { const big=pilotingCarrier(); el.dist.textContent=fmt(big?ship.pos.length():ship.pos.distanceTo(STATION.pos)); const lbl=$('distLbl').firstChild; const want=big?'COLONY ':'CARGO SHIP '; if (lbl.textContent!==want) lbl.textContent=want; }
   if (docked){
-    if (!el.station.hidden && document.activeElement!==el.callsign){ panelT+=0.08; if (panelT>1){ panelT=0; renderPanel(); } }
+    if (!el.station.hidden){ panelT+=0.08; if (panelT>1){ panelT=0; renderPanel(); } }
   }
   { const reach=stat('scanner').mine; el.laserRange.textContent=lock?`${fmt(lockDist)} / ${fmt(reach)} m`:`${fmt(reach)} m`; }   // range in metres: the locked object's distance against the beam's reach, else just the reach
   el.laserState.textContent=(laserOn?`CUTTING · ${Math.round(heatFx.heat*100)}% heat`:firing?'FIRING':heatFx.heat>0.01?`ready · ${Math.round(heatFx.heat*100)}% heat`:'ready'); el.laserState.style.color=laserOn?'var(--amber2)':''; el.radarState.textContent=pulseCd>0?`${pulseCd.toFixed(1)}s`:'READY';
@@ -4192,8 +4166,6 @@ window.addEventListener('keydown', e=>{ if (e.key!=='Enter' || state.tut<0 || !s
 
 if (load()) hasSave=true;
 buildShip();
-el.callsign.addEventListener('input', ()=>{ state.custom.callsign=el.callsign.value.trim()||'Unnamed'; el.dockedEyebrow.textContent=`Docked · ${state.custom.callsign}`; });
-el.callsign.addEventListener('change', save);
 loadZone(zone);
 spawnAtDepot();   // every session starts in the hangar on Bay 1's pad, whatever the save says
 if (state.hull<=0){ if (pilotingCarrier()) state.hull=1; else requestTow('breach'); }   // a save made mid-breach picks up with the tug on its way (no tug at the Hub: limp to the colony)
