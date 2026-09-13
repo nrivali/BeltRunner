@@ -708,7 +708,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.58';
+const GAME_VERSION = '0.9.59';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -3812,10 +3812,12 @@ function update(dt){
     }
     // the planet's pull: inverse-square from the surface value, always toward the origin. Strong enough to drag a drifting ship down, weak enough to climb out of on main thrust.
     { const d=ship.pos.length(); if (d>1){ const g=GRAVITY_SURFACE*Math.min(1, (planetR/d)*(planetR/d)); ship.vel.addScaledVector(ship.pos, -g*dt/d); } }
-    ship.vel.multiplyScalar(Math.exp(-0.32*dt));   // drag: with the throttle cut the ship glides only briefly, shedding most of its speed in a few seconds; retros (S) stop it faster
+    // drag: under power the old light drag (so top speed is still the engine cap); with the throttle cut the drag is four times
+    // stronger, so a coasting ship covers a quarter of the distance it used to and stops within a couple of seconds; retros (S) stop it faster still
+    const dragK=throttle>0?0.32:1.28; ship.vel.multiplyScalar(Math.exp(-dragK*dt));
     // speed cap: thrust can never push past it, but coming off cruise the ship is not snapped down to it. Anything above the cap
     // is only allowed to fall away on drag, so releasing Shift at cruise speed glides down over a few seconds.
-    const sp=ship.vel.length(), vmax=eng.max*(ship.boosting?BOOST:1), lim=Math.max(vmax, spBefore*Math.exp(-0.32*dt)); if (sp>lim) ship.vel.multiplyScalar(lim/sp);
+    const sp=ship.vel.length(), vmax=eng.max*(ship.boosting?BOOST:1), lim=Math.max(vmax, spBefore*Math.exp(-dragK*dt)); if (sp>lim) ship.vel.multiplyScalar(lim/sp);
     ship.pos.addScaledVector(ship.vel, dt);
   }
 
