@@ -720,7 +720,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.29';
+const GAME_VERSION = '0.9.30';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D Â· v' + GAME_VERSION;
 
@@ -3722,11 +3722,13 @@ function update(dt){
     let yaw=0, pitch=0, roll=0;
     if (key('a')||key('arrowleft')) roll-=1; if (key('d')||key('arrowright')) roll+=1;
     if (key('arrowup')) pitch+=1; if (key('arrowdown')) pitch-=1;
-    if (lock && !pilotingCarrier()){   // Q lock: the ship turns itself to keep the crosshair on the rock; the mouse is ignored until the lock is released (roll is still yours)
-      const p=project(lock.pos); let sx=(p.x-W/2)/(W/2), sy=(p.y-H/2)/(H/2);
-      if (p.behind){ sx=-Math.sign(sx||1); sy=-Math.sign(sy||1)*0.5; }   // behind the camera the projection is mirrored: turn hard the other way
+    if (lock && !pilotingCarrier()){   // Q lock: the ship turns itself to put the locked object on the nose ray (the laser's line, not the camera's,
+      // which sits above the ship and looks slightly down: centring on screen left the beam passing over far rocks); the mouse is ignored until
+      // the lock is released (roll is still yours)
+      const L=lock.pos.clone().sub(laserOrigin()).applyQuaternion(ship.q.clone().invert());   // the target in the ship's frame: +Z ahead, +X to port, +Y up
+      const ey=Math.atan2(L.x, L.z), ep=Math.atan2(L.y, Math.hypot(L.x, L.z));               // yaw and pitch error in radians (behind: up to a half turn)
       const c=v=>Math.max(-1,Math.min(1,v));
-      yaw-=c(sx*4)*1.2; pitch-=c(sy*4)*1.0;   // proportional: full rate beyond a quarter screen off centre, easing in as the rock centres
+      yaw+=c(ey*8)*1.2; pitch+=c(ep*8)*1.0;   // proportional: full rate beyond about seven degrees off, easing in as the nose comes on
     } else if (mouseAim && mouse.inside && !invOpen){   // the mouse belongs to the inventory while that panel is open
       let sx=(mouse.x-W/2)/(W/2), sy=(mouse.y-H/2)/(H/2); const dz=0.06;
       const shape=v=>{ const m=Math.abs(v); if (m<dz) return 0; const t=Math.min(1,(m-dz)/(1-dz)); return Math.sign(v)*t*(0.4+0.6*t); };
