@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "gameVersion": "0.9.62",
+  "gameSHA256": "cb0aaba2b8662a64f20928e7f53d46605353f2f188b91506f96f0d667c4e9b3e",
+  "assetSHA256": "ec3331b3c763384e29a3fd1a04673f2deaa9fbd170dee3a9780b4e2a58c58d43",
+  "binaryBytes": 18499580,
+  "scriptFallbackIdentical": true,
+  "embeddedImages": 4,
+  "textures": {
+    "basecolor": [
+      4096,
+      4096
+    ],
+    "normal": [
+      2048,
+      2048
+    ],
+    "metallic_roughness": [
+      2048,
+      2048
+    ],
+    "emissive": [
+      2048,
+      2048
+    ]
+  },
+  "gameBOM": true,
+  "gameCRLF": true,
+  "inlineScriptsParsed": 2
+}

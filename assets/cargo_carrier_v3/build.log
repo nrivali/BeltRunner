@@ -1,0 +1,95 @@
+C:\Users\rival\Documents\BeltRunner\assets\cargo_carrier_v3\build_carrier.py:18: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  mat=bpy.data.materials.new('source_'+k);mat.use_nodes=True;nt=mat.node_tree;bs=nt.nodes.get('Principled BSDF')
+GEOMETRY_READY 16124
+UV_READY
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+BAKED basecolor
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+BAKED metallic_roughness
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+BAKED emissive
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+BAKED normal
+C:\Users\rival\Documents\BeltRunner\assets\cargo_carrier_v3\build_carrier.py:319: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  mat=bpy.data.materials.new(name);mat.use_nodes=True;nt=mat.node_tree;bs=nt.nodes.get('Principled BSDF')
+INFO Draco is available, use library at C:\Program Files\Blender Foundation\Blender 5.2\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_draco_bridge.dll
+INFO MeshOptimizer is available, use library at C:\Program Files\Blender Foundation\Blender 5.2\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_meshopt_bridge.dll
+05:01:01 | INFO: Starting glTF 2.0 export
+05:01:01 | INFO: Extracting primitive: emissive
+05:01:01 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+05:01:01 | INFO: Primitives created: 1
+05:01:01 | INFO: Extracting primitive: glass
+05:01:01 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+05:01:01 | INFO: Primitives created: 1
+05:01:01 | INFO: Extracting primitive: hull
+05:01:01 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+05:01:01 | INFO: Primitives created: 1
+05:01:01 | INFO: Extracting primitive: interior
+05:01:01 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+05:01:01 | INFO: Primitives created: 1
+05:01:01 | INFO: Finished glTF 2.0 export in 0.09755444526672363 s
+
+05:01:01 | INFO: Starting glTF 2.0 export
+05:01:01 | INFO: Extracting primitive: dish_yaw
+05:01:01 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+05:01:01 | INFO: Primitives created: 1
+05:01:01 | INFO: Extracting primitive: dish_pitch
+05:01:01 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+05:01:01 | INFO: Primitives created: 2
+05:01:01 | INFO: Finished glTF 2.0 export in 0.02646613121032715 s
+
+05:01:01 | INFO: Starting glTF 2.0 export
+05:01:01 | INFO: Extracting primitive: dish_yaw
+05:01:01 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+05:01:01 | INFO: Primitives created: 1
+05:01:01 | INFO: Extracting primitive: dish_pitch
+05:01:01 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+05:01:01 | INFO: Primitives created: 2
+05:01:01 | INFO: Extracting primitive: emissive
+05:01:01 | INFO: Primitives created: 1
+05:01:01 | INFO: Extracting primitive: glass
+05:01:01 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+05:01:01 | INFO: Primitives created: 1
+05:01:01 | INFO: Extracting primitive: hull
+05:01:01 | INFO: Primitives created: 1
+05:01:01 | INFO: Extracting primitive: interior
+05:01:01 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+05:01:01 | INFO: Primitives created: 1
+05:01:01 | INFO: Finished glTF 2.0 export in 0.07144856452941895 s
+
+EXPORTED {"hull": 19956, "interior": 4412, "emissive": 3908, "glass": 600, "dish_yaw": 356, "dish_pitch": 1824}
+C:\Users\rival\Documents\BeltRunner\assets\cargo_carrier_v3\build_carrier.py:355: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  scene.world.use_nodes=True;bg=scene.world.node_tree.nodes.get('Background');bg.inputs[0].default_value=(.11,.14,.20,1);bg.inputs[1].default_value=.4
+00:23.969  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\cargo_carrier_v3\previews\preview_front.tmp.png'
+RENDERED preview_front
+00:29.515  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\cargo_carrier_v3\previews\preview_rear.tmp.png'
+RENDERED preview_rear
+01:04.922  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\cargo_carrier_v3\previews\preview_hangar.tmp.png'
+RENDERED preview_hangar
+01:11.078  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\cargo_carrier_v3\previews\preview_profile.tmp.png'
+RENDERED preview_profile
+Info: Saved as "cargo_carrier.blend"
+CARRIER_V3_COMPLETE
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+Blender quit

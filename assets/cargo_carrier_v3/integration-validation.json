@@ -1,0 +1,379 @@
+{
+  "gameSHA256": "cb0aaba2b8662a64f20928e7f53d46605353f2f188b91506f96f0d667c4e9b3e",
+  "assetSHA256": "ec3331b3c763384e29a3fd1a04673f2deaa9fbd170dee3a9780b4e2a58c58d43",
+  "results": [
+    {
+      "mode": "http",
+      "state": "ready",
+      "error": null,
+      "revision": 3,
+      "source": "glb",
+      "triangles": 28876,
+      "meshes": 4,
+      "dishMeshes": 3,
+      "totalTriangles": 31056,
+      "model": true,
+      "engines": [
+        [
+          -3580,
+          220,
+          0
+        ],
+        [
+          -3580,
+          -140,
+          -470
+        ],
+        [
+          -3580,
+          -140,
+          470
+        ]
+      ],
+      "pivot": [
+        -40,
+        995,
+        0
+      ],
+      "pads": [
+        [
+          0,
+          -100,
+          525
+        ],
+        [
+          0,
+          -100,
+          -525
+        ]
+      ],
+      "floor": -150,
+      "fields": [
+        true,
+        true
+      ],
+      "lights": 2,
+      "anchors": 13,
+      "baseColorSize": 4096,
+      "hullStations": 18,
+      "normalMaps": true,
+      "drop": [
+        250,
+        -130,
+        0
+      ],
+      "playerReady": true,
+      "rig": {
+        "aim": [
+          {
+            "error": 5.820766091346741e-11,
+            "dot": 1
+          },
+          {
+            "error": 2.2737367544323206e-13,
+            "dot": 1
+          },
+          {
+            "error": 1.3015628661377063e-10,
+            "dot": 1
+          }
+        ],
+        "beamError": 2.2737367544323206e-13,
+        "rimEmitters": 6,
+        "clearance": 18
+      },
+      "docking": [
+        [
+          1.9895196601282805e-11,
+          -100,
+          -524.9999999999515
+        ],
+        [
+          -8.526512829121202e-12,
+          -100,
+          524.9999999999864
+        ]
+      ],
+      "warp": {
+        "zone": "hub",
+        "sameModel": true,
+        "docked": true,
+        "focusError": 0,
+        "engines": 3
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "file",
+      "state": "ready",
+      "error": null,
+      "revision": 3,
+      "source": "script",
+      "triangles": 28876,
+      "meshes": 4,
+      "dishMeshes": 3,
+      "totalTriangles": 31056,
+      "model": true,
+      "engines": [
+        [
+          -3580,
+          220,
+          0
+        ],
+        [
+          -3580,
+          -140,
+          -470
+        ],
+        [
+          -3580,
+          -140,
+          470
+        ]
+      ],
+      "pivot": [
+        -40,
+        995,
+        0
+      ],
+      "pads": [
+        [
+          0,
+          -100,
+          525
+        ],
+        [
+          0,
+          -100,
+          -525
+        ]
+      ],
+      "floor": -150,
+      "fields": [
+        true,
+        true
+      ],
+      "lights": 2,
+      "anchors": 13,
+      "baseColorSize": 4096,
+      "hullStations": 18,
+      "normalMaps": true,
+      "drop": [
+        250,
+        -130,
+        0
+      ],
+      "playerReady": true,
+      "rig": {
+        "aim": [
+          {
+            "error": 0,
+            "dot": 0.9999999999999998
+          },
+          {
+            "error": 1.1641532182693481e-10,
+            "dot": 1
+          },
+          {
+            "error": 1.1641554387132798e-10,
+            "dot": 1
+          }
+        ],
+        "beamError": 1.1641554387132798e-10,
+        "rimEmitters": 6,
+        "clearance": 18
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "script-fallback",
+      "state": "ready",
+      "error": null,
+      "revision": 3,
+      "source": "script",
+      "triangles": 28876,
+      "meshes": 4,
+      "dishMeshes": 3,
+      "totalTriangles": 31056,
+      "model": true,
+      "engines": [
+        [
+          -3580,
+          220,
+          0
+        ],
+        [
+          -3580,
+          -140,
+          -470
+        ],
+        [
+          -3580,
+          -140,
+          470
+        ]
+      ],
+      "pivot": [
+        -40,
+        995,
+        0
+      ],
+      "pads": [
+        [
+          0,
+          -100,
+          525
+        ],
+        [
+          0,
+          -100,
+          -525
+        ]
+      ],
+      "floor": -150,
+      "fields": [
+        true,
+        true
+      ],
+      "lights": 2,
+      "anchors": 13,
+      "baseColorSize": 4096,
+      "hullStations": 18,
+      "normalMaps": true,
+      "drop": [
+        250,
+        -130,
+        0
+      ],
+      "playerReady": true,
+      "rig": {
+        "aim": [
+          {
+            "error": 1.1641554387132798e-10,
+            "dot": 0.9999999999999999
+          },
+          {
+            "error": 5.820766091346741e-11,
+            "dot": 1
+          },
+          {
+            "error": 1.1641532182693481e-10,
+            "dot": 0.9999999999999998
+          }
+        ],
+        "beamError": 1.1641554387132798e-10,
+        "rimEmitters": 6,
+        "clearance": 18
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "missing",
+      "state": "fallback",
+      "error": "Carrier data unavailable (Carrier HTTP 404)",
+      "model": false,
+      "engines": [
+        [
+          -3800,
+          0,
+          -540
+        ],
+        [
+          -3800,
+          0,
+          0
+        ],
+        [
+          -3800,
+          0,
+          540
+        ]
+      ],
+      "pivot": [
+        -500,
+        1360,
+        0
+      ],
+      "pads": [
+        [
+          0,
+          -138,
+          -525
+        ],
+        [
+          0,
+          -138,
+          525
+        ]
+      ],
+      "floor": -176,
+      "fields": [
+        true,
+        true
+      ],
+      "lights": 2,
+      "anchors": null,
+      "drop": [
+        250,
+        -130,
+        0
+      ],
+      "playerReady": true,
+      "pageErrors": []
+    },
+    {
+      "mode": "invalid",
+      "state": "fallback",
+      "error": "Unexpected token 'i', \"invalid model\" is not valid JSON",
+      "model": false,
+      "engines": [
+        [
+          -3800,
+          0,
+          -540
+        ],
+        [
+          -3800,
+          0,
+          0
+        ],
+        [
+          -3800,
+          0,
+          540
+        ]
+      ],
+      "pivot": [
+        -500,
+        1360,
+        0
+      ],
+      "pads": [
+        [
+          0,
+          -138,
+          -525
+        ],
+        [
+          0,
+          -138,
+          525
+        ]
+      ],
+      "floor": -176,
+      "fields": [
+        true,
+        true
+      ],
+      "lights": 2,
+      "anchors": null,
+      "drop": [
+        250,
+        -130,
+        0
+      ],
+      "playerReady": true,
+      "pageErrors": []
+    }
+  ]
+}

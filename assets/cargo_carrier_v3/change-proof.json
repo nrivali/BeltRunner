@@ -1,0 +1,43 @@
+{
+  "base": "d031e2f3754fb0bc3d21dede402a0a24355c60fb",
+  "beforeSHA256": "1a1f602a5e91ec8f5e39f19645145c0f24748bac6bc3039d37605d2d37305aaf",
+  "afterSHA256": "86f81e1d259f1f978521a3d749755fac7fb54c219e5e5f76a7c2ae8a073ebfeb",
+  "backup": "C:\\Users\\rival\\Documents\\BeltRunner\\backups\\rounded-carrier-2026-09-13T10-01-47-875Z.html",
+  "changes": [
+    {
+      "before": "const GAME_VERSION = '0.9.58';",
+      "after": "const GAME_VERSION = '0.9.59';"
+    },
+    {
+      "before": "<script src=\"assets/cargo_carrier/load-carrier.js\"></script>",
+      "after": "<script src=\"assets/cargo_carrier_v3/hull-contact.js\"></script>\r\n<script src=\"assets/cargo_carrier_v3/load-carrier.js\"></script>"
+    },
+    {
+      "before": "  if (p.x>P.x0 && p.x<P.x1){   // the prow is a cone tapering to the bow tip",
+      "after": "  if (carrierAsset.hullShape && window.BeltRunnerCarrierHull && !bayCorridor(ship.pos)){\r\n    const contact=window.BeltRunnerCarrierHull.contact(p,m,carrierAsset.hullShape);\r\n    if(contact){p.fromArray(contact.position);hit(V3(...contact.normal));}\r\n    return;\r\n  }\r\n  if (p.x>P.x0 && p.x<P.x1){   // procedural fallback prow"
+    }
+  ],
+  "reconciliations": [
+    {
+      "base": "2467494a90ab384e245199e6071aa87ad8f65e5b",
+      "beforeSHA256": "323cbff1e6a9a990e5ff12eddcefa44be9e2facac19afae6b48ca77fa4422e17",
+      "afterSHA256": "39a1ae49b51b3fe0af40300b76fa72412318193f4fea720770365ceecda1e353",
+      "backup": "C:\\Users\\rival\\Documents\\BeltRunner\\backups\\rounded-carrier-reconcile-2026-09-13T10-08-45-263Z.html",
+      "version": "const GAME_VERSION = '0.9.60';"
+    },
+    {
+      "base": "f047455cf21c4ddcc5f85101f80700ae57747c31",
+      "beforeSHA256": "f0e9b7f96bea75772dfcf8b5f928329b322a0ee2a96781c269d0114ee8ea0f29",
+      "afterSHA256": "fbb47f98c3e705c55abb4e629d1c05e67ebf9342881a2e5805d3cde01ebcc6ea",
+      "backup": "C:\\Users\\rival\\Documents\\BeltRunner\\backups\\rounded-carrier-reconcile-2026-09-13T10-14-33-614Z.html",
+      "version": "const GAME_VERSION = '0.9.61';"
+    },
+    {
+      "base": "be70dc1b92b8c060749706c07aab3d57f8d124f1",
+      "beforeSHA256": "f99d4ff1c01bfc507258626430feb5874435d2067d2a95631b5a3106ca50574d",
+      "afterSHA256": "cb0aaba2b8662a64f20928e7f53d46605353f2f188b91506f96f0d667c4e9b3e",
+      "backup": "C:\\Users\\rival\\Documents\\BeltRunner\\backups\\rounded-carrier-reconcile-2026-09-13T10-21-40-055Z.html",
+      "version": "const GAME_VERSION = '0.9.62';"
+    }
+  ]
+}

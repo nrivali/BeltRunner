@@ -1,0 +1,211 @@
+{
+  "triangles": 28876,
+  "triangles_with_dish": 31056,
+  "triangles_by_mesh": {
+    "hull": 19956,
+    "interior": 4412,
+    "emissive": 3908,
+    "glass": 600,
+    "dish_yaw": 356,
+    "dish_pitch": 1824
+  },
+  "meshes": [
+    "hull",
+    "interior",
+    "emissive",
+    "glass"
+  ],
+  "empties": {
+    "hangar_mouth_pos": [
+      0,
+      0,
+      900
+    ],
+    "hangar_mouth_neg": [
+      0,
+      0,
+      -900
+    ],
+    "pad_pos": [
+      0,
+      -138,
+      525
+    ],
+    "pad_neg": [
+      0,
+      -138,
+      -525
+    ],
+    "drop_pad": [
+      250,
+      -130,
+      0
+    ],
+    "dish_mount": [
+      -40,
+      995,
+      0
+    ],
+    "engine_0": [
+      -3480,
+      220,
+      0
+    ],
+    "engine_1": [
+      -3480,
+      -140,
+      -470
+    ],
+    "engine_2": [
+      -3480,
+      -140,
+      470
+    ],
+    "drone_dock_0": [
+      760,
+      -60,
+      1500
+    ],
+    "drone_dock_1": [
+      850,
+      -60,
+      1500
+    ],
+    "drone_dock_2": [
+      940,
+      -60,
+      1500
+    ],
+    "bridge_windows": [
+      2200,
+      610,
+      0
+    ]
+  },
+  "atlas_size": 4096,
+  "map_sizes": {
+    "basecolor": [
+      4096,
+      4096
+    ],
+    "metallic_roughness": [
+      2048,
+      2048
+    ],
+    "normal": [
+      2048,
+      2048
+    ],
+    "emissive": [
+      2048,
+      2048
+    ]
+  },
+  "profile": [
+    [
+      -3290,
+      665,
+      390
+    ],
+    [
+      -3090,
+      815,
+      488
+    ],
+    [
+      -2800,
+      872,
+      523
+    ],
+    [
+      -2300,
+      894,
+      537
+    ],
+    [
+      -1500,
+      900,
+      540
+    ],
+    [
+      -650,
+      900,
+      540
+    ],
+    [
+      0,
+      900,
+      540
+    ],
+    [
+      650,
+      897,
+      537
+    ],
+    [
+      1300,
+      880,
+      523
+    ],
+    [
+      2100,
+      850,
+      498
+    ],
+    [
+      2700,
+      813,
+      467
+    ],
+    [
+      3200,
+      758,
+      425
+    ],
+    [
+      3700,
+      676,
+      355
+    ],
+    [
+      4020,
+      545,
+      282
+    ],
+    [
+      4280,
+      370,
+      203
+    ],
+    [
+      4460,
+      205,
+      126
+    ],
+    [
+      4560,
+      96,
+      77
+    ],
+    [
+      4600,
+      32,
+      52
+    ]
+  ],
+  "exponent": 2.5,
+  "forward": "+X",
+  "up": "+Y",
+  "length": 8150,
+  "main_hull_width": 1800,
+  "main_hull_height": 1080,
+  "hangar_clear_x": [
+    -420,
+    420
+  ],
+  "hangar_clear_y": [
+    -176,
+    176
+  ],
+  "dish": "Separate mining_dish.glb plus complete cargo_carrier_assembled.glb; carrier alone retains original 4-mesh contract."
+}

@@ -1,0 +1,41 @@
+{
+  "passed": true,
+  "views": [
+    {
+      "name": "front",
+      "camera": [
+        4063.7662806247727,
+        2714.7288906984804,
+        10036.932273812732
+      ],
+      "triangles": 148712,
+      "drawCalls": 22
+    },
+    {
+      "name": "rear",
+      "camera": [
+        -7843.2116256464715,
+        2717.741572172491,
+        6714.3916157600925
+      ],
+      "triangles": 148712,
+      "drawCalls": 22
+    },
+    {
+      "name": "hangar",
+      "camera": [
+        0,
+        0,
+        1320
+      ],
+      "triangles": 148608,
+      "drawCalls": 11
+    }
+  ],
+  "paused": true,
+  "resumed": true,
+  "drag": true,
+  "zoom": true,
+  "responsive": true,
+  "errors": []
+}

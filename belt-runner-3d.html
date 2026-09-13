@@ -545,7 +545,8 @@ table.manifest td.dimmed{color:var(--dim);}
   window.BeltRunnerGLTFLoader=InlineImageGLTFLoader;
 })();
 </script>
-<script src="assets/cargo_carrier/load-carrier.js"></script>
+<script src="assets/cargo_carrier_v3/hull-contact.js"></script>
+<script src="assets/cargo_carrier_v3/load-carrier.js"></script>
 <script src="assets/player_ship/assemble-player-ship.global.js"></script>
 <script src="assets/player_ship/load-player-ship.js"></script>
 <script src="assets/asteroid_surface/load-rock-texture.js"></script>
@@ -708,7 +709,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.61';
+const GAME_VERSION = '0.9.62';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -2774,7 +2775,12 @@ function depotCollide(){
   const rel=ship.vel.clone().sub(STATION.vel);
   const commit=()=>ship.pos.copy(depotWorld(p));
   const hit=(nL)=>{ const n=depotDir(nL), vn=rel.dot(n); commit(); if (vn<0){ impact(-vn, ship.pos.clone()); ship.vel.addScaledVector(n, -vn*1.4); } };
-  if (p.x>P.x0 && p.x<P.x1){   // the prow is a cone tapering to the bow tip
+  if (carrierAsset.hullShape && window.BeltRunnerCarrierHull && !bayCorridor(ship.pos)){
+    const contact=window.BeltRunnerCarrierHull.contact(p,m,carrierAsset.hullShape);
+    if(contact){p.fromArray(contact.position);hit(V3(...contact.normal));}
+    return;
+  }
+  if (p.x>P.x0 && p.x<P.x1){   // procedural fallback prow
     const rr=Math.hypot(p.y,p.z), allow=P.r0*(P.x1-p.x)/(P.x1-P.x0)+m;
     if (rr<allow){ const n=rr<1e-3?V3(0,1,0):V3(0,p.y/rr,p.z/rr); p.y=n.y*allow; p.z=n.z*allow; hit(n); }
     return;
