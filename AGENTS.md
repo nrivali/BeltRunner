@@ -13,6 +13,7 @@ The user edits this game with Claude as well as Codex. Preserve concurrent work.
 ## Git workflow (both agents)
 
 - Edit files in place in this folder. Never copy a whole file in from elsewhere.
+- `belt-runner-3d.html` is UTF-8 with a BOM and CRLF line endings, and it contains non-ASCII text (· — ▲ ▼ ♪ ° × and more). Read and write it as UTF-8 only. Never round-trip it through Windows-1252/ANSI (PowerShell `Get-Content`/`Set-Content` without `-Encoding utf8`, `Out-File` defaults, or an editor that guesses): that double-encodes every symbol into "Â·"-style garbage, which happened once (v0.9.13) and had to be repaired in v0.9.34. After a bulk write, `git diff --stat` should show only the lines you meant to change.
 - Before starting a task: `git status` must be clean (commit or ask about anything left over), then `git log -1` to see the latest commit.
 - Before editing `belt-runner-3d.html`: `git diff` / `git status` to confirm nothing uncommitted is sitting there from the other agent. If there is, leave it alone and ask the user.
 - After finishing a change: `git add -A` and `git commit` with a message that says what changed and which agent made it (add a `Co-Authored-By:` trailer for the agent). One task, one commit.
