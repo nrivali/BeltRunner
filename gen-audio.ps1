@@ -37,8 +37,9 @@ $clips=@(
   @{name='dock';        kind='sfx'; dur=2.2; text='heavy spaceship docking clamps locking with a deep metallic clunk and a hydraulic hiss, hangar interior'},
   @{name='stow';        kind='sfx'; dur=1.0; text='metal cargo crate sliding into a rack and latching, short mechanical clunk, sci-fi'},
   @{name='cash';        kind='sfx'; dur=1.5; text='futuristic cash register sale confirmation, pleasant two-note ascending chime, clean'},
-  # --- soundtrack: no songs, just a deep space ambience bed (two variants, looped, crossfaded now and then) and a few
-  # short beat phrases that sit on top of it every few minutes (eleven music endpoint)
+  # --- soundtrack: no songs, just a subtle deep space ambience bed (sound-generation endpoint, seamless loop, played very
+  # quietly and drifted between nearby notes by pitch) and a few short beat phrases that sit on top of it every few minutes
+  @{name='space_ambience'; kind='sfx'; dur=22.0; loop=$true; text='very subtle deep space ambience, soft airy cosmic wind, faint distant shimmering pad, slow gentle swells, barely there, calm and vast, no melody, no rhythm, no drums, seamless loop'},
   @{name='beat_1'; kind='music'; ms=24000; text='A short sparse downtempo beat phrase to sit over a deep space ambient drone: soft muffled kick, dusty snare, subtle closed hi-hat, 84 bpm, minimal, no melody, fades in and fades out'},
   @{name='beat_2'; kind='music'; ms=24000; text='A short minimal electronic beat phrase over a dark ambient pad: deep kick, clicky rim, soft shaker, 96 bpm, restrained, no melody, fades in and fades out'},
   @{name='beat_3'; kind='music'; ms=24000; text='A short half-time beat phrase over a cosmic ambient drone: heavy slow kick, brushed snare, sparse tuned metallic percussion, 72 bpm, no melody, fades in and fades out'},
@@ -67,5 +68,8 @@ foreach ($c in $clips){
       Invoke-WebRequest -Uri ("https://api.elevenlabs.io/v1/text-to-speech/$VOICE_CONTROL"+'?output_format=mp3_44100_96') -Method Post -Headers @{'xi-api-key'=$key; 'Content-Type'='application/json'; 'Accept'='audio/mpeg'} -Body $body -OutFile $file | Out-Null
     }
     "made  $($c.name)  $((Get-Item $file).Length) bytes"
-  } catch { "FAIL  $($c.name): $($_.Exception.Message)" }
+  } catch {
+    $detail=''; try { $rd=New-Object IO.StreamReader($_.Exception.Response.GetResponseStream()); $detail=' '+$rd.ReadToEnd() } catch {}   # the API's own explanation (quota, permissions, bad prompt)
+    "FAIL  $($c.name): $($_.Exception.Message)$detail"
+  }
 }
