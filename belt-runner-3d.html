@@ -566,6 +566,7 @@ table.manifest td.dimmed{color:var(--dim);}
 <script src="assets/asteroid_surface/load-rock-texture.js"></script>
 <script src="assets/asteroids_v2/mesh-collision.js"></script>
 <script src="assets/asteroids_v2/load-asteroids.js"></script>
+<script src="assets/lighting/space-lighting.js"></script>
 <script>
 (() => {
 'use strict';
@@ -704,7 +705,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.24';
+const GAME_VERSION = '0.9.25';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D Â· v' + GAME_VERSION;
 
@@ -1056,7 +1057,7 @@ let quality='balanced', lodScale=.8;
 function applyQuality(){ const q=QUALITY[quality]||QUALITY.balanced; renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, q.pr)); lodScale=q.lod; renderer.setSize(window.innerWidth, window.innerHeight, false); }
 applyQuality();
 renderer.outputColorSpace=THREE.SRGBColorSpace;
-renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.55;
+renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=1.05;
 const scene=new THREE.Scene(); scene.background=new THREE.Color(0x070912);
 scene.fog=new THREE.FogExp2(0x070912, 0.00011);
 const camera=new THREE.PerspectiveCamera(62, 1, 2, 20000000);
@@ -1066,12 +1067,8 @@ window.addEventListener('resize', resize); resize();
 
 // lights
 const sunDir=V3(0.55,0.42,-0.72).normalize();
-// three-point rig: warm key from the zone's sun, a cool fill from the opposite side, and a rim from above-behind
-const sun=new THREE.DirectionalLight(0xfff1dc, 2.6); sun.position.copy(sunDir).multiplyScalar(1000); scene.add(sun);
-const fill=new THREE.DirectionalLight(0x8fa4ff, 0.55); fill.position.copy(sunDir).multiplyScalar(-1000); scene.add(fill);
-const rim=new THREE.DirectionalLight(0xffffff, 0.35); rim.position.set(-sunDir.x, 1.2, -sunDir.z).multiplyScalar(1000); scene.add(rim);
-const hemi=new THREE.HemisphereLight(0x3a4a8a, 0x0a0c18, 1.3); scene.add(hemi);
-scene.add(new THREE.AmbientLight(0x3a4468, 0.9));
+const SKY_R=6000000;
+const lighting=window.BeltRunnerLighting=createBeltRunnerLighting({renderer,scene,sunDir,skyRadius:SKY_R});
 
 // textures
 function glowTexture(inner, outer){
@@ -1097,19 +1094,7 @@ function surfaceTexture(w, h, fn, opts){
 const rockTex=surfaceTexture(256, 256, (u,v)=>{ const n=fbm2(u*5,v*5,3,5), m=fbm2(u*2+9,v*2+4,11,3), pit=Math.max(0, .62-fbm2(u*11,v*11,5,3))*2; const val=160+n*95-pit*60; return [val*(1+(m-.5)*.16), val, val*(1-(m-.5)*.12), n-pit*.35]; }, {repeat:2});
 // hull: panel grid with per-panel shading, dark seams, rivets along the seams and a little wear
 const hullTex=surfaceTexture(256, 256, (u,v)=>{ const P=6, px=u*P, py=v*P, ix=Math.floor(px), iy=Math.floor(py), fx=px-ix, fy=py-iy; const shade=.86+hash3(ix,iy,2)*.16, wear=fbm2(u*7,v*7,17,3); const seam=(fx<.03||fy<.03)?1:0; const near=(Math.abs(fx-.06)<.012||Math.abs(fy-.06)<.012)?1:0; const rivet=(near && (Math.abs(((fx*9)%1)-.5)<.12 || Math.abs(((fy*9)%1)-.5)<.12))?1:0; let val=232*shade*(.92+wear*.16); if (seam) val*=.5; if (rivet) val*=1.1; return [val, val*1.02, val*1.08, seam?.1:(rivet?.9:.6)]; }, {repeat:3});
-// environment map: a soft gradient sky in the zone's colours with a hot sun disc, filtered by PMREM so metals pick up
-// real reflections and highlights. Rebuilt on every zone change.
-const pmrem=new THREE.PMREMGenerator(renderer); pmrem.compileEquirectangularShader();
-function buildEnv(z){
-  const es=new THREE.Scene();
-  const g=new THREE.SphereGeometry(50, 32, 16), pos=g.attributes.position, col=[];
-  const top=new THREE.Color(z.hemi).multiplyScalar(2.6), mid=new THREE.Color(z.fogColor).multiplyScalar(3.2).lerp(new THREE.Color(0x8090b0), .35), bot=new THREE.Color(z.bg).multiplyScalar(1.2);
-  for (let i=0;i<pos.count;i++){ const y=pos.getY(i)/50; const c=y>0 ? mid.clone().lerp(top,y) : mid.clone().lerp(bot,-y); col.push(c.r,c.g,c.b); }
-  g.setAttribute('color', new THREE.Float32BufferAttribute(col,3));
-  es.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial({side:THREE.BackSide, vertexColors:true})));
-  const sunM=new THREE.Mesh(new THREE.SphereGeometry(3.2, 16, 8), new THREE.MeshBasicMaterial({color:new THREE.Color(z.sun).multiplyScalar(9)})); sunM.position.copy(sunDir).multiplyScalar(40); es.add(sunM);
-  const env=pmrem.fromScene(es, .035).texture; if (scene.environment) scene.environment.dispose(); scene.environment=env;
-}
+// Reflections and sun lighting are managed together by assets/lighting/space-lighting.js.
 // sky: a distant sphere carrying a baked nebula, a dust lane and thousands of pinpoint stars; the zone tints it
 let skyMesh=null;
 function buildSky(){
@@ -1132,10 +1117,8 @@ function buildSky(){
   skyMesh.frustumCulled=false; skyMesh.renderOrder=-2; scene.add(skyMesh);
 }
 
-// sun sprite
-const sunSprite=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTexture('rgba(255,244,220,1)','rgba(255,200,120,.5)'), blending:THREE.AdditiveBlending, depthWrite:false, fog:false}));
-const SKY_R=6000000;   // stars and the sun sprite sit well beyond the zone edge
-sunSprite.position.copy(sunDir).multiplyScalar(SKY_R); sunSprite.scale.set(1050000,1050000,1); scene.add(sunSprite);
+// The lighting controller positions the solar disk and glare relative to the camera.
+
 
 // stars
 function makeStars(n, rMin, rMax, size, color, opacity){
@@ -1145,11 +1128,11 @@ function makeStars(n, rMin, rMax, size, color, opacity){
   const m=new THREE.PointsMaterial({size, sizeAttenuation:false, color, transparent:true, opacity, fog:false, depthWrite:false});
   const p=new THREE.Points(g,m); p.frustumCulled=false; scene.add(p); return p;
 }
-makeStars(2600, SKY_R*0.8, SKY_R*0.97, 1.4, 0x9fb0e0, 0.75);
-makeStars(500, SKY_R*0.8, SKY_R*0.97, 2.6, 0xdde4ff, 0.95);
+makeStars(1800, SKY_R*0.8, SKY_R*0.97, 1.0, 0xb8c1cf, 0.30);
+makeStars(180, SKY_R*0.8, SKY_R*0.97, 1.5, 0xe4e7ed, 0.55);
 
 // world edge
-const worldEdge=new THREE.Mesh(new THREE.SphereGeometry(1, 24, 12), new THREE.MeshBasicMaterial({color:0xf26b5e, wireframe:true, transparent:true, opacity:0.018, fog:false})); worldEdge.scale.setScalar(WORLD_R); scene.add(worldEdge);
+const worldEdge=new THREE.Mesh(new THREE.SphereGeometry(1, 24, 12), new THREE.MeshBasicMaterial({color:0xf26b5e, wireframe:true, transparent:true, opacity:0.018, fog:false})); worldEdge.scale.setScalar(WORLD_R); worldEdge.visible=false; scene.add(worldEdge);
 
 // station
 const station=new THREE.Group();
@@ -1313,7 +1296,7 @@ function installCarrierModel(model, anchors, materials, rig){
   TURRET_PIVOT.copy(anchors.dish_mount); TURRET_PITCH_OFF.copy(rig.pitchOff); TURRET_MUZZLE.copy(rig.focus);
   turretYaw.rotation.y=depotLaser.yaw; turretPitch.rotation.z=depotLaser.pitch;
   // Keep the existing two-light budget, placing warm light beneath the modeled ceiling.
-  stationPointLights.forEach((light,i)=>{light.position.set(0,130,i?525:-525);light.color.setHex(0xffdfb5);});
+  stationPointLights.forEach((light,i)=>{light.position.set(0,130,i?525:-525);light.color.setHex(0xffc98c);light.intensity=2600;light.distance=1150;light.decay=1.25;});
   // engine glows just behind the model's bells
   stationEngines.forEach((s,i)=>{ const a=anchors['engine_'+i]; if (a) s.position.copy(a).add(V3(-100,0,0)); });
   // pads: ships settle 38 above the pad marker, which puts the hull on the model's deck; the deck itself is the collision floor
@@ -1324,6 +1307,7 @@ function installCarrierModel(model, anchors, materials, rig){
 // no fill or glow point lights any more: the sun, sky light and environment map light the hull, and the only point
 // lights left are the two inside the hangar. Point lights cost every pixel on screen, and the carrier fills the screen.
 const stationPointLights=[]; station.traverse(o=>{ if (o.isPointLight) stationPointLights.push(o); });   // gated by distance in the update loop
+lighting.configureHangar(station);
 let frameNo=0;
 
 // planets (built per zone)
@@ -1356,23 +1340,23 @@ function buildPlanet(def){
   const tex=planetTexture(def);
   p.group.add(new THREE.Mesh(g, new THREE.MeshLambertMaterial({map:tex.map})));   // Lambert: the planet can fill the whole screen, so its per-pixel cost matters most of all
   const light=new THREE.Color(p.tint).lerp(new THREE.Color(0xffffff), .45);
-  const atm=new THREE.Mesh(new THREE.SphereGeometry(p.r*1.06, 64, 40), new THREE.MeshBasicMaterial({color:p.tint, transparent:true, opacity:.12, side:THREE.BackSide})); p.group.add(atm);
+  const atm=new THREE.Mesh(new THREE.SphereGeometry(p.r*1.06, 64, 40), new THREE.MeshBasicMaterial({color:p.tint, transparent:true, opacity:.12, side:THREE.BackSide})); atm.visible=false; p.group.add(atm);
   // fresnel limb glow: bright where the shell is seen edge-on, invisible face-on
-  const rimMat=new THREE.ShaderMaterial({uniforms:{uColor:{value:light}}, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
+  const rimMat=new THREE.ShaderMaterial({uniforms:{uColor:{value:light},uSolarDirection:{value:sunDir}}, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending,
     vertexShader:`
 #include <common>
 #include <logdepthbuf_pars_vertex>
-varying float vF;
-void main(){ vec4 mv=modelViewMatrix*vec4(position,1.0); vec3 n=normalize(normalMatrix*normal); vec3 v=normalize(-mv.xyz); vF=pow(1.0-max(0.0,dot(n,v)), 3.2); gl_Position=projectionMatrix*mv;
+varying float vF; varying float vDay; uniform vec3 uSolarDirection;
+void main(){ vDay=smoothstep(-.08,.25,dot(normalize(mat3(modelMatrix)*normal),uSolarDirection)); vec4 mv=modelViewMatrix*vec4(position,1.0); vec3 n=normalize(normalMatrix*normal); vec3 v=normalize(-mv.xyz); vF=pow(1.0-max(0.0,dot(n,v)), 3.2); gl_Position=projectionMatrix*mv;
 #include <logdepthbuf_vertex>
 }`,
     fragmentShader:`
 #include <common>
 #include <logdepthbuf_pars_fragment>
-uniform vec3 uColor; varying float vF;
+uniform vec3 uColor; varying float vF; varying float vDay;
 void main(){
 #include <logdepthbuf_fragment>
-  gl_FragColor=vec4(uColor, vF*0.9); }`});
+  gl_FragColor=vec4(uColor, vF*.45*vDay); }`});
   p.group.add(new THREE.Mesh(new THREE.SphereGeometry(p.r*1.028, 96, 60), rimMat));
   // no planetary rings: the asteroid belts are the only rings in a zone
   p.group.position.copy(p.pos); scene.add(p.group); return p;
@@ -2122,15 +2106,10 @@ function loadZone(z){
   for (const p of planets) removePlanet(p); planets=[];
   clearHazards();
   target=null; laserOn=false; parked=null; pulse=null; pulseCd=0;
-  scene.background.setHex(z.bg); scene.fog.color.setHex(z.fogColor); scene.fog.density=z.fog/WORLD_SCALE;
-  sunDir.set(...z.sunDir).normalize(); sun.position.copy(sunDir).multiplyScalar(1000); sun.color.setHex(z.sun); sun.intensity=z.sunI*1.45;
-  fill.position.copy(sunDir).multiplyScalar(-1000); fill.color.setHex(z.hemi).lerp(new THREE.Color(0xffffff), 0.55); fill.intensity=0.7+z.sunI*0.12;
-  rim.position.set(-sunDir.x, 1.2, -sunDir.z).multiplyScalar(1000);
-  const ss=z.sunSize*WORLD_SCALE; sunSprite.position.copy(sunDir).multiplyScalar(SKY_R); sunSprite.material.color.setHex(z.sun); sunSprite.scale.set(ss,ss,1);
-  hemi.color.setHex(z.hemi); rockMat.color.setHex(z.rock); rockMatSmooth.color.setHex(z.rock); rockMatCave.color.setHex(z.rock);
+  lighting.setZone(z);
+  rockMat.color.setHex(z.rock); rockMatSmooth.color.setHex(z.rock); rockMatCave.color.setHex(z.rock);
   for (const k of ORE_KEYS) for (const m of Object.values(oreRockMats[k])) m.color.setHex(z.rock);
-  buildEnv(z);
-  if (!skyMesh) buildSky(); skyMesh.scale.setScalar(SKY_R*1.03); skyMesh.material.color.setHex(z.hemi).lerp(new THREE.Color(0xffffff), .55);
+  if (!skyMesh) buildSky(); skyMesh.scale.setScalar(SKY_R*1.03); skyMesh.material.color.setScalar(z.id==='drift'?.13:.018);
   // the Hub has the colony at the origin instead of a planet (no gravity, no terrain)
   if (z.hub){ planets=[]; planetR=0; } else { planets=[buildPlanet(z.planet)]; planetR=planets[0].r; }
   WORLD_R=planetR+WORLD_EDGE_BASE*WORLD_SCALE; worldEdge.scale.setScalar(WORLD_R);
@@ -4074,6 +4053,7 @@ function frame(now){
   const dt=Math.min(0.05,(now-last)/1000); last=now; t0+=dt;
   if (started && !paused) update(dt); else if (!started) { for (const a of asteroids) if(a.inScene) a.group.rotateOnAxis(a.axis, a.spin*dt); }
   updateVisuals(dt, t0);
+  lighting.update({camera,quality,station,asteroids,scenery,rockAssets,dt});
   rockAssets?.render(camera,quality);
   renderer.render(scene, camera);
   updateHud(dt); updateOverlays(); tutUpdate();
@@ -4171,7 +4151,7 @@ if(rockAssets)rockAssets.load({renderer,scene,heatable,asteroids:()=>asteroids,s
 if (window.loadBeltRunnerCarrier) window.loadBeltRunnerCarrier({station, renderer, glowTexture:texSoft, install:installCarrierModel, status:carrierAsset});
 else { carrierAsset.state='fallback'; carrierAsset.error='Carrier asset script unavailable'; }
 if(window.BeltRunner){
-  Object.assign(window.BeltRunner,{rockAssets,makeAsteroid,findTarget,noisyCollide,radiusAlong,SHIP_R,shipPrev,damageRock,removeAsteroid,shipGroup,playerAsset,shipAim,shipDishAnglesTo,shipDishFocusWorld,startGame,setLaserAim:p=>{laserAim=p;}, carrierAsset, station, stationEngines, TURRET_PIVOT, forceFields, stationPointLights, droneDock, depotDish, turretAnglesTo, turretMuzzleWorld, updateDepot, depotBeam, DROP_PAD});
+  Object.assign(window.BeltRunner,{lighting,rockAssets,makeAsteroid,findTarget,noisyCollide,radiusAlong,SHIP_R,shipPrev,damageRock,removeAsteroid,shipGroup,playerAsset,shipAim,shipDishAnglesTo,shipDishFocusWorld,startGame,setLaserAim:p=>{laserAim=p;}, carrierAsset, station, stationEngines, TURRET_PIVOT, forceFields, stationPointLights, droneDock, depotDish, turretAnglesTo, turretMuzzleWorld, updateDepot, depotBeam, DROP_PAD});
   Object.defineProperties(window.BeltRunner,{playerModel:{get:()=>playerModel},shipDish:{get:()=>shipDish},exhausts:{get:()=>exhausts},navLights:{get:()=>navLights}});
 }
 requestAnimationFrame(frame);

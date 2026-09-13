@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "mode": "file",
+  "gameSHA256": "f170e9157910e1f77914862da98af700e3d9bcf03a2102821e2160b565ad447d",
+  "setup": {
+    "version": "v0.9.25",
+    "carrier": "ready",
+    "player": "ready",
+    "lighting": {
+      "zone": "kessler",
+      "shadowSize": 2048,
+      "shadowExtent": 5600,
+      "sunVisible": 1,
+      "exposure": 1.05
+    },
+    "calls": 264
+  },
+  "errors": []
+}

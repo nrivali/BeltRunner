@@ -2,6 +2,7 @@ const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),
 const {pathToFileURL}=require('node:url');
 const {chromium}=require('C:/Users/rival/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
 const root=path.resolve(__dirname,'..'),out=path.join(root,'assets/asteroids_v2');
+const expectedVersion='v'+fs.readFileSync(path.join(root,'belt-runner-3d.html'),'utf8').match(/const GAME_VERSION = '([^']+)'/)[1];
 const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+decodeURIComponent(new URL(req.url,'http://localhost').pathname));if(!p.startsWith(root+path.sep)){res.writeHead(403).end();return;}fs.readFile(p,(e,b)=>{if(e){res.writeHead(404).end();return;}res.setHeader('Content-Type',p.endsWith('.js')?'text/javascript':p.endsWith('.html')?'text/html':'application/octet-stream');res.end(b);});});
 (async()=>{
  await new Promise(r=>server.listen(0,'127.0.0.1',r));
@@ -21,7 +22,7 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+decodeU
    await page.goto(url+'?debug',{waitUntil:'load',timeout:60000});
    await page.waitForFunction(()=>window.BeltRunner?.rockAssets.status.state!=='loading'&&window.BeltRunner?.rockAssets.status.state,null,{timeout:60000,polling:100});
    const result=await page.evaluate(()=>{const b=BeltRunner;return {status:{...b.rockAssets.status},count:b.asteroids.length,attached:b.asteroids.filter(a=>a.asset).length,scenery:b.scenery.filter(a=>a.asset).length,version:document.getElementById('version').textContent};});
-   const fallback=mode==='missing'||mode==='invalid'||mode==='collision-missing';assert.equal(result.status.state,fallback?'fallback':'ready');assert.equal(result.version,'v0.9.19');
+   const fallback=mode==='missing'||mode==='invalid'||mode==='collision-missing';assert.equal(result.status.state,fallback?'fallback':'ready');assert.equal(result.version,expectedVersion);
    if(fallback){
     await page.waitForFunction(()=>window.BeltRunnerRockSurface.status.state!=='loading',null,{polling:100});
     assert.equal(result.attached,0);assert.ok(await page.evaluate(()=>BeltRunner.asteroids.every(a=>a.bodyGeo&&a.group.children.length)));
@@ -85,7 +86,9 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+decodeU
      result.mining=await page.evaluate(()=>{
       const b=BeltRunner,V=THREE.Vector3,position=b.ship.pos.clone().add(new V(0,0,3000));
       const a=b.makeAsteroid(b.asteroids[0].belt,null,null,{cls:'small',r:100,ore:'iron',barren:false,pos:position,amount:80});a.hp=a.hpMax=100000;a.free=true;a.vel=new V();b.asteroids.push(a);b.ship.q.identity();const offset=new V(0,0,-a.boundR-150),hp=a.hp;
+      b.keys[' ']=true;
       for(let i=0;i<140;i++){b.ship.pos.copy(a.pos).add(offset);b.ship.vel.set(0,0,0);b.update(.05);b.updateVisuals(.05,8+i*.05);}
+      b.keys[' ']=false;
       if(a.hp>=hp||b.heatFx.rock!==a||!a.asset.heat)throw Error('Live mining did not heat and damage the new rock');
       const error=b.rockAssets.surfaceSample(a,b.heatFx.pos).point.distanceTo(b.heatFx.pos);if(error>2)throw Error('Mining heat detached from visible surface');
       return {damage:hp-a.hp,heat:b.heatFx.heat,bodyHeat:a.asset.heat,surfaceError:error};

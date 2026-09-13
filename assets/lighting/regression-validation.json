@@ -1,0 +1,623 @@
+{
+  "carrier": [
+    {
+      "mode": "http",
+      "state": "ready",
+      "error": null,
+      "revision": 2,
+      "source": "glb",
+      "triangles": 35316,
+      "meshes": 4,
+      "dishMeshes": 3,
+      "totalTriangles": 37496,
+      "model": true,
+      "engines": [
+        [
+          -3580,
+          0,
+          -540
+        ],
+        [
+          -3580,
+          0,
+          0
+        ],
+        [
+          -3580,
+          0,
+          540
+        ]
+      ],
+      "pivot": [
+        -40,
+        995,
+        0
+      ],
+      "pads": [
+        [
+          0,
+          -100,
+          525
+        ],
+        [
+          0,
+          -100,
+          -525
+        ]
+      ],
+      "floor": -150,
+      "fields": [
+        true,
+        true
+      ],
+      "lights": 2,
+      "anchors": 13,
+      "normalMaps": true,
+      "drop": [
+        250,
+        -130,
+        0
+      ],
+      "playerReady": true,
+      "rig": {
+        "aim": [
+          {
+            "error": 2.274846706538671E-13,
+            "dot": 1
+          },
+          {
+            "error": 0,
+            "dot": 1
+          },
+          {
+            "error": 1.4210854715202004E-14,
+            "dot": 0.9999999999999998
+          }
+        ],
+        "beamError": 2.31335954426011E-13,
+        "rimEmitters": 6,
+        "clearance": 18
+      },
+      "docking": [
+        [
+          -8.322554569317801E-15,
+          -100,
+          -524.9999999999754
+        ],
+        [
+          6.31855746652428E-14,
+          -100,
+          524.9999999999729
+        ]
+      ],
+      "warp": {
+        "zone": "cinder",
+        "sameModel": true,
+        "docked": true,
+        "focusError": 5.820766091346741E-11,
+        "engines": 3
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "file",
+      "state": "ready",
+      "error": null,
+      "revision": 2,
+      "source": "script",
+      "triangles": 35316,
+      "meshes": 4,
+      "dishMeshes": 3,
+      "totalTriangles": 37496,
+      "model": true,
+      "engines": [
+        [
+          -3580,
+          0,
+          -540
+        ],
+        [
+          -3580,
+          0,
+          0
+        ],
+        [
+          -3580,
+          0,
+          540
+        ]
+      ],
+      "pivot": [
+        -40,
+        995,
+        0
+      ],
+      "pads": [
+        [
+          0,
+          -100,
+          525
+        ],
+        [
+          0,
+          -100,
+          -525
+        ]
+      ],
+      "floor": -150,
+      "fields": [
+        true,
+        true
+      ],
+      "lights": 2,
+      "anchors": 13,
+      "normalMaps": true,
+      "drop": [
+        250,
+        -130,
+        0
+      ],
+      "playerReady": true,
+      "rig": {
+        "aim": [
+          {
+            "error": 2.274846706538671E-13,
+            "dot": 1
+          },
+          {
+            "error": 0,
+            "dot": 1
+          },
+          {
+            "error": 1.4210854715202004E-14,
+            "dot": 0.9999999999999998
+          }
+        ],
+        "beamError": 4.808647507754992E-13,
+        "rimEmitters": 6,
+        "clearance": 18
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "script-fallback",
+      "state": "ready",
+      "error": null,
+      "revision": 2,
+      "source": "script",
+      "triangles": 35316,
+      "meshes": 4,
+      "dishMeshes": 3,
+      "totalTriangles": 37496,
+      "model": true,
+      "engines": [
+        [
+          -3580,
+          0,
+          -540
+        ],
+        [
+          -3580,
+          0,
+          0
+        ],
+        [
+          -3580,
+          0,
+          540
+        ]
+      ],
+      "pivot": [
+        -40,
+        995,
+        0
+      ],
+      "pads": [
+        [
+          0,
+          -100,
+          525
+        ],
+        [
+          0,
+          -100,
+          -525
+        ]
+      ],
+      "floor": -150,
+      "fields": [
+        true,
+        true
+      ],
+      "lights": 2,
+      "anchors": 13,
+      "normalMaps": true,
+      "drop": [
+        250,
+        -130,
+        0
+      ],
+      "playerReady": true,
+      "rig": {
+        "aim": [
+          {
+            "error": 2.274846706538671E-13,
+            "dot": 1
+          },
+          {
+            "error": 0,
+            "dot": 1
+          },
+          {
+            "error": 1.4210854715202004E-14,
+            "dot": 0.9999999999999998
+          }
+        ],
+        "beamError": 2.31335954426011E-13,
+        "rimEmitters": 6,
+        "clearance": 18
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "missing",
+      "state": "fallback",
+      "error": "Carrier data unavailable (Carrier HTTP 404)",
+      "model": false,
+      "engines": [
+        [
+          -3800,
+          0,
+          -540
+        ],
+        [
+          -3800,
+          0,
+          0
+        ],
+        [
+          -3800,
+          0,
+          540
+        ]
+      ],
+      "pivot": [
+        -500,
+        1360,
+        0
+      ],
+      "pads": [
+        [
+          0,
+          -138,
+          -525
+        ],
+        [
+          0,
+          -138,
+          525
+        ]
+      ],
+      "floor": -176,
+      "fields": [
+        true,
+        true
+      ],
+      "lights": 2,
+      "anchors": null,
+      "drop": [
+        250,
+        -130,
+        0
+      ],
+      "playerReady": true,
+      "pageErrors": []
+    },
+    {
+      "mode": "invalid",
+      "state": "fallback",
+      "error": "Unexpected token 'i', \"invalid model\" is not valid JSON",
+      "model": false,
+      "engines": [
+        [
+          -3800,
+          0,
+          -540
+        ],
+        [
+          -3800,
+          0,
+          0
+        ],
+        [
+          -3800,
+          0,
+          540
+        ]
+      ],
+      "pivot": [
+        -500,
+        1360,
+        0
+      ],
+      "pads": [
+        [
+          0,
+          -138,
+          -525
+        ],
+        [
+          0,
+          -138,
+          525
+        ]
+      ],
+      "floor": -176,
+      "fields": [
+        true,
+        true
+      ],
+      "lights": 2,
+      "anchors": null,
+      "drop": [
+        250,
+        -130,
+        0
+      ],
+      "playerReady": true,
+      "pageErrors": []
+    }
+  ],
+  "asteroids": {
+    "passed": true,
+    "results": [
+      {
+        "mode": "http",
+        "status": {
+          "state": "ready",
+          "error": null,
+          "drawCalls": 0,
+          "triangles": 0,
+          "visible": 0,
+          "lodCounts": [
+            0,
+            0,
+            0
+          ],
+          "source": "binary",
+          "models": 84,
+          "textures": 6,
+          "oreTypes": 17
+        },
+        "count": 10900,
+        "attached": 10900,
+        "scenery": 600,
+        "version": "v0.9.22",
+        "render": {
+          "state": "ready",
+          "error": null,
+          "drawCalls": 17,
+          "triangles": 40646,
+          "visible": 67,
+          "lodCounts": [
+            0,
+            0,
+            67
+          ],
+          "source": "binary",
+          "models": 84,
+          "textures": 6,
+          "oreTypes": 17,
+          "totalCalls": 96,
+          "totalTriangles": 175652
+        },
+        "physics": {
+          "passageSteps": 81,
+          "shipCollision": true,
+          "scorch": true,
+          "heat": true,
+          "manualRayThroughArch": true,
+          "autoAimHitsWall": true
+        },
+        "breaking": {
+          "fragments": 5,
+          "drops": 2,
+          "scrap": 8,
+          "sharedModels": 84
+        },
+        "field": {
+          "near": {
+            "state": "ready",
+            "error": null,
+            "drawCalls": 26,
+            "triangles": 1363522,
+            "visible": 944,
+            "lodCounts": [
+              0,
+              415,
+              529
+            ],
+            "source": "binary",
+            "models": 84,
+            "textures": 6,
+            "oreTypes": 17,
+            "totalCalls": 26,
+            "totalTriangles": 1363522
+          },
+          "distant": {
+            "state": "ready",
+            "error": null,
+            "drawCalls": 14,
+            "triangles": 621298,
+            "visible": 1000,
+            "lodCounts": [
+              0,
+              0,
+              1000
+            ],
+            "source": "binary",
+            "models": 84,
+            "textures": 6,
+            "oreTypes": 17
+          }
+        },
+        "zones": [
+          {
+            "zone": "frost",
+            "rocks": 11842,
+            "scenery": 660
+          },
+          {
+            "zone": "hub",
+            "rocks": 0,
+            "scenery": 140
+          },
+          {
+            "zone": "kessler",
+            "rocks": 10867,
+            "scenery": 600
+          }
+        ],
+        "play": {
+          "departureSteps": 105,
+          "simulationMsPerFrame": 1.2166666666666666,
+          "visibleRocks": 31,
+          "rockDrawCalls": 12
+        },
+        "mining": {
+          "damage": 128.57500000001164,
+          "heat": 0.23333333333333386,
+          "bodyHeat": 0.00017454342467022608,
+          "surfaceError": 7.275957614183426E-12
+        },
+        "errors": []
+      },
+      {
+        "mode": "file",
+        "status": {
+          "state": "ready",
+          "error": null,
+          "drawCalls": 0,
+          "triangles": 0,
+          "visible": 0,
+          "lodCounts": [
+            0,
+            0,
+            0
+          ],
+          "source": "script",
+          "models": 84,
+          "textures": 6,
+          "oreTypes": 17
+        },
+        "count": 10948,
+        "attached": 10948,
+        "scenery": 600,
+        "version": "v0.9.22",
+        "render": {
+          "state": "ready",
+          "error": null,
+          "drawCalls": 17,
+          "triangles": 40330,
+          "visible": 66,
+          "lodCounts": [
+            0,
+            0,
+            66
+          ],
+          "source": "script",
+          "models": 84,
+          "textures": 6,
+          "oreTypes": 17,
+          "totalCalls": 106,
+          "totalTriangles": 175404
+        },
+        "errors": []
+      },
+      {
+        "mode": "script-fallback",
+        "status": {
+          "state": "ready",
+          "error": null,
+          "drawCalls": 0,
+          "triangles": 0,
+          "visible": 0,
+          "lodCounts": [
+            0,
+            0,
+            0
+          ],
+          "source": "script",
+          "models": 84,
+          "textures": 6,
+          "oreTypes": 17
+        },
+        "count": 11031,
+        "attached": 11031,
+        "scenery": 600,
+        "version": "v0.9.22",
+        "render": {
+          "state": "ready",
+          "error": null,
+          "drawCalls": 16,
+          "triangles": 36370,
+          "visible": 59,
+          "lodCounts": [
+            0,
+            0,
+            59
+          ],
+          "source": "script",
+          "models": 84,
+          "textures": 6,
+          "oreTypes": 17,
+          "totalCalls": 174,
+          "totalTriangles": 171484
+        },
+        "errors": []
+      },
+      {
+        "mode": "missing",
+        "status": {
+          "state": "fallback",
+          "error": "Asteroid data unavailable: HTTP 404",
+          "drawCalls": 0,
+          "triangles": 0,
+          "visible": 0,
+          "lodCounts": [
+            0,
+            0,
+            0
+          ]
+        },
+        "count": 10848,
+        "attached": 0,
+        "scenery": 0,
+        "version": "v0.9.22",
+        "errors": []
+      },
+      {
+        "mode": "invalid",
+        "status": {
+          "state": "fallback",
+          "error": "Failed to fetch",
+          "drawCalls": 0,
+          "triangles": 0,
+          "visible": 0,
+          "lodCounts": [
+            0,
+            0,
+            0
+          ],
+          "source": "binary"
+        },
+        "count": 10849,
+        "attached": 0,
+        "scenery": 0,
+        "version": "v0.9.22",
+        "errors": []
+      }
+    ]
+  },
+  "testedBeforeFinalExposurePolish": "0.9.22"
+}

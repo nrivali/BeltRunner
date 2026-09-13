@@ -81,7 +81,8 @@ mapN.xy*=normalScale;normal=normalize(tbn*mapN);`);
     const capacity=2**Math.ceil(Math.log2(Math.max(16,count))),g=templates.get(key).geometry.clone();
     g.setAttribute('instanceRock',new THREE.InstancedBufferAttribute(new Float32Array(capacity*4),4).setUsage(THREE.DynamicDrawUsage));
     const mesh=new THREE.InstancedMesh(g,material,capacity);mesh.name='asteroid_batch_'+key;mesh.frustumCulled=false;mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);mesh.instanceColor=new THREE.InstancedBufferAttribute(new Float32Array(capacity*3),3).setUsage(THREE.DynamicDrawUsage);
-    mesh.matrixAutoUpdate=false;mesh.count=0;cfg.scene.add(mesh);
+    mesh.matrixAutoUpdate=false;mesh.count=0;mesh.receiveShadow=true;cfg.scene.add(mesh);
+    window.BeltRunnerLighting?.patchMaterial(material);
     if(b){cfg.scene.remove(b.mesh);b.mesh.geometry.dispose();b.mesh.dispose();}
     b={mesh,capacity};batches.set(key,b);return b;
   }
@@ -92,19 +93,23 @@ mapN.xy*=normalScale;normal=normalize(tbn*mapN);`);
     for(const list of lists.values())list.length=0;
     const height=cfg.renderer.domElement.clientHeight||innerHeight,focal=height/(2*Math.tan(camera.fov*Math.PI/360)),q=quality==='low'?1.5:quality==='high'?.8:1;
     let visible=0,triangles=0,calls=0;const lodCounts=[0,0,0];
+    const shadowRegion=window.BeltRunnerAsteroids.shadowRegion;
     function add(a,isScenery){
       if(a.dead)return;if(!a.asset)register(a,isScenery);const state=a.asset;if(!state)return;state.drawn=false;
-      sphere.center.copy(a.pos);sphere.radius=a.boundR;if(!frustum.intersectsSphere(sphere))return;
-      const distance=Math.max(1,camera.position.distanceTo(a.pos)),pixels=a.boundR*focal/distance;if(pixels<1.25*q)return;
+      sphere.center.copy(a.pos);sphere.radius=a.boundR;const inView=frustum.intersectsSphere(sphere);
+      const caster=shadowRegion&&a.pos.distanceToSquared(shadowRegion.center)<(shadowRegion.radius+a.boundR)**2;
+      if(!inView&&!caster)return;
+      const distance=Math.max(1,camera.position.distanceTo(a.pos)),pixels=a.boundR*focal/distance;if(pixels<1.25*q&&!caster)return;
       let lod=pixels>100*q?0:pixels>22*q?1:2;
       if(state.lod===0&&pixels>82*q)lod=0;else if(state.lod===1&&pixels>18*q&&pixels<116*q)lod=1;
-      state.lod=lod;state.drawn=true;const key=state.key+'_LOD'+lod;let list=lists.get(key);if(!list){list=[];lists.set(key,list);}list.push(a);visible++;lodCounts[lod]++;
+      if(caster)lod=Math.min(lod,1);
+      state.lod=lod;state.drawn=inView;state.shadowCaster=!!caster;const key=state.key+'_LOD'+lod;let list=lists.get(key);if(!list){list=[];lists.set(key,list);}list.push(a);if(inView)visible++;lodCounts[lod]++;
     }
     for(const a of cfg.asteroids())add(a,false);for(const a of cfg.scenery())add(a,true);
     for(const b of batches.values())b.mesh.count=0;
     for(const [key,list] of lists){if(!list.length)continue;const b=batch(key,list.length),m=b.mesh,params=m.geometry.attributes.instanceRock;
       for(let i=0;i<list.length;i++){const a=list[i],s=a.asset;matrix.compose(a.pos,a.group.quaternion,scale.setScalar(a.baseR));m.setMatrixAt(i,matrix);m.setColorAt(i,s.color);params.setXYZW(i,s.roughness,s.metallic,s.heat,s.barren?0:1);}
-      m.count=list.length;m.instanceMatrix.needsUpdate=true;m.instanceColor.needsUpdate=true;params.needsUpdate=true;triangles+=m.geometry.index.count/3*m.count;calls++;
+      m.count=list.length;m.castShadow=list.some(a=>a.asset.shadowCaster);m.instanceMatrix.needsUpdate=true;m.instanceColor.needsUpdate=true;params.needsUpdate=true;triangles+=m.geometry.index.count/3*m.count;calls++;
     }
     Object.assign(status,{visible,triangles,drawCalls:calls,lodCounts});
   }
