@@ -49,6 +49,11 @@ $clips=@(
   @{name='colony_control';   kind='voice'; text='Colony control to cargo ship. You are cleared to hold station off Meridian. Welcome to the Hub.'},
   @{name='approach_control'; kind='voice'; text='Approach control has your ship. Stand by for docking.'},
   @{name='warp_ready';       kind='voice'; text='Jump drive charged. All hands, brace for warp.'},
+  # --- approach control: one of these (or approach_control above) plays at random when E hands the ship to approach control
+  @{name='approach_1'; kind='voice'; text='We have you on the beam. Hands off, pilot. We will bring you in.'},
+  @{name='approach_2'; kind='voice'; text='Copy your approach. Lining you up on the deck now. Stay easy.'},
+  @{name='approach_3'; kind='voice'; text='Approach control. You are ours until the pad. Nice and slow.'},
+  @{name='approach_4'; kind='voice'; text='Got you, pilot. Follow the lights. We will do the rest.'},
   # --- hangar deck: one of these plays at random when the ship settles on a pad after a flight (not on the first launch or during the tutorial)
   @{name='hangar_1'; kind='voice'; text='Contact. Clamps are on. Welcome back aboard, pilot.'},
   @{name='hangar_2'; kind='voice'; text='Good approach. You are on the pad, and the deck crew is moving in.'},
