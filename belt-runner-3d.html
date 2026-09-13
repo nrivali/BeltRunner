@@ -378,6 +378,7 @@ table.manifest td.dimmed{color:var(--dim);}
     <span><kbd>N</kbd></span><span>Nav map · warp (docked in the cargo ship)</span>
     <span><kbd>K</kbd></span><span>Sound on · off</span>
     <span><kbd>C</kbd></span><span>Hide · show this list</span>
+    <span><kbd>Space</kbd></span><span>Skip a docking, departure or warp cutscene</span>
   </div>
 </div>
 
@@ -475,6 +476,7 @@ table.manifest td.dimmed{color:var(--dim);}
       <span><kbd>N</kbd></span><span>Open the nav map. The cargo ship makes the jump between zones, so dock in its hangar first; you ride along and arrive in Dock 1.</span>
       <span><kbd>K</kbd></span><span>Sound on or off</span>
       <span><kbd>C</kbd></span><span>Hide or show the flight controls list in the bottom-left corner. Remembered between sessions.</span>
+      <span><kbd>Space</kbd></span><span>During a docking, departure, berthing or warp cutscene, skip to the end of it.</span>
       <span><kbd>Esc</kbd></span><span>Pause · opens this menu with Settings and Controls</span>
     </div>
     <button class="btn menu-back">Back</button>
@@ -711,7 +713,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.71';
+const GAME_VERSION = '0.9.72';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -2675,6 +2677,7 @@ window.addEventListener('keydown', e => {
   if (k==='n' && !e.repeat) toggleMap();
   if (k==='k' && !e.repeat) toggleSound();
   if (k==='c' && !e.repeat) toggleControls();
+  if (e.key===' ' && !e.repeat && (cut || warpCut)) skipCutscene();
   if (k==='q' && !e.repeat && !docked) toggleLock();
   if (k==='r' && !e.repeat) radarPulse();
   if ((k==='i' || e.key==='Tab') && !e.repeat) toggleInventory();
@@ -2704,6 +2707,12 @@ document.addEventListener('mouseleave', () => { mouse.inside=false; });
 function toggleSound(){ SFX.init(); SFX.setMuted(!SFX.muted); toast(SFX.muted?'Sound off':'Sound on'); save(); syncSettings(); }
 let controlsHidden=false;   // C: hide or show the flight controls list bottom-left (saved)
 function toggleControls(){ controlsHidden=!controlsHidden; document.body.classList.toggle('controls-hidden', controlsHidden); toast(controlsHidden?'Flight controls hidden · C shows them again':'Flight controls shown'); save(); }
+// Space skips a cutscene: the docking, departure or berthing flight jumps to its end (the next frame runs its finish as
+// normal), and a warp jumps to the arrival and finishes that too
+function skipCutscene(){
+  if (cut){ cut.t=cut.dur; toast('Skipped'); }
+  else if (warpCut){ warpCut.skip=true; warpCut.t=Math.max(warpCut.t, warpCut.phase==='depart'?5.0:4.4); toast('Skipped'); }
+}
 function toggleMusic(){ SFX.init(); MUSIC.setOn(!MUSIC.on); toast(MUSIC.on?'Music on':'Music off'); save(); syncSettings(); }
 function cycleQuality(){ const keys=Object.keys(QUALITY); quality=keys[(keys.indexOf(quality)+1)%keys.length]; applyQuality(); toast(`Quality: ${QUALITY[quality].label}${(quality==='low')!==(savedQuality==='low')?' · anti-aliasing changes on next load':''}`); save(); syncSettings(); }
 // HUD size: a slider from 70% to 160%; the fixed HUD panes scale about the corner they hang from, the boresight and markers stay as they are
@@ -2975,7 +2984,7 @@ function startHoldApproach(){
   const curve=new THREE.CatmullRomCurve3(pts, false, 'centripetal'), len=curve.getLength();
   cut={mode:'dock', bay:HOLD, world:true, curve, t:0, dur:Math.max(14, Math.min(28, len/6500)), len};
   if (parked) releasePark(); throttle=0;
-  el.cineCap.textContent=`Arrival · ${zone.colony}`; el.cine.classList.add('on'); el.center.classList.remove('on'); SFX.chime();
+  el.cineCap.textContent=`Arrival · ${zone.colony} · Space skips`; el.cine.classList.add('on'); el.center.classList.remove('on'); SFX.chime();
 }
 function startBerthApproach(){ startHoldApproach(); }
 function startApproach(){
@@ -2988,7 +2997,7 @@ function startApproach(){
   const curve=new THREE.CatmullRomCurve3(pts, false, 'centripetal'); const len=curve.getLength();
   cut={mode:'dock', bay:b, curve, t:0, dur:Math.max(5, Math.min(12, len/380)), len};
   if (parked) releasePark(); mining=false; laserOn=false; throttle=0;
-  el.cineCap.textContent=`Approach · ${b.name} · ${CARGO_SHIP}`; el.cine.classList.add('on'); el.center.classList.remove('on');
+  el.cineCap.textContent=`Approach · ${b.name} · ${CARGO_SHIP} · Space skips`; el.cine.classList.add('on'); el.center.classList.remove('on');
   SFX.chime(); SFX.clip('approach_control'); toast(`Approach control has the ship · ${b.name}`);
 }
 // Departure cutscene: the ship taxis off the pad, out through the far mouth and clear of the hull, then control comes back
@@ -3004,7 +3013,7 @@ function startDeparture(){
   const pts=[b.parkL.clone(), V3(0,-112,out*620), V3(0,-40,out*1000), V3(0,60,out*2500)];
   const curve=new THREE.CatmullRomCurve3(pts, false, 'centripetal');
   cut={mode:'depart', bay:b, curve, t:0, dur:5.2, len:curve.getLength()};
-  el.cineCap.textContent=`Departure · ${b.name} · ${CARGO_SHIP}`; el.cine.classList.add('on'); el.center.classList.remove('on');
+  el.cineCap.textContent=`Departure · ${b.name} · ${CARGO_SHIP} · Space skips`; el.cine.classList.add('on'); el.center.classList.remove('on');
   SFX.chime(); toast('Departing · approach control has the ship');
 }
 function cutUpdate(dt){
@@ -3578,7 +3587,7 @@ function warpTo(z){
   el.wName.textContent=z.name; el.wSub.textContent=`${ly} light-years`;
   const nose=depotDir(V3(1,0,0)), side=depotDir(V3(0,0,1));
   warpCut={phase:'depart', t:0, z, nose, camPos:STATION.pos.clone().addScaledVector(side, 9500).addScaledVector(nose, -2500).add(V3(0,3800,0)), flashed:false};
-  el.cineCap.textContent=`Warp · ${z.name}`; el.cine.classList.add('on'); SFX.chime(); SFX.clip('warp_charge');
+  el.cineCap.textContent=`Warp · ${z.name} · Space skips`; el.cine.classList.add('on'); SFX.chime(); SFX.clip('warp_charge');
 }
 function warpCutUpdate(dt){
   const W=warpCut; W.t+=dt;
@@ -3594,7 +3603,7 @@ function warpCutUpdate(dt){
       if (W.z.hub){ glow(1); warpCut=null; warping=false; docked=false; dockBay=null; document.body.classList.remove('in-cut'); toast(`Arrived · ${W.z.name}`); startHoldApproach(); save(); setTimeout(()=>el.warp.classList.remove('on'), 900); return; }
       dockBay=DEPOT.bays[0];
       const nose=depotDir(V3(1,0,0)), side=depotDir(V3(0,0,1));
-      W.phase='arrive'; W.t=0; W.nose=nose; W.camPos=STATION.pos.clone().addScaledVector(side, 11000).addScaledVector(nose, 6500).add(V3(0,4200,0));
+      W.phase='arrive'; W.t=W.skip?4.4:0; W.nose=nose; W.camPos=STATION.pos.clone().addScaledVector(side, 11000).addScaledVector(nose, 6500).add(V3(0,4200,0));
       STATION.warpOff=-90000; placeDepot(); ship.pos.copy(DEPOT.bays[0].park); ship.q.copy(DEPOT.bays[0].q);
     }
   } else {
@@ -4165,7 +4174,7 @@ function updateHud(dt){
   const segs=[];
   if (tow || disabled){ segs.push(tow?towStatus():'Hull breach · drifting'); segs.push('Mouse looks around'); }
   else if (!docked){
-    if (cut) segs.push(cut.world?`Colony control has the ${CARGO_SHIP.toLowerCase()} · ${cut.bay.name}`:`Approach control has the ship · ${cut.bay.name}`);
+    if (cut){ segs.push(cut.world?`Colony control has the ${CARGO_SHIP.toLowerCase()} · ${cut.bay.name}`:`Approach control has the ship · ${cut.bay.name}`); segs.push('<kbd>Space</kbd>Skip'); }
     else if (pilotingCarrier()) segs.push(nearColony()?`<kbd>E</kbd>Berth at ${zone.colony} · the market and services`:`Fly the ${CARGO_SHIP.toLowerCase()} to ${zone.colony} · within ${fmt(COLONY.near)} press <kbd>E</kbd> to berth`);
     else if (nearStation()) segs.push(`<kbd>E</kbd>Auto-dock with the ${CARGO_SHIP.toLowerCase()} · or fly in through either hangar mouth`);
     else if (state.fuel<=0.5 && !parked) segs.push('<kbd>T</kbd>Out of fuel · call a tow (15% of credits)');
