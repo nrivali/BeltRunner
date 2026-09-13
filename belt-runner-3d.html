@@ -473,8 +473,8 @@ table.manifest td.dimmed{color:var(--dim);}
     <div id="menuSettings" class="menu-page" hidden>
       <div class="setting"><span>Sound</span><button id="sSound" class="btn">On</button></div>
       <div class="setting"><span>Sound volume</span><span class="vol"><input type="range" id="sSfxVol" min="0" max="100" value="100"><b id="sSfxVolT" class="mono">100%</b></span></div>
-      <div class="setting"><span>Ambience</span><button id="sMusic" class="btn">On</button></div>
-      <div class="setting"><span>Ambience volume</span><span class="vol"><input type="range" id="sMusicVol" min="0" max="100" value="100"><b id="sMusicVolT" class="mono">100%</b></span></div>
+      <div class="setting"><span>Music</span><button id="sMusic" class="btn">On</button></div>
+      <div class="setting"><span>Music volume</span><span class="vol"><input type="range" id="sMusicVol" min="0" max="100" value="100"><b id="sMusicVolT" class="mono">100%</b></span></div>
       <div class="setting"><span>Quality</span><button id="sQuality" class="btn">Balanced</button></div>
       <div class="setting"><span>HUD size</span><span class="vol"><input type="range" id="sHud" min="70" max="160" step="5" value="100"><b id="sHudT" class="mono">100%</b></span></div>
       <div class="setting"><span>Saved game</span><button id="sReset" class="btn">Wipe save</button></div>
@@ -702,7 +702,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.16';
+const GAME_VERSION = '0.9.17';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D Â· v' + GAME_VERSION;
 
@@ -768,18 +768,16 @@ const shipRight = () => V3(-1,0,0).applyQuaternion(ship.q);
 // Generative soundtrack, all synthesised. Most of the time it is a slow ambient bed: a detuned pad drifting through four
 // chords under a sub drone, with echoing sparkle notes and the odd distant swell. Every few minutes a groove fades in for a
 // minute or so â€” kick, hats, snare, a bouncing bassline and a square-wave arp on the same chords â€” then dissolves back.
-// Recorded audio comes from sfx/<name>.mp3 (or .wav for the locally rendered ambience) when the page is served over http. Opened straight from disk (file://) the
+// Recorded audio comes from sfx/<name>.mp3 when the page is served over http. Opened straight from disk (file://) the
 // browser refuses fetch, so the same bytes come from sfx/sfx.data.js, a base64 pack built by build-sfx-data.ps1, which
 // is also the fallback if a fetch fails for any other reason. Both paths hand back an ArrayBuffer for decodeAudioData.
 const AUDIO_PACK=(()=>{ let p=null; return ()=>{ if (!p) p=new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='sfx/sfx.data.js'; s.onload=()=>{ s.remove(); res(window.BeltRunnerSfxData||{}); }; s.onerror=()=>{ s.remove(); rej(new Error('sfx pack unavailable')); }; document.head.append(s); }); return p; }; })();
-const CLIP_EXT={space_ambience:'wav'};   // every clip is an mp3 except the locally rendered ambience
 async function fetchAudio(name){
-  if (location.protocol!=='file:'){ try { const r=await fetch('sfx/'+name+'.'+(CLIP_EXT[name]||'mp3')); if (r.ok) return await r.arrayBuffer(); } catch(e){} }
+  if (location.protocol!=='file:'){ try { const r=await fetch('sfx/'+name+'.mp3'); if (r.ok) return await r.arrayBuffer(); } catch(e){} }
   const pack=await AUDIO_PACK(), b64=pack[name]; if (!b64) throw new Error('no clip '+name);
   return Uint8Array.from(atob(b64), c=>c.charCodeAt(0)).buffer;
 }
-// The procedural music engine: eight generated-in-code tracks. Kept as the fallback for when the recorded tracks below
-// cannot be loaded (no server, a missing file); MUSIC wraps it.
+// The procedural music engine: eight generated-in-code tracks. This is the soundtrack (MUSIC below points at it).
 const MUSIC_PROC=(()=>{
   let ctx=null, out=null, noise=null, on=true, timer=null, onGroove=null, onTrack=null;
   let step=0, nextT=0, mode='ambient', modeUntil=0, chord=0, groove=null, pad=null, sub=null, delay=null, lfo=null, track=0, STEP=60/112/2;
@@ -920,53 +918,9 @@ const MUSIC_PROC=(()=>{
     set onGroove(fn){ onGroove=fn; }, set onTrack(fn){ onTrack=fn; },
     get state(){ return ctx?ctx.state:'none'; }, get step(){ return step; }, cue(){ modeUntil=0; } };   // cue(): bring the next section on at the next bar (debug)
 })();
-// The soundtrack: no songs and no synth pads. A subtle space ambience (sfx/space_ambience.wav, rendered locally by
-// gen-ambience.ps1: soft filtered wind, a faint beating sub drone, slow shimmering swells) loops very quietly under
-// everything, drifting a few semitones up or down by pitch every half minute or so, and every couple of minutes a short
-// recorded beat phrase fades in over it and out again. The first bed in BEDS that loads is used, so if the ambience
-// file is missing the recorded space hum stands in for it.
-const MUSIC=(()=>{
-  const BEDS=['space_ambience','space_hum'], BEATS=['beat_1','beat_2','beat_3','beat_4'], BED_GAIN=.3;   // .3: barely there under the sound effects
-  const STEPS=[0,-2,2,-3,3,-5];   // semitone offsets the bed drifts between: small steps so the texture stays subtle
-  let ctx=null, out=null, on=true, vol=1, bed=null, bedIdx=0, voice=null, semi=0, beat=null, timer=null, onTrack=null, onGroove=null, nextBeatAt=0, nextShiftAt=0;
-  const bufs={}, rnd=(a,b)=>a+Math.random()*(b-a);
-  function init(c){
-    if (ctx) return; ctx=c;
-    out=ctx.createGain(); out.gain.value=on?0.55*vol:0; out.connect(ctx.destination);   // its own path to the speakers, so the ambience slider is independent of the sound slider
-    (async()=>{
-      for (let k=0;k<BEDS.length;k++){ if (await load(BEDS[k])){ bedIdx=k; startVoice(0, 4); nextShiftAt=ctx.currentTime+rnd(20,40); break; } }
-      if (!timer) timer=setInterval(tick, 1000); nextBeatAt=ctx.currentTime+rnd(25,60); for (const b of BEATS) load(b);
-    })();
-  }
-  function load(name){ if (bufs[name]) return Promise.resolve(true); return fetchAudio(name).then(b=>ctx.decodeAudioData(b)).then(buf=>{ bufs[name]=buf; return true; }).catch(()=>false); }
-  // a voice: the bed looping at a pitch, started somewhere along its length; the previous voice fades out as the new one fades in
-  function startVoice(s, fade){
-    const buf=bufs[BEDS[bedIdx]], src=ctx.createBufferSource(), g=ctx.createGain(); src.buffer=buf; src.loop=true; src.playbackRate.value=Math.pow(2, s/12);
-    g.gain.value=0; src.connect(g); g.connect(out); src.start(0, Math.random()*buf.duration*0.8); g.gain.setTargetAtTime(BED_GAIN, ctx.currentTime, fade);
-    if (voice){ const old=voice; old.g.gain.setTargetAtTime(0, ctx.currentTime, fade); setTimeout(()=>{ try{ old.src.stop(); }catch(e){} }, fade*4000+500); }
-    voice={src, g}; bed=voice; semi=s;
-  }
-  function tick(){
-    if (!ctx || ctx.state!=='running') return;
-    const t=ctx.currentTime;
-    if (voice && t>=nextShiftAt){ let s; do { s=STEPS[Math.floor(Math.random()*STEPS.length)]; } while (s===semi); startVoice(s, 5); nextShiftAt=t+rnd(22,45); }
-    if (!beat && t>=nextBeatAt) playBeat();
-  }
-  // a beat phrase: fades in over a couple of seconds, rides the bed, fades out before its end, then a long quiet gap
-  function playBeat(){
-    const ready=BEATS.filter(b=>bufs[b]); if (!ready.length){ nextBeatAt=ctx.currentTime+20; return; }
-    const name=ready[Math.floor(Math.random()*ready.length)], buf=bufs[name], t=ctx.currentTime;
-    const src=ctx.createBufferSource(), g=ctx.createGain(); src.buffer=buf; g.gain.value=0; src.connect(g); g.connect(out);
-    g.gain.setTargetAtTime(.85, t, 1.2); g.gain.setTargetAtTime(0, t+buf.duration-3.5, 1.2); src.start(t); src.stop(t+buf.duration);
-    beat={src, g, name}; src.onended=()=>{ beat=null; nextBeatAt=ctx.currentTime+rnd(70,150); };
-  }
-  return { init,
-    setOn(v){ on=v; if (out) out.gain.setTargetAtTime(v?0.55*vol:0, ctx.currentTime, .3); }, get on(){ return on; },
-    setVolume(v){ vol=Math.max(0, Math.min(1, v)); if (out) out.gain.setTargetAtTime(on?0.55*vol:0, ctx.currentTime, .08); }, get volume(){ return vol; },
-    get mode(){ return beat?'beat':'ambient'; }, get track(){ return beat?beat.name:(bed?`${BEDS[bedIdx]} ${semi>=0?'+':''}${semi} st`:'silent'); }, get recorded(){ return !!bed; }, get semitone(){ return semi; },
-    set onGroove(fn){ onGroove=fn; }, set onTrack(fn){ onTrack=fn; },
-    get state(){ return ctx?ctx.state:'none'; }, get step(){ return 0; }, cue(){ if (!beat) playBeat(); else nextShiftAt=0; } };
-})();
+// The soundtrack is the procedural engine above, exactly as before the recorded audio came in: slow synth pads with a
+// groove every few minutes. The ElevenLabs clips are sound effects only; no recorded music plays.
+const MUSIC=MUSIC_PROC;
 
 const SFX=(()=>{
   let ctx=null, master=null, noiseBuf=null, muted=false, vol=1;
@@ -2699,7 +2653,7 @@ document.addEventListener('mouseleave', () => { mouse.inside=false; });
 // ---- start menu
 function toggleAutoMine(){ autoMine=!autoMine; toast(autoMine?'Mining laser on Â· the dish cuts what you aim at, or the nearest rock in reach':'Mining laser off'); save(); }
 function toggleSound(){ SFX.init(); SFX.setMuted(!SFX.muted); toast(SFX.muted?'Sound off':'Sound on'); save(); syncSettings(); }
-function toggleMusic(){ SFX.init(); MUSIC.setOn(!MUSIC.on); toast(MUSIC.on?'Ambience on':'Ambience off'); save(); syncSettings(); }
+function toggleMusic(){ SFX.init(); MUSIC.setOn(!MUSIC.on); toast(MUSIC.on?'Music on':'Music off'); save(); syncSettings(); }
 function cycleQuality(){ const keys=Object.keys(QUALITY); quality=keys[(keys.indexOf(quality)+1)%keys.length]; applyQuality(); toast(`Quality: ${QUALITY[quality].label}${(quality==='low')!==(savedQuality==='low')?' Â· anti-aliasing changes on next load':''}`); save(); syncSettings(); }
 // HUD size: a slider from 70% to 160%; the fixed HUD panes scale about the corner they hang from, the boresight and markers stay as they are
 let hudSize=1;

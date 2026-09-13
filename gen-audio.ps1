@@ -37,14 +37,7 @@ $clips=@(
   @{name='dock';        kind='sfx'; dur=2.2; text='heavy spaceship docking clamps locking with a deep metallic clunk and a hydraulic hiss, hangar interior'},
   @{name='stow';        kind='sfx'; dur=1.0; text='metal cargo crate sliding into a rack and latching, short mechanical clunk, sci-fi'},
   @{name='cash';        kind='sfx'; dur=1.5; text='futuristic cash register sale confirmation, pleasant two-note ascending chime, clean'},
-  # --- soundtrack: no songs. The subtle ambience bed under everything is synthesised locally by gen-ambience.ps1
-  # (sfx\space_ambience.wav), not by the API; these are the short beat phrases that sit on top of it every few minutes
-  @{name='beat_1'; kind='music'; ms=24000; text='A short sparse downtempo beat phrase to sit over a deep space ambient drone: soft muffled kick, dusty snare, subtle closed hi-hat, 84 bpm, minimal, no melody, fades in and fades out'},
-  @{name='beat_2'; kind='music'; ms=24000; text='A short minimal electronic beat phrase over a dark ambient pad: deep kick, clicky rim, soft shaker, 96 bpm, restrained, no melody, fades in and fades out'},
-  @{name='beat_3'; kind='music'; ms=24000; text='A short half-time beat phrase over a cosmic ambient drone: heavy slow kick, brushed snare, sparse tuned metallic percussion, 72 bpm, no melody, fades in and fades out'},
-  @{name='beat_4'; kind='music'; ms=24000; text='A short glitchy downtempo percussion phrase over a space ambient pad: soft kick, crisp ticks, filtered hats, subtle sub pulse, 90 bpm, no melody, fades in and fades out'},
-  @{name='beat_5'; kind='music'; ms=32000; text='A short chill lo-fi beat to vibe to over a deep space ambient pad: dusty kick and snare, soft hats, a warm rolling synth bassline and a sparse pluck motif, 88 bpm, laid back, fades in and fades out'},
-  @{name='beat_6'; kind='music'; ms=32000; text='A short mellow downtempo groove over a cosmic ambient pad: deep kick, rimshot, shaker, a slow melodic synth bass riff and gentle chord stabs, 78 bpm, head-nodding, fades in and fades out'},
+  # --- no music here: the soundtrack is the game's own procedural synth engine; the API only makes sound effects and voices
   # --- voice lines
   @{name='colony_control';   kind='voice'; text='Colony control to cargo ship. You are cleared to hold station off Meridian. Welcome to the Hub.'},
   @{name='approach_control'; kind='voice'; text='Approach control has your ship. Stand by for docking.'},
