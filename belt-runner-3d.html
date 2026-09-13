@@ -617,7 +617,7 @@ const GRAVITY_SURFACE = 55;      // u/s² at the planet surface, falling off wit
 const CARGO_SHIP='Cargo ship';
 const ZONES = [
   {id:'hub', name:'The Hub', hub:true, colony:'Meridian Colony', accent:'#6BD69A', map:[50,57], danger:0,
-   tag:'Meridian Colony and three smaller stations above a blue ocean world. Green continents, white clouds, and familiar lights on the night side: a home to return to, with safe lanes and the sector’s ore market.',
+   tag:'Meridian Colony above a blue ocean world. Green continents, white clouds, and familiar lights on the night side: a home to return to, with safe lanes and the sector’s ore market.',
    bg:0x080a14, fogColor:0x0a0e1c, fog:0.00003, sun:0xfff6e6, sunI:2.4, sunSize:9500, sunDir:[-0.85,0.45,0.10], hemi:0x3a4a7a, rock:0x4a5068, density:0, amountMult:1,
    belts:[{},{},{}],
    planet:{name:'Meridian', homeworld:true, position:[150000,-430000,-360000], r:1280, ore:'iron', tint:0x3C86B5, max:0, tier:0}},
@@ -707,7 +707,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.55';
+const GAME_VERSION = '0.9.56';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -1812,16 +1812,15 @@ function updateBeltCloud(){
 // steady stream of colony traffic landing on the pads and berthing at the terminals. Everything is built so each part
 // sits on a flat face or disappears inside a larger body: nothing pokes through a curved surface.
 // The whole ring assembly turns together (rings and spokes in one group); the hub, terminals and berths never move.
-// Three smaller colonies of the same build sit out in the zone, and the traffic (other cargo carriers included) runs
-// between all of them. Static geometry is merged by material, so a colony costs a few dozen draw calls, not hundreds.
+// The traffic (other cargo carriers included) runs between the colony and deep space. Static geometry is merged by
+// material, so a colony costs a few dozen draw calls, not hundreds.
 let colony=null, colony_dish=null, colonies=[];
 const COLONY={R:52000, ringW:3000, ringH:2600, R2:30000, ring2W:1800, ring2H:1800, hub:7000, coreR:2600, coreH:24000, padY:15000, padR:5200, berthY:12000, termX:4200, termY:1500, termZ:3200, berthZ:6230, near:80000};
 const BERTHS=[1,-1].map(side=>({name:side>0?'Upper berth':'Lower berth', berth:true, side, park:V3(0,side*COLONY.berthY,COLONY.berthZ), q:new THREE.Quaternion().setFromAxisAngle(V3(0,1,0), Math.PI/2)}));   // nose along +X, port side against the terminal pad
+// One colony only: Meridian, where you hold station. (The three outlying stations were removed on 2026-09-13; the
+// builder still takes a list, so more sites can be added back here.)
 const COLONY_SITES=[
   {name:'Meridian Colony', pos:V3(0,0,0), scale:1, rot:0, main:true},
-  {name:'Vesper Station', pos:V3(230000, 26000, -150000), scale:0.55, rot:0.8},
-  {name:'Kestrel Yards', pos:V3(-270000, -18000, 95000), scale:0.48, rot:2.4},
-  {name:'Tannhäuser Ring', pos:V3(110000, -40000, 275000), scale:0.62, rot:4.1},
 ];
 const UPV=V3(0,1,0);
 const cw=(c,x,y,z)=>V3(x,y,z).multiplyScalar(c.scale).applyAxisAngle(UPV, c.rot).add(c.pos);   // a colony-local point (scaled) in world space
