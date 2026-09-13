@@ -7,7 +7,8 @@ The user edits this game with Claude as well as Codex. Preserve concurrent work.
 - Recheck the file hash immediately before writing. If it changed, reread and reconcile the latest contents before applying the patch. Do not blindly reapply edits that another process removed.
 - Review the resulting diff against the immediate pre-edit backup. Preserve all unrelated changes from Claude or the user. If changes conflict and intent cannot be determined, ask the user.
 - Before any push or publication, identify and check the authoritative latest game version, reconcile changes, and validate that exact result. A push request does not authorize overwriting newer work.
-- This folder became a Git repository on 2026-09-12 (branch `main`, no remote yet). Git is at `C:\Program Files\Git\cmd\git.exe` if it is not on PATH.
+- This folder became a Git repository on 2026-09-12 (branch `main`). Git is at `C:\Program Files\Git\cmd\git.exe` if it is not on PATH.
+- Remote `origin` is https://github.com/nrivali/BeltRunner (public, added 2026-09-12). GitHub Pages serves `main` at https://nrivali.github.io/BeltRunner/ (index.html redirects to the game), so every `git push origin main` is a deploy; the build takes about a minute. The GitHub CLI is at `C:\Program Files\GitHub CLI\gh.exe`, signed in as nrivali. Push only after the checks above.
 
 ## Git workflow (both agents)
 
