@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "triangles": 35316,
+  "triangles_with_dish": 37496,
+  "texture_size": 2048,
+  "embedded_maps": 4,
+  "attachment_points": 13,
+  "uv_overlaps": 0,
+  "hangar_clearance_rays": 70,
+  "length": 8150.0,
+  "dish_focus_world": [
+    88.38250732421875,
+    1454.9522705078125,
+    0
+  ],
+  "packed_blend_textures": true,
+  "cameras_lights_in_glb": false
+}

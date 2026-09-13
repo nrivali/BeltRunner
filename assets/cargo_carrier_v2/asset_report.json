@@ -1,0 +1,100 @@
+{
+  "triangles": 35316,
+  "triangles_with_dish": 37496,
+  "triangles_by_mesh": {
+    "hull": 23896,
+    "interior": 4412,
+    "emissive": 3684,
+    "glass": 3324,
+    "dish_yaw": 356,
+    "dish_pitch": 1824
+  },
+  "meshes": [
+    "hull",
+    "interior",
+    "emissive",
+    "glass"
+  ],
+  "empties": {
+    "hangar_mouth_pos": [
+      0,
+      0,
+      900
+    ],
+    "hangar_mouth_neg": [
+      0,
+      0,
+      -900
+    ],
+    "pad_pos": [
+      0,
+      -138,
+      525
+    ],
+    "pad_neg": [
+      0,
+      -138,
+      -525
+    ],
+    "drop_pad": [
+      250,
+      -130,
+      0
+    ],
+    "dish_mount": [
+      -40,
+      995,
+      0
+    ],
+    "engine_0": [
+      -3480,
+      0,
+      -540
+    ],
+    "engine_1": [
+      -3480,
+      0,
+      0
+    ],
+    "engine_2": [
+      -3480,
+      0,
+      540
+    ],
+    "drone_dock_0": [
+      760,
+      -60,
+      1500
+    ],
+    "drone_dock_1": [
+      850,
+      -60,
+      1500
+    ],
+    "drone_dock_2": [
+      940,
+      -60,
+      1500
+    ],
+    "bridge_windows": [
+      900,
+      734,
+      0
+    ]
+  },
+  "atlas_size": 2048,
+  "forward": "+X",
+  "up": "+Y",
+  "length": 8150,
+  "main_hull_width": 1800,
+  "main_hull_height": 1080,
+  "hangar_clear_x": [
+    -420,
+    420
+  ],
+  "hangar_clear_y": [
+    -176,
+    176
+  ],
+  "dish": "Separate mining_dish.glb plus complete cargo_carrier_assembled.glb; carrier alone retains original 4-mesh contract."
+}

@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "threeRevision": "158",
+  "loadedAssets": 3,
+  "carrierMeshes": 4,
+  "carrierTriangles": 35316,
+  "materials": [
+    "emissive",
+    "glass",
+    "hull",
+    "interior"
+  ],
+  "textureSize": 2048,
+  "hangarClear": true,
+  "dishFocus": [
+    88.38250732421875,
+    1454.9522705078125,
+    0
+  ],
+  "rendered": true,
+  "errors": []
+}
