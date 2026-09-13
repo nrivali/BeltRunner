@@ -92,7 +92,7 @@ kbd{font-family:var(--mono);font-size:11px;color:var(--text);background:#151A30;
 .credits{color:var(--amber2);text-shadow:0 0 10px rgba(242,163,58,.55);}
 .eyebrow,.gauge-head span:first-child{color:var(--hud-dim);}
 .gauge-head .mono,.goal-text b{color:#dff7ff;text-shadow:0 0 6px rgba(94,211,240,.35);}
-.gauge .bar,.goal .bar,.t-hp .bar,.db-row .bar{height:8px;background:rgba(94,211,240,.08);border:none;-webkit-mask:repeating-linear-gradient(90deg,#000 0 6px,transparent 6px 8px);mask:repeating-linear-gradient(90deg,#000 0 6px,transparent 6px 8px);}
+.gauge .bar,.goal .bar,.t-hp .bar{height:8px;background:rgba(94,211,240,.08);border:none;-webkit-mask:repeating-linear-gradient(90deg,#000 0 6px,transparent 6px 8px);mask:repeating-linear-gradient(90deg,#000 0 6px,transparent 6px 8px);}
 .gauge .bar i,.goal .bar i,.t-hp .bar i{box-shadow:0 0 8px currentColor;}
 #fuelFill{color:var(--cyan);} #hullFill{color:var(--green);} #cargoFill{color:#B8C0DA;} #thrFill{color:var(--amber);} .goal .bar i{color:var(--amber);}
 .bar.thr{height:10px;background-image:none;}
@@ -129,7 +129,6 @@ kbd{font-family:var(--mono);font-size:11px;color:var(--text);background:#151A30;
 .ladder .u{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--hud-dim);text-transform:uppercase;}
 .prompt{background:linear-gradient(180deg,rgba(8,12,26,.8),rgba(8,12,26,.6));border:1px solid var(--hud-faint);clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));}
 .toast{background:rgba(6,10,24,.9);border-color:var(--hud-faint);clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));}
-.dockbox{background:linear-gradient(180deg,rgba(8,12,26,.85),rgba(8,12,26,.65));border:1px solid var(--hud-faint);border-top:2px solid var(--amber);clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));}
 .reticle i{box-shadow:0 0 6px rgba(94,211,240,.5);} .reticle.hot i{box-shadow:0 0 8px rgba(242,163,58,.6);}
 /* cargo-full notice: a pulsing amber strip under the toasts that stays up until the hold empties */
 .notice{left:50%;bottom:112px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:3px;background:rgba(40,22,6,.92);border:1px solid var(--amber);border-left:4px solid var(--amber);padding:8px 18px;text-align:center;animation:noticePulse 1.6s ease-in-out infinite;}
@@ -183,12 +182,6 @@ kbd{font-family:var(--mono);font-size:11px;color:var(--text);background:#151A30;
 .blip i{display:block;width:6px;height:6px;border:1.5px solid var(--cyan);transform:rotate(45deg);margin:0 auto;}
 .blip span{display:block;font-family:var(--mono);font-size:10px;color:var(--muted);white-space:nowrap;margin-top:4px;text-shadow:0 1px 3px #000;}
 .prompt .sep{color:var(--dim);margin:0 10px;}
-.dockbox{position:fixed;left:50%;bottom:64px;transform:translateX(-50%);z-index:2;pointer-events:none;width:460px;background:rgba(14,18,36,.9);border:1px solid var(--line2);border-top:2px solid var(--amber);padding:10px 14px 12px;display:flex;flex-direction:column;gap:8px;box-sizing:border-box;}
-.db-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
-.db-hint{font-size:11px;color:var(--dim);white-space:nowrap;} .db-hint kbd{margin:0 2px 0 6px;}
-.db-row{display:grid;grid-template-columns:46px 1fr 150px;align-items:center;gap:10px;font-family:var(--display);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
-.db-row b{font-family:var(--mono);font-size:11.5px;letter-spacing:0;text-transform:none;color:var(--text);font-weight:500;text-align:right;}
-.db-row .bar i{background:#B8C0DA;} .db-row .bar i.f{background:var(--cyan);} .db-row .bar i.h{background:var(--green);}
 table.manifest tr.held td{color:var(--dim);}
 .link.hold{color:var(--muted);text-decoration:none;font-family:var(--display);font-size:10px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--line2);padding:2px 7px;}
 .link.hold.on{color:var(--amber2);border-color:var(--amber);}
@@ -348,7 +341,7 @@ table.manifest td.dimmed{color:var(--dim);}
 /* HUD size (Settings): each pane scales about the corner or edge it hangs from. Last in the sheet so it wins. */
 .hud-tl{transform:translateX(-50%) scale(var(--hudScale));transform-origin:50% 100%;} .hud-tr{transform:scale(var(--hudScale));transform-origin:100% 0;} .hud-tc{transform:translateX(-50%) scale(var(--hudScale));transform-origin:50% 0;} .hud-bl{transform:scale(var(--hudScale));transform-origin:0 100%;}
 .hud-center{transform:translate(-50%,-50%) scale(var(--hudScale));}
-.prompt,.notice,.dockbox{transform:translateX(-50%) scale(var(--hudScale));transform-origin:50% 100%;} .toasts{transform:translateX(-50%) scale(var(--hudScale));transform-origin:50% 0;}
+.prompt,.notice{transform:translateX(-50%) scale(var(--hudScale));transform-origin:50% 100%;} .toasts{transform:translateX(-50%) scale(var(--hudScale));transform-origin:50% 0;}
 </style>
 
 <canvas id="game"></canvas>
@@ -413,12 +406,6 @@ table.manifest td.dimmed{color:var(--dim);}
 <div id="blips"></div>
 <div class="dmg" id="dmg"></div>
 <div class="cine" id="cine"><div class="bar top"></div><div class="bar bot"></div><div class="cap" id="cineCap"></div></div>
-<div class="dockbox" id="dockbox" hidden>
-  <div class="db-head"><span class="eyebrow" id="dbTitle">Docked</span><span class="db-hint"><kbd>F</kbd> services · storage <kbd>W</kbd> depart</span></div>
-  <div class="db-row"><span>Cargo</span><div class="bar"><i id="dbCargo"></i></div><b id="dbCargoT"></b></div>
-  <div class="db-row"><span>Fuel</span><div class="bar"><i id="dbFuel" class="f"></i></div><b id="dbFuelT"></b></div>
-  <div class="db-row"><span>Hull</span><div class="bar"><i id="dbHull" class="h"></i></div><b id="dbHullT"></b></div>
-</div>
 <div class="hud prompt" id="prompt"></div>
 <div class="hud toasts" id="toasts"></div>
 <div class="hud notice" id="fullNotice" hidden><b>CARGO HOLD FULL</b><span>Return to the cargo ship to stow it · press <kbd>E</kbd> within 4,500 to auto-dock</span></div>
@@ -727,7 +714,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.42';
+const GAME_VERSION = '0.9.43';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -2645,7 +2632,6 @@ const el={credits:$('credits'),goalFill:$('goalFill'),goalPct:$('goalPct'),fuelT
   spd:$('spd'),spdBig:$('spdBig'),dist:$('dist'),inv:$('inv'),invBody:$('invBody'),invCap:$('invCap'),invFill:$('invFill'),invClose:$('invClose'),target:$('target'),tEyebrow:$('tEyebrow'),tName:$('tName'),tSize:$('tSize'),tRange:$('tRange'),tWarn:$('tWarn'),tHp:$('tHp'),tHpT:$('tHpT'),prompt:$('prompt'),toasts:$('toasts'),
   center:$('center'),reticle:$('reticle'),rLbl:$('rLbl'),hoverLbl:$('hoverLbl'),marker:$('marker'),mArr:$('mArr'),mLbl:$('mLbl'),fullNotice:$('fullNotice'),
   station:$('station'),pCredits:$('pCredits'),manifest:$('manifest'),upgrades:$('upgrades'),closeSvc:$('closeSvc'),reset:$('reset'),
-  dockbox:$('dockbox'),dbTitle:$('dbTitle'),dbCargo:$('dbCargo'),dbCargoT:$('dbCargoT'),dbFuel:$('dbFuel'),dbFuelT:$('dbFuelT'),dbHull:$('dbHull'),dbHullT:$('dbHullT'),
   hullText:$('hullText'),hullFill:$('hullFill'),dmg:$('dmg'),thrText:$('thrText'),thrFill:$('thrFill'),
   win:$('win'),wTime:$('wTime'),wMined:$('wMined'),wEarned:$('wEarned'),keepFlying:$('keepFlying'),intro:$('intro'),
   menuMain:$('menuMain'),menuSettings:$('menuSettings'),menuControls:$('menuControls'),mContinue:$('mContinue'),mNew:$('mNew'),mSaveInfo:$('mSaveInfo'),mNewInfo:$('mNewInfo'),mControls:$('mControls'),mSettings:$('mSettings'),sSound:$('sSound'),sMusic:$('sMusic'),sQuality:$('sQuality'),sHud:$('sHud'),sHudT:$('sHudT'),sReset:$('sReset'),
@@ -2907,7 +2893,7 @@ function bumpRock(a, dir, speed){
 }
 function enterHangar(b){
   docked=true; dockBay=b; mining=false; laserOn=false; parked=null; depWait=true; throttle=0; ship.vel.set(0,0,0);
-  el.center.classList.remove('on'); el.dockbox.hidden=false; el.dbTitle.textContent=`Docked · ${b.name} · ${CARGO_SHIP}${zone.hub?' · '+zone.colony:''}`; SFX.clip('dock', SFX.dock);
+  el.center.classList.remove('on'); SFX.clip('dock', SFX.dock);
   // the hangar view: HUD clears, the camera walks slowly round the ship on the pad, and the services panel opens beside it
   document.body.classList.add('in-hangar'); hangarT=0; renderPanel(); el.station.hidden=false; openInventory();   // the inventory opens on the left, with the cargo ship's storage under your hold
   if (tow && tow.phase==='haul'){
@@ -2930,7 +2916,7 @@ let cut=null;
 const HOLD={name:'Holding station', berth:true, hold:true, side:1, park:V3(-40000, 14000, 56000), q:levelHeading(V3(40000, -9000, -56000).normalize())};
 function enterBerth(b){
   docked=true; dockBay=b; mining=false; laserOn=false; parked=null; depWait=true; throttle=0; ship.vel.set(0,0,0);
-  el.center.classList.remove('on'); el.dockbox.hidden=false; el.dbTitle.textContent=`${b.hold?'Holding station':'Berthed · '+b.name} · ${zone.colony}`; SFX.clip('dock', SFX.dock); setTimeout(()=>SFX.clip('colony_control'), 900);
+  el.center.classList.remove('on'); SFX.clip('dock', SFX.dock); setTimeout(()=>SFX.clip('colony_control'), 900);
   document.body.classList.remove('in-cut'); document.body.classList.add('in-hangar'); hangarT=0; renderPanel(); el.station.hidden=false; openInventory();
   toast(`Holding station off ${zone.colony} · the market is open`); save();
 }
@@ -3003,7 +2989,7 @@ function cutUpdate(dt){
 }
 let exitPending=false;
 let hangarT=0;
-function leaveHangar(){ if (!docked) return; docked=false; dockBay=null; exitPending=true; ship.vel.copy(STATION.vel); el.station.hidden=true; el.dockbox.hidden=true; if (invOpen) closeInventory(); el.center.classList.add('on'); document.body.classList.remove('in-hangar'); document.body.classList.remove('in-cut'); camQ.copy(ship.q); save(); }
+function leaveHangar(){ if (!docked) return; docked=false; dockBay=null; exitPending=true; ship.vel.copy(STATION.vel); el.station.hidden=true; if (invOpen) closeInventory(); el.center.classList.add('on'); document.body.classList.remove('in-hangar'); document.body.classList.remove('in-cut'); camQ.copy(ship.q); save(); }
 function toggleServices(){ if (!docked) return; if (el.station.hidden){ renderPanel(); el.station.hidden=false; } else el.station.hidden=true; }
 const fuelRate=()=>8+state.up.tank*4, repairRate=()=>6;
 function dockUpdate(dt){
@@ -3527,7 +3513,7 @@ function warpTo(z){
   if (warping || z===zone) return;
   if (!docked){ toast('Dock with the cargo ship before warping · it makes the jump', true); return; }
   const ly=zoneLy(zone,z); closeMap(); warping=true; el.center.classList.remove('on');
-  el.station.hidden=true; el.dockbox.hidden=true; document.body.classList.remove('in-hangar'); document.body.classList.add('in-cut'); if (invOpen) closeInventory();
+  el.station.hidden=true; document.body.classList.remove('in-hangar'); document.body.classList.add('in-cut'); if (invOpen) closeInventory();
   el.wName.textContent=z.name; el.wSub.textContent=`${ly} light-years`;
   const nose=depotDir(V3(1,0,0)), side=depotDir(V3(0,0,1));
   warpCut={phase:'depart', t:0, z, nose, camPos:STATION.pos.clone().addScaledVector(side, 9500).addScaledVector(nose, -2500).add(V3(0,3800,0)), flashed:false};
@@ -4085,9 +4071,6 @@ function updateHud(dt){
   el.spdBig.textContent=docked?(pilotingCarrier()?'HOLD':'DOCK'):fmt(ship.vel.length());   // the bottom gauge: the same reading, in m/s
   { const big=pilotingCarrier(); el.dist.textContent=fmt(big?ship.pos.length():ship.pos.distanceTo(STATION.pos)); const lbl=$('distLbl').firstChild; const want=big?'COLONY ':'CARGO SHIP '; if (lbl.textContent!==want) lbl.textContent=want; }
   if (docked){
-    el.dbCargo.style.width=(ct/cc*100)+'%'; el.dbCargoT.textContent=`${us} / ${ns} slots · storage ${storeUsed()} / ${STORE_SLOTS}`;
-    el.dbFuel.style.width=(state.fuel/tank*100)+'%'; el.dbFuelT.textContent=(state.fuel>=tank-0.01?'tank full':(state.shipFuel<0.5?'cargo ship dry':`${fuelRate()} u/s from the cargo ship`))+` · supply ${Math.floor(state.shipFuel)}`;
-    el.dbHull.style.width=(hf*100)+'%'; el.dbHullT.textContent=state.hull>=hp-0.01?'hull sound':(state.credits<2?'no credits':`${repairRate()} pt/s · 2 cr/pt`);
     if (!el.station.hidden && document.activeElement!==el.callsign){ panelT+=0.08; if (panelT>1){ panelT=0; renderPanel(); } }
   }
   { const reach=stat('scanner').mine; el.laserRange.textContent=lock?`${fmt(lockDist)} / ${fmt(reach)} m`:`${fmt(reach)} m`; }   // range in metres: the locked object's distance against the beam's reach, else just the reach
@@ -4160,7 +4143,7 @@ const TUT=[
     text:'Find a copper rock (orange veins) and get within laser reach. Hold the mining laser (left mouse, <kbd>Space</kbd> or <kbd>L</kbd>): the dish under the nose swings onto the rock and cuts while you hold, until it breaks, and the health bar top-right shows how it is going. The ore comes loose as glowing pickups; fly near and they are pulled aboard.', auto:()=>state.cargo.copper>=1},
   {id:'return', title:'Back to the cargo ship', ring:['#marker'], wait:'dock with the cargo ship',
     text:'Copper aboard. Follow the CARGO SHIP marker home: the carrier with the hangar is yours, and it warps with you. Within 4,500 press <kbd>E</kbd> and approach control flies you into the hangar, or fly straight in through either hangar mouth yourself.', auto:()=>docked},
-  {id:'hangar', title:'In the hangar', ring:['#dockbox'],
+  {id:'hangar', title:'In the hangar', ring:['.hud-tl'],
     text:'While you sit on the pad your tank fills from the cargo ship\'s fuel supply for free, and the hull repairs, charged to your credits as it goes. The cargo ship buys its own fuel from the colony at the Hub, so keep an eye on its supply. Nothing sells here: the cargo ship has 50 storage slots of its own, and the inventory moves stacks between your hold and that storage.'},
   {id:'services', title:'Storage and refits', ring:['#station .panel'],
     text:'The services panel is open beside you (<kbd>F</kbd> hides and shows it). To move ore aboard the cargo ship, open your inventory (<kbd>Tab</kbd>) while docked: its storage grid appears under your hold, and stacks drag or double-click across. Ore only sells at the Hub, a colony zone on the nav map (<kbd>N</kbd>); the cargo ship, storage and all, warps there with you. The refit list below is where the money goes.'},
