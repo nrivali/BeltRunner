@@ -613,7 +613,7 @@ const ZONES = [
    belts:[{},{},{}]},
   {id:'kessler', name:'Kessler Belt', accent:'#F2A33A', map:[46,34], danger:0.5,
    tag:'The home belt. Picked over, safe, and never far from a refuel.',
-   bg:0x070912, fogColor:0x070912, fog:0.000036, sun:0xfff1dc, sunI:2.6, sunSize:10500, sunDir:[0.55,0.42,-0.72], hemi:0x3a4a8a, rock:0x4a5068, density:1, amountMult:1,
+   bg:0x070912, fogColor:0x070912, fog:0.000036, sun:0xfff1dc, sunI:2.6, sunSize:10500, sunDir:[0.55,0.42,-0.72], hemi:0x3a4a8a, rock:0x4a5068, density:5, amountMult:1,
    belts:[{iron:.55,copper:.25,cobalt:.2},{copper:.3,gold:.4,platinum:.1,cobalt:.1,beryl:.1},{gold:.15,platinum:.4,crystal:.25,beryl:.2}],
    planet:{name:'Ferron', r:900,  ore:'iron',    tint:0x7E5F4B, max:20000, tier:1}},
 ];
@@ -697,7 +697,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.48';
+const GAME_VERSION = '0.9.49';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -1520,11 +1520,11 @@ function makeAsteroid(belt, avoid, field, opts){
   // Size classes: most rocks are small and skew toward the belt minimum; a few are large; a rare handful are giants.
   const ore=opts?opts.ore:pickOre(field?field.ores:belt.ores), roll=Math.random(), sizeT=Math.pow(Math.random(),1.7);
   let baseR, cls='small', detailBoost=0;
-  // size mix: 70% small, 25% large, 4% giant, 1% colossal (colossals only as loose belt rocks, never inside a field)
+  // size mix: 60% small, 35% large, 4.9% giant, 0.1% colossal (colossals only as loose belt rocks, never inside a field)
   if (opts){ cls=opts.cls; baseR=opts.r; detailBoost=cls==='colossal'?3:cls==='giant'?2:cls==='large'?1:0; }
-  else if (roll<0.01 && !field){ cls='colossal'; baseR=belt.size[1]*rand(14,24); detailBoost=3; }
+  else if (roll<0.0015 && !field){ cls='colossal'; baseR=belt.size[1]*rand(14,24); detailBoost=3; }   // loose rocks are ~2/3 of the zone, so this lands near 0.1% overall
   else if (roll<0.05){ cls='giant'; baseR=belt.size[1]*rand(5,8.5); detailBoost=2; }
-  else if (roll<0.30){ cls='large'; baseR=belt.size[1]*rand(1.8,3.2); detailBoost=1; }
+  else if (roll<0.40){ cls='large'; baseR=belt.size[1]*rand(1.8,3.2); detailBoost=1; }
   else baseR=belt.size[0]+(belt.size[1]-belt.size[0])*sizeT;
   // large and giant rocks are sometimes hollows you can fly into; giants are otherwise big rounded, pocked or blocky bodies
   let shape;
@@ -2861,9 +2861,11 @@ function collideRocks(){
     const k=key(Math.floor(a.pos.x/ROCK_CELL), Math.floor(a.pos.y/ROCK_CELL), Math.floor(a.pos.z/ROCK_CELL)); let arr=rockCells.get(k); if (!arr){ arr=[]; rockCells.set(k, arr); } arr.push(a);
   }
   const around=(pos, fn)=>{ const cx=Math.floor(pos.x/ROCK_CELL), cy=Math.floor(pos.y/ROCK_CELL), cz=Math.floor(pos.z/ROCK_CELL); for (let dx=-1;dx<=1;dx++) for (let dy=-1;dy<=1;dy++) for (let dz=-1;dz<=1;dz++){ const arr=rockCells.get(key(cx+dx,cy+dy,cz+dz)); if (arr) for (const b of arr) fn(b); } };
+  // Only rocks knocked off their rails get pair-tested: rail rocks were placed by the generator and never move relative to
+  // each other, and at belt density testing every rail pair in a crowded field cost far more than everything else in the frame.
   for (const a of nearRocks){
-    if (a.r<=BIG_ROCK) around(a.pos, b=>{ if (b!==a && b.id>a.id) rockPair(a, b); });
-    for (const b of bigs) if (b!==a && (a.r<=BIG_ROCK || b.id>a.id)) rockPair(a, b);
+    if (a.r<=BIG_ROCK){ if (a.free) around(a.pos, b=>{ if (b!==a && (!b.free || b.id>a.id)) rockPair(a, b); }); }
+    for (const b of bigs) if (b!==a && (a.free || b.free) && (a.r<=BIG_ROCK || b.id>a.id)) rockPair(a, b);
   }
   for (const c of debris){ around(c.pos, a=>chunkRock(c, a)); for (const b of bigs) chunkRock(c, b); }
 }
