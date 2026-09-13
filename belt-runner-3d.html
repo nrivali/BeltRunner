@@ -715,7 +715,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.89';
+const GAME_VERSION = '0.9.90';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -3094,6 +3094,12 @@ function buyJump(){
   el.station.hidden=true; docked=false; document.body.classList.remove('in-hangar'); el.win.hidden=false;
 }
 function cutsList(level){ const names=COMMON_KEYS.filter(k=>ORES[k].hardness<=level).map(k=>ORES[k].name); const ex=ACTIVE_KEYS.filter(k=>ORES[k].zone&&ORES[k].hardness<=level).length; return names.join(', ')+(ex?` + ${ex} zone exclusives`:''); }
+// the mining laser row says only what the next level buys: the cut-rate step and the ore it unlocks (hardness = next level)
+function laserRowDesc(i, maxed){
+  const L=UPGRADES.laser.levels; if (maxed) return `<b>${L[i].rate} u/s</b> · cuts every ore`;
+  const next=ACTIVE_KEYS.filter(k=>ORES[k].hardness===i+2).map(k=>ORES[k].name);
+  return `${L[i].rate} u/s → <b>${L[i+1].rate} u/s</b> · ${next.length?`unlocks <b>${next.join(', ')}</b>`:'no new ore'}`;
+}
 function describe(k,i){
   const L=UPGRADES[k].levels[i];
   switch(k){
@@ -3202,7 +3208,7 @@ function renderPanel(){
   for (const k in UPGRADES){
     const u=UPGRADES[k], i=state.up[k], maxed=i>=u.costs.length;
     const pips=Array.from({length:u.levels.length},(_,j)=>j<=i?'■':'<span>■</span>').join('');
-    const desc=maxed?`<b>${describe(k,i)}</b> · fully refitted`:`${describe(k,i)} → <b>${describe(k,i+1)}</b>`;
+    const desc=k==='laser'?laserRowDesc(i,maxed):maxed?`<b>${describe(k,i)}</b> · fully refitted`:`${describe(k,i)} → <b>${describe(k,i+1)}</b>`;
     const btn=maxed?`<button class="btn" disabled>Max</button>`:`<button class="btn ${state.credits>=u.costs[i]?'primary':''}" data-up="${k}" ${state.credits<u.costs[i]?'disabled':''}>${fmt(u.costs[i])} cr</button>`;
     html+=`<div class="up"><div class="up-head"><span class="up-name">${u.name}</span><span class="pips">${pips}</span></div><div class="up-desc">${desc}</div>${btn}</div>`;
   }
