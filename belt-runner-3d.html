@@ -727,7 +727,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.41';
+const GAME_VERSION = '0.9.42';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -4073,7 +4073,8 @@ function updateHud(dt){
   el.thrText.textContent=disabled?'DISABLED':docked?'docked':parked?'parked':ship.braking?'RETRO':ship.boosting?`${thrPct}% · CRUISE`:`${thrPct}%`;
   const tank=stat('tank').cap; el.fuelText.textContent=`${Math.ceil(state.fuel)} / ${tank}`; el.fuelFill.style.width=(state.fuel/tank*100)+'%'; el.fuelFill.className=state.fuel/tank<0.2?'low':'';
   const hp=stat('hull').hp, hf=state.hull/hp; el.hullText.textContent=`${Math.ceil(state.hull)} / ${hp}`; el.hullFill.style.width=(hf*100)+'%'; el.hullFill.className=hf<0.25?'low':hf<0.6?'mid':'';
-  const ct=cargoTotal(), cc=cargoCap(), full=holdFull(), us=usedSlots(), ns=cargoSlots(); el.cargoText.textContent=full?`${us} / ${ns} slots · FULL`:`${us} / ${ns} slots`;   // slots only; the unit count is in the inventory el.cargoFill.style.width=(ct/cc*100)+'%'; el.cargoFill.className=full?'full':'';
+  const ct=cargoTotal(), cc=cargoCap(), full=holdFull(), us=usedSlots(), ns=cargoSlots(); el.cargoText.textContent=full?`${us} / ${ns} slots · FULL`:`${us} / ${ns} slots`;   // slots only; the unit count is in the inventory
+  el.cargoFill.style.width=(ct/cc*100)+'%'; el.cargoFill.className=full?'full':'';   // the bar still fills by units
   // a standing notice while the hold is full (and a one-off toast and chime the moment it fills), cleared when it empties or you dock
   el.fullNotice.hidden=!(full && started && !docked); el.cargoText.classList.toggle('full', full);
   if (full && !wasFull && started && !docked){ toast('Cargo hold full · head back to the cargo ship to stow it', true); SFX.chime(); } wasFull=full;
