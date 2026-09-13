@@ -715,7 +715,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.90';
+const GAME_VERSION = '0.9.91';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -740,7 +740,7 @@ const DEPOT_UPGRADES={
   laser:{name:'Cargo ship mining laser', levels:[null,{range:12000,rate:2},{range:20000,rate:4},{range:32000,rate:7}], costs:[5000,14000,40000]},
   collectors:{name:'Collector drones', levels:[null,{ships:1,cap:120,speed:260,range:20000},{ships:2,cap:180,speed:300,range:35000},{ships:3,cap:260,speed:340,range:60000}], costs:[8000,20000,45000]},
 };
-function describeDepot(k,i){ const L=DEPOT_UPGRADES[k].levels[i]; if (!L) return 'not installed'; return k==='radar' ? `pulse every ${L.period}s · ${fmt(L.range)} range` : k==='laser' ? `${fmt(L.range)} reach · ${L.rate} u/s · hardness ≤ ${i+1}` : `${L.ships} drone${L.ships>1?'s':''} · ${L.cap} u hold · ${fmt(L.range)} range`; }
+function describeDepot(k,i){ const L=DEPOT_UPGRADES[k].levels[i]; if (!L) return 'not installed'; return k==='radar' ? `pulse every ${L.period}s · ${fmt(L.range)} range` : k==='laser' ? `${fmt(L.range)} reach · ${L.rate} dmg/s · hardness ≤ ${i+1}` : `${L.ships} drone${L.ships>1?'s':''} · ${L.cap} hold · ${fmt(L.range)} range`; }
 const depotPulse={on:false, t:0, r:0, cd:2}, depotLaser={rock:null, hit:null, retarget:0, since:0, toastT:0, yaw:0, pitch:0.15, firing:false};
 const keys={}, mouse={x:0,y:0,inside:false,down:false};
 
@@ -1686,7 +1686,7 @@ function breakRock(a, byDepot){
   const k=splits ? splitRock(a, vel) : 0;
   // the dish works on its own, so its breaks are only announced every 20 s or so; your own always are
   const quiet=byDepot && state.time-depotLaser.toastT<20; if (byDepot && !quiet) depotLaser.toastT=state.time;
-  if (!quiet){ const who=byDepot?'Cargo ship dish: ':'', ore=a.barren?'':` · ${Math.round(loose)} u ${ORES[a.ore].name} loose`;
+  if (!quiet){ const who=byDepot?'Cargo ship dish: ':'', ore=a.barren?'':` · ${Math.round(loose)} ${ORES[a.ore].name} loose`;
     toast(splits ? `${who}${rockName(a)} broken into ${k} ${SPLIT_CLASS[a.cls]} rocks${ore}` : a.barren ? `${who}${rockName(a)} broken · scrap only` : `${who}${rockName(a)} broken${ore}`); }
   a.dead=true; a.hp=0; a.respawnAt=state.time+300; removeAsteroid(a); a.inScene=false;
   if (target && target.obj===a) target=null;
@@ -1705,7 +1705,7 @@ function updateDrops(dt){
       if (d.noPick>state.time){ d.vel.multiplyScalar(Math.exp(-0.4*dt)); }   // just jettisoned: left alone until it has drifted off
       else if (dist<60){
         const free=cargoRoom(d.ore), take=Math.min(d.amount, free);
-        if (take>0.01){ state.cargo[d.ore]+=take; state.mined+=take; state.minedBy[d.ore]=(state.minedBy[d.ore]||0)+take; d.amount-=take; if (take>=0.5){ toast(`+${Math.round(take)} u ${ORES[d.ore].name}`); SFX.pickup(); } }
+        if (take>0.01){ state.cargo[d.ore]+=take; state.mined+=take; state.minedBy[d.ore]=(state.minedBy[d.ore]||0)+take; d.amount-=take; if (take>=0.5){ toast(`+${Math.round(take)} ${ORES[d.ore].name}`); SFX.pickup(); } }
         if (d.amount<=0.05){ scene.remove(d.group); drops.splice(i,1); continue; }
         if (state.time-dropFullT>5){ dropFullT=state.time; toast('Cargo hold full · head back to the cargo ship'); }
         d.vel.addScaledVector(to.divideScalar(dist), -60);   // full hold: the pickup is nudged back out
@@ -2435,7 +2435,7 @@ function unloadDrone(c){
   let units=0, left=0;
   for (const k in c.cargo){ const u=c.cargo[k]; if (u<=0.01){ delete c.cargo[k]; continue; } const fit=Math.min(u, storeRoom(k)); if (fit>0.01){ state.store[k]=(state.store[k]||0)+fit; c.cargo[k]-=fit; units+=fit; } if (c.cargo[k]<=0.01) delete c.cargo[k]; else left+=c.cargo[k]; }
   c.load=left;
-  if (units>0.5){ state.droneUnits+=units; invSig=''; toast(`Collector ${c.idx+1} stowed ${Math.round(units)} u aboard the cargo ship${left>0.5?` · storage full, ${Math.round(left)} u kept aboard`:''}`); if (docked && !el.station.hidden) renderPanel(); }
+  if (units>0.5){ state.droneUnits+=units; invSig=''; toast(`Collector ${c.idx+1} stowed ${Math.round(units)} aboard the cargo ship${left>0.5?` · storage full, ${Math.round(left)} kept aboard`:''}`); if (docked && !el.station.hidden) renderPanel(); }
   else if (left>0.5) toast(`Collector ${c.idx+1} · cargo ship storage is full`, true);
 }
 function updateCollectors(dt){
@@ -3090,21 +3090,21 @@ function renderHangar(){ el.dockedEyebrow.textContent=`Docked · ${state.custom.
 function buyJump(){
   if (state.credits<JUMP_COST){ toast('Not enough credits', true); return; }
   state.credits-=JUMP_COST; state.jump=true; save(); renderPanel();
-  el.wTime.textContent=fmtTime(state.time); el.wMined.textContent=fmt(state.mined)+' u'; el.wEarned.textContent=fmt(state.earned)+' cr';
+  el.wTime.textContent=fmtTime(state.time); el.wMined.textContent=fmt(state.mined); el.wEarned.textContent=fmt(state.earned)+' cr';
   el.station.hidden=true; docked=false; document.body.classList.remove('in-hangar'); el.win.hidden=false;
 }
 function cutsList(level){ const names=COMMON_KEYS.filter(k=>ORES[k].hardness<=level).map(k=>ORES[k].name); const ex=ACTIVE_KEYS.filter(k=>ORES[k].zone&&ORES[k].hardness<=level).length; return names.join(', ')+(ex?` + ${ex} zone exclusives`:''); }
 // the mining laser row says only what the next level buys: the cut-rate step and the ore it unlocks (hardness = next level)
 function laserRowDesc(i, maxed){
-  const L=UPGRADES.laser.levels; if (maxed) return `<b>${L[i].rate} u/s</b> · cuts every ore`;
+  const L=UPGRADES.laser.levels; if (maxed) return `<b>${L[i].rate} dmg/s</b> · cuts every ore`;
   const next=ACTIVE_KEYS.filter(k=>ORES[k].hardness===i+2).map(k=>ORES[k].name);
-  return `${L[i].rate} u/s → <b>${L[i+1].rate} u/s</b> · ${next.length?`unlocks <b>${next.join(', ')}</b>`:'no new ore'}`;
+  return `${L[i].rate} dmg/s → <b>${L[i+1].rate} dmg/s</b> · ${next.length?`unlocks <b>${next.join(', ')}</b>`:'no new ore'}`;
 }
 function describe(k,i){
   const L=UPGRADES[k].levels[i];
   switch(k){
-    case 'laser': return `${L.rate} u/s · hardness ≤ ${i+1} · ${cutsList(i+1)}`;
-    case 'cargo': return `${L.slots} slots · ${L.slots*STACK} u`;
+    case 'laser': return `${L.rate} dmg/s · hardness ≤ ${i+1} · ${cutsList(i+1)}`;
+    case 'cargo': return `${L.slots} slots`;
     case 'engine': return `${L.thrust} thrust · ${L.max} top speed`;
     case 'tank': return `${L.cap} fuel`;
     case 'scanner': return `${fmt(L.range)} m scan`;
@@ -3129,19 +3129,19 @@ function takeStack(k, want){
 function stowAll(){
   let moved=0; for (const k of ORE_KEYS){ const u=Math.min(state.cargo[k], storeRoom(k)); if (u>0.01){ state.cargo[k]-=u; state.store[k]=(state.store[k]||0)+u; moved+=u; if (state.cargo[k]<0.01) state.cargo[k]=0; } }
   if (moved<0.5){ toast(cargoTotal()>0.5?'Cargo ship storage is full':'Nothing in the hold to stow', true); return; }
-  toast(`Stowed ${Math.round(moved)} u aboard the cargo ship${cargoTotal()>0.5?' · storage full, the rest stays in the hold':''}`); invSig=''; SFX.clip('stow', SFX.click); renderPanel(); save();
+  toast(`Stowed ${Math.round(moved)} aboard the cargo ship${cargoTotal()>0.5?' · storage full, the rest stays in the hold':''}`); invSig=''; SFX.clip('stow', SFX.click); renderPanel(); save();
 }
 function takeAll(){
   let moved=0; for (const k of ORE_KEYS){ const u=Math.min(state.store[k]||0, cargoRoom(k)); if (u>0.01){ state.store[k]-=u; state.cargo[k]+=u; moved+=u; if (state.store[k]<0.01) state.store[k]=0; } }
   if (moved<0.5){ toast(storeTotal()>0.5?'No room in the hold':'Storage is empty', true); return; }
-  toast(`Took ${Math.round(moved)} u back aboard`); invSig=''; SFX.clip('stow', SFX.click); renderPanel(); save();
+  toast(`Took ${Math.round(moved)} back aboard`); invSig=''; SFX.clip('stow', SFX.click); renderPanel(); save();
 }
 // ---- the colony market at the Hub buys from the hold and the storage alike, at the going price
 function sellOre(keys, fromHold, fromStore){
   let cr=0, units=0;
   for (const k of keys){ let u=0; if (fromHold){ u+=state.cargo[k]; state.cargo[k]=0; } if (fromStore){ u+=state.store[k]||0; state.store[k]=0; } if (u>0.01){ cr+=u*price(k); units+=u; } }
   if (units<0.5){ toast('Nothing to sell', true); return; }
-  state.credits+=cr; state.earned+=cr; toast(`Sold ${Math.round(units)} u · +${fmt(cr)} cr`); SFX.clip('cash', SFX.cash); invSig=''; renderPanel(); save();
+  state.credits+=cr; state.earned+=cr; toast(`Sold ${Math.round(units)} · +${fmt(cr)} cr`); SFX.clip('cash', SFX.cash); invSig=''; renderPanel(); save();
 }
 // the services panel only summarises the cargo: moving stacks between the hold and the storage is done in the inventory (Tab)
 let fuelDryWarned=false, partsWarned=false;
@@ -3151,7 +3151,7 @@ function refuelCargoShip(){
   if (want<0.5){ toast('Fuel supply is already full'); return; }
   if (u<1){ toast('Not enough credits for fuel', true); return; }
   state.shipFuel+=u; state.credits=Math.max(0, state.credits-u*CARGO_FUEL_PRICE); fuelDryWarned=false;
-  toast(`Refuelled ${Math.floor(u)} u · ${fmt(u*CARGO_FUEL_PRICE)} cr${u<want-0.5?' · out of credits before full':''}`); SFX.clip('cash', SFX.cash); renderPanel(); save();
+  toast(`Refuelled ${Math.floor(u)} · ${fmt(u*CARGO_FUEL_PRICE)} cr${u<want-0.5?' · out of credits before full':''}`); SFX.clip('cash', SFX.cash); renderPanel(); save();
 }
 function buyParts(){
   const want=PARTS_CAP-state.parts, n=Math.min(want, Math.floor(state.credits/PARTS_PRICE));
@@ -3188,9 +3188,9 @@ function renderMarket(){
   }
   const list=ACTIVE_KEYS.map(k=>{ const d=Math.round((state.market[k]-1)*100); return `<tr><td><span class="dot" style="background:${ORES[k].color}"></span>${ORES[k].name}${ORES[k].zone?' <span class="delta" style="color:var(--dim)">exotic</span>':''}</td><td class="dimmed">${ORES[k].hardness>state.up.laser+1?'needs laser Lv'+ORES[k].hardness:''}</td><td>${price(k).toFixed(1)}${d?`<span class="delta ${d>0?'up':'down'}">${d>0?'▲':'▼'}${Math.abs(d)}%</span>`:''}</td></tr>`; }).join('');
   return `<h3 style="margin:22px 0 10px">${z.colony} market</h3>`+(any
-    ? `<table class="manifest"><thead><tr><th>Ore</th><th>Hold</th><th>Storage</th><th>cr / u</th><th>Value</th><th></th></tr></thead><tbody>${rows}</tbody></table><div class="total"><span>Everything aboard</span><b>${fmt(total)} cr</b></div><div class="row-actions"><button class="btn primary" data-sellall="1">Sell everything</button><button class="btn" data-sellhold="1">Sell hold only</button><button class="btn" data-sellstore="1">Sell storage only</button></div>`
+    ? `<table class="manifest"><thead><tr><th>Ore</th><th>Hold</th><th>Storage</th><th>cr each</th><th>Value</th><th></th></tr></thead><tbody>${rows}</tbody></table><div class="total"><span>Everything aboard</span><b>${fmt(total)} cr</b></div><div class="row-actions"><button class="btn primary" data-sellall="1">Sell everything</button><button class="btn" data-sellhold="1">Sell hold only</button><button class="btn" data-sellstore="1">Sell storage only</button></div>`
     : `<div class="empty">Nothing aboard to sell. Cut ore in a belt zone and bring it back.</div>`)
-    + `<table class="manifest" style="margin-top:12px"><thead><tr><th>Prices today</th><th></th><th>cr / u</th></tr></thead><tbody>${list}</tbody></table>`;
+    + `<table class="manifest" style="margin-top:12px"><thead><tr><th>Prices today</th><th></th><th>cr each</th></tr></thead><tbody>${list}</tbody></table>`;
 }
 function renderPanel(){
   el.pCredits.textContent=fmt(state.credits)+' cr'; renderHangar();
@@ -3220,7 +3220,7 @@ function renderPanel(){
     const btn=maxed?`<button class="btn" disabled>Max</button>`:`<button class="btn ${state.credits>=u.costs[i]?'primary':''}" data-dup="${k}" ${state.credits<u.costs[i]?'disabled':''}>${fmt(u.costs[i])} cr</button>`;
     html+=`<div class="up"><div class="up-head"><span class="up-name">${u.name}</span><span class="pips">${pips}</span></div><div class="up-desc">${desc}</div>${btn}</div>`;
   }
-  html+=`<p class="hint" style="margin:4px 0 10px">The dish leaves the ore it frees adrift for you to pick up. Collector drones gather it and stow it in the cargo ship's storage${state.droneUnits>0.5?` · <b>${fmt(state.droneUnits)} u</b> stowed so far`:''}.</p>`;
+  html+=`<p class="hint" style="margin:4px 0 10px">The dish leaves the ore it frees adrift for you to pick up. Collector drones gather it and stow it in the cargo ship's storage${state.droneUnits>0.5?` · <b>${fmt(state.droneUnits)}</b> stowed so far`:''}.</p>`;
   html+=`<div class="up jump"><div class="up-head"><span class="up-name">Jump drive</span></div><div class="up-desc">${state.jump?'<b>Installed.</b> You can leave whenever you like.':'Leaves the belt for good. One purchase, no refunds.'}</div>${state.jump?'<button class="btn" disabled>Owned</button>':`<button class="btn ${state.credits>=JUMP_COST?'primary':''}" data-jump="1" ${state.credits<JUMP_COST?'disabled':''}>${fmt(JUMP_COST)} cr</button>`}</div>`;
   el.upgrades.innerHTML=html;
   el.upgrades.querySelectorAll('[data-up]').forEach(b=>b.addEventListener('click',()=>buy(b.dataset.up)));
@@ -3267,7 +3267,7 @@ function requestTow(reason){
     if (pirates.some(p=>p.state==='attack')){
       let lost=0; for (const k of ORE_KEYS){ const l=state.cargo[k]*0.35; state.cargo[k]-=l; lost+=l; }
       for (const p of pirates){ p.state='idle'; p.wp=p.home.clone(); }
-      if (lost>0.5) toast(`Raiders stripped ${Math.floor(lost)} u of cargo from the hold`, true);
+      if (lost>0.5) toast(`Raiders stripped ${Math.floor(lost)} of cargo from the hold`, true);
     }
   } else toast('Tow requested · tug inbound');
 }
@@ -3399,7 +3399,7 @@ function killPirate(p, byPlayer){
   for (let i=0;i<20;i++) spawnParticle(p.pos.clone().add(V3(rand(-14,14),rand(-14,14),rand(-14,14))), i%3?0xff6a3a:0xffe0a0);
   if (byPlayer){
     state.credits+=p.bounty; state.earned+=p.bounty; let drop='';
-    if (Math.random()<0.35){ const ks=Object.keys(zone.belts[2]); const k=ks[Math.floor(Math.random()*ks.length)]; const u=Math.min(rand(8,28), cargoRoom(k)); if (u>0.5){ state.cargo[k]+=u; drop=` · salvaged ${Math.floor(u)} u ${ORES[k].name}`; } }
+    if (Math.random()<0.35){ const ks=Object.keys(zone.belts[2]); const k=ks[Math.floor(Math.random()*ks.length)]; const u=Math.min(rand(8,28), cargoRoom(k)); if (u>0.5){ state.cargo[k]+=u; drop=` · salvaged ${Math.floor(u)} ${ORES[k].name}`; } }
     toast(`Raider destroyed · +${fmt(p.bounty)} cr bounty${drop}`);
   }
   if (target && target.obj===p) target=null;
@@ -3497,7 +3497,7 @@ function jettisonSlot(i){
   state.cargo[k]-=u; if (state.cargo[k]<0.01) state.cargo[k]=0; S[i]=null;
   const back=shipForward().multiplyScalar(-1), at=ship.pos.clone().addScaledVector(back, 40*SHIP_SCALE);
   spawnDrop(at.add(V3(rand(-10,10),rand(-10,10),rand(-10,10))), k, u, ship.vel.clone().addScaledVector(back, 45).add(V3(rand(-8,8),rand(-8,8),rand(-8,8)))); drops[drops.length-1].noPick=state.time+60;
-  toast(`Jettisoned ${Math.round(u)} u ${ORES[k].name}`); SFX.click(); invSig=''; save();
+  toast(`Jettisoned ${Math.round(u)} ${ORES[k].name}`); SFX.click(); invSig=''; save();
 }
 function moveSlot(i, j){
   const S=slotOrder(); if (i===j || !S[i]) return; const a=S[i], b=S[j];
@@ -3511,7 +3511,7 @@ function renderInventory(){
   // stacks move between the two grids by drag or click
   const aboard=docked, st=aboard?storeStacks():[], su=storeUsed();
   const sig=ns+'|'+JSON.stringify(S.map(s=>s?[s.k,Math.floor(s.u)]:0))+'|'+zone.id+'|'+(aboard?JSON.stringify(st.map(s=>[s.k,Math.floor(s.u)])):'-'); if (sig===invSig) return; invSig=sig;
-  el.invCap.textContent=`${us} / ${ns} slots · ${Math.floor(ct)} u`; el.invFill.style.width=(us/ns*100)+'%'; el.invFill.className=holdFull()?'full':'';
+  el.invCap.textContent=`${us} / ${ns} slots`; el.invFill.style.width=(us/ns*100)+'%'; el.invFill.className=holdFull()?'full':'';
   let total=0; for (const s of S) if (s) total+=s.u*price(s.k);
   const cell=(s,i)=>{ if (!s) return `<div class="slot empty" data-i="${i}"><span>empty</span></div>`; const o=ORES[s.k]; return `<div class="slot" draggable="true" data-i="${i}" style="--c:${o.color}" title="${aboard?'Drag to the storage grid (or double-click) to stow it aboard the cargo ship':''}"><img class="ico" src="${oreIcon(s.k)}" alt="" draggable="false"><b>${o.name}</b><span class="n">${Math.floor(s.u)} / ${STACK}</span><span class="v">${fmt(s.u*price(s.k))} cr</span><button class="x" data-jet="${i}" title="Jettison this stack">✕</button></div>`; };
   // the hold grid, then Deposit all (everything in the hold into the cargo ship's storage; only while docked at it). There is no
@@ -3524,8 +3524,8 @@ function renderInventory(){
   if (aboard){
     const scell=(s,i)=>{ if (!s) return `<div class="slot empty" data-s="${i}"><span>empty</span></div>`; const o=ORES[s.k]; return `<div class="slot" draggable="true" data-s="${i}" style="--c:${o.color}" title="Drag to your hold (or double-click) to take it back aboard"><img class="ico" src="${oreIcon(s.k)}" alt="" draggable="false"><b>${o.name}</b><span class="n">${Math.floor(s.u)} / ${STACK}</span></div>`; };
     const cells=[]; for (let i=0;i<STORE_SLOTS;i++) cells.push(scell(st[i],i));
-    html+=`<div class="xfer-head" style="margin-top:18px"><span class="eyebrow">${CARGO_SHIP} storage</span><span class="mono">${su} / ${STORE_SLOTS} slots · ${Math.floor(storeTotal())} u</span><span><button class="link" data-takeall="1">▲ Take all</button></span></div><div class="inv-grid" id="invStore">${cells.join('')}</div><p class="hint" style="margin:8px 0 0">Drag stacks between the two grids, or double-click one, to move it. The storage rides with the cargo ship and sells at the Hub.</p>`;
-  } else html+=`<div class="inv-total" style="border-top:none;padding-top:4px"><span>${CARGO_SHIP} storage</span><b style="color:var(--text)">${su} / ${STORE_SLOTS} slots · ${Math.floor(storeTotal())} u · dock to transfer</b></div>`;
+    html+=`<div class="xfer-head" style="margin-top:18px"><span class="eyebrow">${CARGO_SHIP} storage</span><span class="mono">${su} / ${STORE_SLOTS} slots</span><span><button class="link" data-takeall="1">▲ Take all</button></span></div><div class="inv-grid" id="invStore">${cells.join('')}</div><p class="hint" style="margin:8px 0 0">Drag stacks between the two grids, or double-click one, to move it. The storage rides with the cargo ship and sells at the Hub.</p>`;
+  } else html+=`<div class="inv-total" style="border-top:none;padding-top:4px"><span>${CARGO_SHIP} storage</span><b style="color:var(--text)">${su} / ${STORE_SLOTS} slots · dock to transfer</b></div>`;
   el.invBody.innerHTML=html;
   el.invBody.querySelectorAll('[data-jet]').forEach(b=>b.addEventListener('click', e=>{ e.stopPropagation(); jettisonSlot(+b.dataset.jet); }));
   el.invBody.querySelectorAll('[data-stowall]').forEach(b=>b.addEventListener('click', stowAll));
@@ -3594,7 +3594,7 @@ function renderMap(){
   const aboard=Math.floor(cargoTotal()+storeTotal());
   const detail=z.hub
     ? `<div class="kv"><span>Distance</span><b>${z===cur?'here':zoneLy(cur,z)+' ly'}</b><span>Colony</span><b>${z.colony}</b><span>Market</span><b>buys every ore · exotics +${Math.round((EXPORT_BONUS-1)*100)}%</b><span>Fuel</span><b>cargo ship resupplies here · ${CARGO_FUEL_PRICE} cr/u</b><span>Danger</span><b>none · colony patrols</b></div>
-       <div><h3>Aboard to sell</h3><p class="tag" style="font-family:var(--mono);font-size:12px">${aboard>0?`${aboard} u across the hold and the cargo ship's storage`:'nothing yet · the storage rides with the cargo ship'}</p></div>
+       <div><h3>Aboard to sell</h3><p class="tag" style="font-family:var(--mono);font-size:12px">${aboard>0?`${aboard} across the hold and the cargo ship's storage`:'nothing yet · the storage rides with the cargo ship'}</p></div>
        <div><h3>Holding station</h3><p class="tag" style="font-family:var(--mono);font-size:12px">On arrival the cargo ship flies in and takes up station off Meridian Colony, and the market and services open from there. Set a course here to leave.</p></div>`
     : `<div class="kv"><span>Distance</span><b>${z===cur?'here':zoneLy(cur,z)+' ly'}</b><span>Market</span><b>none · sell at the Hub</b><span>Belts</span><b>${z.amountMult>1.2?'rich seams':z.density<1?'sparse':'typical'} · ${nFields} fields</b><span>Danger</span><b style="color:${z.danger>1.6?'var(--red)':z.danger>1.1?'var(--amber)':'var(--text)'}">${z.danger<=0.6?'quiet · light patrols':z.danger<=1.1?'patrolled · mines near rich fields':z.danger<=1.6?'contested · raider holds':'lawless · heavy raider presence'}</b></div>
        <div><h3>Asteroid fields</h3><p class="tag" style="font-family:var(--mono);font-size:12px">${fieldList}</p></div>
@@ -4145,7 +4145,7 @@ function updateOverlays(){
   else el.fieldMarker.classList.remove('on');
   // collector drones: a cyan waypoint on each, with what it is doing and how far away it is
   for (let i=0;i<droneMarkers.length;i++) droneMarkers[i].box.classList.remove('on');
-  if (started && !docked) collectors.forEach((c,i)=>{ const mk=droneMarker(i); placeMarker(mk.box, mk.arr, mk.lbl, c.pos, `DRONE ${i+1} · ${DRONE_WORDS[c.phase]||c.phase}${c.load>0.5?` · ${Math.round(c.load)} u`:''} · ${fmt(c.pos.distanceTo(ship.pos))}`); });
+  if (started && !docked) collectors.forEach((c,i)=>{ const mk=droneMarker(i); placeMarker(mk.box, mk.arr, mk.lbl, c.pos, `DRONE ${i+1} · ${DRONE_WORDS[c.phase]||c.phase}${c.load>0.5?` · ${Math.round(c.load)}`:''} · ${fmt(c.pos.distanceTo(ship.pos))}`); });
   el.fieldState.textContent=inside?inside.name:'—';
   // radar-marked rocks: a blip on every marked rock in view, and for the ones out of view a waypoint pinned to the screen
   // edge with an arrow pointing the way, so a scan tells you where to turn as well as what is ahead
