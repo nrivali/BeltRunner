@@ -616,6 +616,10 @@ const ZONES = [
    bg:0x070912, fogColor:0x070912, fog:0.000036, sun:0xfff1dc, sunI:2.6, sunSize:10500, sunDir:[0.55,0.42,-0.72], hemi:0x3a4a8a, rock:0x4a5068, density:1, amountMult:1,
    belts:[{iron:.55,copper:.25,cobalt:.2},{copper:.3,gold:.4,platinum:.1,cobalt:.1,beryl:.1},{gold:.15,platinum:.4,crystal:.25,beryl:.2}],
    planet:{name:'Ferron', r:900,  ore:'iron',    tint:0x7E5F4B, max:20000, tier:1}},
+];
+// Zones taken off the chart for now (2026-09-13): only the Kessler Belt and the Hub are live. These stay here, unused,
+// so they can move straight back into ZONES when the sector grows again; their exclusive ores stay defined for the same reason.
+const SHELVED_ZONES = [
   {id:'cinder', name:'Cinder Reach', accent:'#FF6A3D', map:[16,14], danger:1.0,
    tag:'A dying red giant cooks the rocks here. Sulfur glass and emberite form nowhere else.',
    bg:0x120708, fogColor:0x1a0a08, fog:0.000052, sun:0xff8a4a, sunI:3.2, sunSize:17000, sunDir:[-0.6,0.25,0.75], hemi:0x6a2a1a, rock:0x5a3a33, density:1, amountMult:1,
@@ -644,6 +648,7 @@ const ZONES = [
 ];
 const HOME_ZONE = ZONES.find(z=>z.id==='kessler');
 const zoneById = id => ZONES.find(z=>z.id===id) || HOME_ZONE;
+const ACTIVE_KEYS = ORE_KEYS.filter(k=>!ORES[k].zone || ZONES.some(z=>z.id===ORES[k].zone));   // ores that can actually be cut somewhere on the chart
 function zoneLy(a,b){ return Math.round(Math.hypot(a.map[0]-b.map[0], a.map[1]-b.map[1])*0.12*10)/10; }
 function warpCost(a,b){ return 0; }   // the jump drive runs off the cargo ship's reactor: warping costs nothing
 // The cargo ship carries the fuel supply. Your ship fills its tank from it for free whenever it is docked; the cargo ship
@@ -692,7 +697,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.47';
+const GAME_VERSION = '0.9.48';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -3006,7 +3011,7 @@ function buyJump(){
   el.wTime.textContent=fmtTime(state.time); el.wMined.textContent=fmt(state.mined)+' u'; el.wEarned.textContent=fmt(state.earned)+' cr';
   el.station.hidden=true; docked=false; document.body.classList.remove('in-hangar'); el.win.hidden=false;
 }
-function cutsList(level){ const names=COMMON_KEYS.filter(k=>ORES[k].hardness<=level).map(k=>ORES[k].name); const ex=ORE_KEYS.filter(k=>ORES[k].zone&&ORES[k].hardness<=level).length; return names.join(', ')+(ex?` + ${ex} zone exclusives`:''); }
+function cutsList(level){ const names=COMMON_KEYS.filter(k=>ORES[k].hardness<=level).map(k=>ORES[k].name); const ex=ACTIVE_KEYS.filter(k=>ORES[k].zone&&ORES[k].hardness<=level).length; return names.join(', ')+(ex?` + ${ex} zone exclusives`:''); }
 function describe(k,i){
   const L=UPGRADES[k].levels[i];
   switch(k){
@@ -3094,7 +3099,7 @@ function renderMarket(){
     const exp=isExport(k)?`<span class="delta up">exotic +${Math.round((EXPORT_BONUS-1)*100)}%</span>`:'';
     rows+=`<tr><td><span class="dot" style="background:${ORES[k].color}"></span>${ORES[k].name}${exp}</td><td>${fmt(h)}</td><td>${fmt(s)}</td><td>${p.toFixed(1)}${delta}</td><td>${fmt(v)}</td><td><button class="link" data-sell="${k}">sell</button></td></tr>`;
   }
-  const list=ORE_KEYS.map(k=>{ const d=Math.round((state.market[k]-1)*100); return `<tr><td><span class="dot" style="background:${ORES[k].color}"></span>${ORES[k].name}${ORES[k].zone?' <span class="delta" style="color:var(--dim)">exotic</span>':''}</td><td class="dimmed">${ORES[k].hardness>state.up.laser+1?'needs laser Lv'+ORES[k].hardness:''}</td><td>${price(k).toFixed(1)}${d?`<span class="delta ${d>0?'up':'down'}">${d>0?'▲':'▼'}${Math.abs(d)}%</span>`:''}</td></tr>`; }).join('');
+  const list=ACTIVE_KEYS.map(k=>{ const d=Math.round((state.market[k]-1)*100); return `<tr><td><span class="dot" style="background:${ORES[k].color}"></span>${ORES[k].name}${ORES[k].zone?' <span class="delta" style="color:var(--dim)">exotic</span>':''}</td><td class="dimmed">${ORES[k].hardness>state.up.laser+1?'needs laser Lv'+ORES[k].hardness:''}</td><td>${price(k).toFixed(1)}${d?`<span class="delta ${d>0?'up':'down'}">${d>0?'▲':'▼'}${Math.abs(d)}%</span>`:''}</td></tr>`; }).join('');
   return `<h3 style="margin:22px 0 10px">${z.colony} market</h3>`+(any
     ? `<table class="manifest"><thead><tr><th>Ore</th><th>Hold</th><th>Storage</th><th>cr / u</th><th>Value</th><th></th></tr></thead><tbody>${rows}</tbody></table><div class="total"><span>Everything aboard</span><b>${fmt(total)} cr</b></div><div class="row-actions"><button class="btn primary" data-sellall="1">Sell everything</button><button class="btn" data-sellhold="1">Sell hold only</button><button class="btn" data-sellstore="1">Sell storage only</button></div>`
     : `<div class="empty">Nothing aboard to sell. Cut ore in a belt zone and bring it back.</div>`)
