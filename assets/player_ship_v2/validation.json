@@ -1,0 +1,41 @@
+{
+  "status": "PASS",
+  "required_nodes": 22,
+  "assembled_triangle_range": [
+    22252,
+    23176
+  ],
+  "all_components_triangles": 41272,
+  "radius": 14.371443847638922,
+  "texture_sizes": {
+    "basecolor": [
+      4096,
+      4096
+    ],
+    "metallic_roughness": [
+      2048,
+      2048
+    ],
+    "normal": [
+      2048,
+      2048
+    ],
+    "emissive": [
+      2048,
+      2048
+    ]
+  },
+  "embedded_pngs": 4,
+  "uv_overlap_count": 0,
+  "yaw_clearance_samples": 555,
+  "yaw_range_degrees": [
+    -90,
+    90
+  ],
+  "pitch_range_radians": [
+    -0.7,
+    1.3
+  ],
+  "camera_or_lights_in_glb": false,
+  "scene_count": 2
+}

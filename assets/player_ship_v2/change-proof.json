@@ -1,0 +1,57 @@
+{
+  "base": "330de9e3fa0ceb6a1062a5e17ecb3be729b3eb07",
+  "beforeSHA256": "ed52f3e282e242e0326dfd961df964a443d1658b2e7944ac53e66268bf5d8428",
+  "afterSHA256": "a83727dcdf8588916de6f06dfed295d6cf22b05426465b53aa504df0a061899b",
+  "backup": "C:\\Users\\rival\\Documents\\BeltRunner\\backups\\rounded-player-2026-09-13T11-07-08-670Z.html",
+  "changes": [
+    {
+      "before": "const GAME_VERSION = '0.9.69';",
+      "after": "const GAME_VERSION = '0.9.70';"
+    },
+    {
+      "before": "<script src=\"assets/player_ship/assemble-player-ship.global.js\"></script>",
+      "after": "<script src=\"assets/player_ship_v2/assemble-player-ship.global.js\"></script>"
+    },
+    {
+      "before": "<script src=\"assets/player_ship/load-player-ship.js\"></script>",
+      "after": "<script src=\"assets/player_ship_v2/load-player-ship.js\"></script>"
+    }
+  ],
+  "reconciliations": [
+    {
+      "base": "e55cea6b0b0d13e202f5dc45fcf0c1e735860f88",
+      "beforeSHA256": "95640dd06377efed65d906ce500ae89e787a29d9d810f018f36d6ec591c38ba2",
+      "afterSHA256": "99b136958af614f6aa82e5db48b26467eef264e128ee1b6f6793f9e9f13e5542",
+      "backup": "C:\\Users\\rival\\Documents\\BeltRunner\\backups\\rounded-player-reconcile-2026-09-13T11-12-49-087Z.html",
+      "version": "const GAME_VERSION = '0.9.71';"
+    },
+    {
+      "base": "77c4bfea906e5dcda368127c597ba448d1bd4df8",
+      "beforeSHA256": "5899617176ca81a13f32e814a10664e19d168e7e55124d19fc049b35a999016c",
+      "afterSHA256": "3f644a1cb40f5db3de8ebfa3f02ae422b93d388602f72c502c7d29aabbb3a0b7",
+      "backup": "C:\\Users\\rival\\Documents\\BeltRunner\\backups\\rounded-player-reconcile-2026-09-13T11-20-18-656Z.html",
+      "version": "const GAME_VERSION = '0.9.72';"
+    },
+    {
+      "base": "d817494d3fae9f378590eb9b605b87a839696199",
+      "beforeSHA256": "aea97e25517288e10001cdbd169d869f0f2d3082dba342704608df6653f733c5",
+      "afterSHA256": "23dae6a73173655947fe8e58550ed9583029f997ba93b57ff7440c263b1e09f5",
+      "backup": "C:\\Users\\rival\\Documents\\BeltRunner\\backups\\rounded-player-reconcile-2026-09-13T11-30-07-598Z.html",
+      "version": "const GAME_VERSION = '0.9.74';"
+    },
+    {
+      "base": "664b18dff3bc2b70c8b94353e45b8eb81282a271",
+      "beforeSHA256": "bd32c2d9787075164bc79997e1b94c22d95728d7163190dea9cbf7329a536258",
+      "afterSHA256": "989df1634ccf61b2e94b3860795fcca77000aba9a03480848b5cf36b93481e32",
+      "backup": "C:\\Users\\rival\\Documents\\BeltRunner\\backups\\rounded-player-reconcile-2026-09-13T11-32-44-568Z.html",
+      "version": "const GAME_VERSION = '0.9.75';"
+    },
+    {
+      "base": "d75af90a03639a7d3814acdd5132ebe74757dab0",
+      "beforeSHA256": "8918f36da84c75582dd93ba79f1a3b3c868cb3799cace8f9e626f38ac71c9645",
+      "afterSHA256": "c1135b341e8a92a53fc463e241722b01ec657f4cb13d4dc1bc1f29efc9411936",
+      "backup": "C:\\Users\\rival\\Documents\\BeltRunner\\backups\\rounded-player-reconcile-2026-09-13T11-37-57-560Z.html",
+      "version": "const GAME_VERSION = '0.9.76';"
+    }
+  ]
+}

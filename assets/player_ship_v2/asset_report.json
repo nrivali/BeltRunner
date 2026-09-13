@@ -1,0 +1,129 @@
+{
+  "triangles_by_mesh": {
+    "hull": 1828,
+    "hull_trim": 4408,
+    "canopy": 896,
+    "cockpit_frame": 1184,
+    "cockpit": 1524,
+    "emissive": 1172,
+    "engine_core": 1472,
+    "engine_nacelle_1": 4288,
+    "engine_nacelle_2": 4504,
+    "engine_nacelle_3": 4736,
+    "wings_delta": 1284,
+    "wings_swept": 1300,
+    "wings_forward": 1276,
+    "wings_twin": 856,
+    "cargo_pod_1": 1784,
+    "cargo_pod_2": 1800,
+    "cargo_pod_3": 1816,
+    "dish_base": 192,
+    "dish_yoke": 228,
+    "mining_dish": 1268,
+    "laser_barrel_1": 480,
+    "laser_barrel_2": 480,
+    "laser_barrel_3": 480,
+    "scanner_dish_1": 672,
+    "scanner_dish_2": 672,
+    "scanner_dish_3": 672
+  },
+  "triangles_all_components": 41272,
+  "assembled_triangle_counts": {
+    "delta_level_1": 22680,
+    "delta_level_2": 22912,
+    "delta_level_3": 23160,
+    "swept_level_1": 22696,
+    "swept_level_2": 22928,
+    "swept_level_3": 23176,
+    "forward_level_1": 22672,
+    "forward_level_2": 22904,
+    "forward_level_3": 23152,
+    "twin_level_1": 22252,
+    "twin_level_2": 22484,
+    "twin_level_3": 22732
+  },
+  "max_radius": 14.371443847638922,
+  "forward": "+Z",
+  "up": "+Y",
+  "dimensions_approx": [
+    24.2,
+    10.3,
+    25.3
+  ],
+  "default_components": [
+    "hull",
+    "hull_trim",
+    "canopy",
+    "cockpit_frame",
+    "cockpit",
+    "emissive",
+    "engine_core",
+    "engine_nacelle_1",
+    "wings_delta",
+    "cargo_pod_1",
+    "dish_base",
+    "dish_yoke",
+    "mining_dish",
+    "laser_barrel_1",
+    "scanner_dish_1"
+  ],
+  "optional_components": [
+    "engine_nacelle_2",
+    "engine_nacelle_3",
+    "wings_swept",
+    "wings_forward",
+    "wings_twin",
+    "cargo_pod_2",
+    "cargo_pod_3",
+    "laser_barrel_2",
+    "laser_barrel_3",
+    "scanner_dish_2",
+    "scanner_dish_3"
+  ],
+  "attachments": {
+    "dish_mount": [
+      0.0,
+      -3.4000000953674316,
+      7.0
+    ],
+    "engine_l": [
+      4.550000190734863,
+      1.4500000476837158,
+      -12.869999885559082
+    ],
+    "engine_r": [
+      -4.550000190734863,
+      1.4500000476837158,
+      -12.869999885559082
+    ],
+    "nav_l": [
+      12.039999961853027,
+      0.2199999988079071,
+      -4.849999904632568
+    ],
+    "nav_r": [
+      -12.039999961853027,
+      0.2199999988079071,
+      -4.849999904632568
+    ]
+  },
+  "textures": "4096 basecolor; 2048 normal, metallic_roughness and emissive; Blender baked ImageGen atlas",
+  "map_sizes": {
+    "basecolor": [
+      4096,
+      4096
+    ],
+    "metallic_roughness": [
+      2048,
+      2048
+    ],
+    "normal": [
+      2048,
+      2048
+    ],
+    "emissive": [
+      2048,
+      2048
+    ]
+  }
+}

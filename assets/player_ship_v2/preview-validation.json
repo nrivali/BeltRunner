@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "combinations": 324,
+  "min": 22252,
+  "max": 23176,
+  "maps": {
+    "glass": {
+      "base": 4096,
+      "transmission": 0.8999999761581421
+    },
+    "paint": {
+      "base": 4096,
+      "normal": 2048
+    },
+    "trim": {
+      "base": 4096,
+      "normal": 2048
+    },
+    "emissive": {
+      "base": 4096,
+      "normal": 2048
+    }
+  },
+  "components": 26,
+  "views": 4,
+  "wingViews": 4,
+  "paused": true,
+  "moving": true,
+  "paint": true,
+  "orbitZoom": true,
+  "responsive": true,
+  "errors": []
+}

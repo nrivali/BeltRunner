@@ -1,0 +1,8 @@
+{
+  "functionalChecksPassed": true,
+  "modes": ["http", "file", "script-fallback", "missing", "invalid"],
+  "testedGameStartSHA256": "989df1634ccf61b2e94b3860795fcca77000aba9a03480848b5cf36b93481e32",
+  "gameEndSHA256": "69497c454df9f67e7f18513b5a4f46e63f54085536019f06bd76da88f6cfcb62",
+  "stableSourceCheckPassed": false,
+  "evidence": "The integration test printed PASS for all five loading modes. Its final source hash guard then failed because concurrent inventory edits changed the HTML. This is a record of observed functional results, not a passing full-suite report for a single final game version. final-smoke-validation.json records the subsequent normal-loading, customization, aiming and docking checks on the final local commit source."
+}

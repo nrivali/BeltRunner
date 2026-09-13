@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "gameVersion": "0.9.76",
+  "gameSHA256": "c1135b341e8a92a53fc463e241722b01ec657f4cb13d4dc1bc1f29efc9411936",
+  "assetSHA256": "a1b97a0f988bdf6a99df5534b9820297e81f48319a0ee33e8921b779d45ea95f",
+  "bytes": 16225108,
+  "scriptFallbackIdentical": true,
+  "embeddedTextures": 4,
+  "mapSizes": {
+    "basecolor": [
+      4096,
+      4096
+    ],
+    "metallic_roughness": [
+      2048,
+      2048
+    ],
+    "normal": [
+      2048,
+      2048
+    ],
+    "emissive": [
+      2048,
+      2048
+    ]
+  },
+  "gameUTF8BOM": true,
+  "gameCRLF": true,
+  "fullAimingClearancePoses": 555,
+  "uvOverlaps": 0
+}

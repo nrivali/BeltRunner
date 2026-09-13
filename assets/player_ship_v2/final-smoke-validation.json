@@ -1,0 +1,29 @@
+{
+  "gameSHA256": "c1135b341e8a92a53fc463e241722b01ec657f4cb13d4dc1bc1f29efc9411936",
+  "assetSHA256": "a1b97a0f988bdf6a99df5534b9820297e81f48319a0ee33e8921b779d45ea95f",
+  "results": [
+    {
+      "mode": "http",
+      "state": "ready",
+      "error": null,
+      "revision": 2,
+      "source": "glb",
+      "refits": 2400,
+      "maxTriangles": 23176,
+      "aimChecks": [
+        0.999991816652942,
+        0.9999996059136512,
+        0.9999974417180453
+      ],
+      "engines": 2,
+      "navLights": 2,
+      "scale": [
+        3,
+        3,
+        3
+      ],
+      "departureAndDocking": true,
+      "errors": []
+    }
+  ]
+}

@@ -552,8 +552,8 @@ table.manifest td.dimmed{color:var(--dim);}
 </script>
 <script src="assets/cargo_carrier_v3/hull-contact.js"></script>
 <script src="assets/cargo_carrier_v3/load-carrier.js"></script>
-<script src="assets/player_ship/assemble-player-ship.global.js"></script>
-<script src="assets/player_ship/load-player-ship.js"></script>
+<script src="assets/player_ship_v2/assemble-player-ship.global.js"></script>
+<script src="assets/player_ship_v2/load-player-ship.js"></script>
 <script src="assets/asteroid_surface/load-rock-texture.js"></script>
 <script src="assets/asteroids_v2/mesh-collision.js"></script>
 <script src="assets/asteroids_v2/collision-grid.js"></script>
@@ -714,7 +714,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.75';
+const GAME_VERSION = '0.9.76';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
