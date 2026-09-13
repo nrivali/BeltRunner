@@ -176,6 +176,7 @@ kbd{font-family:var(--mono);font-size:11px;color:var(--text);background:#151A30;
 .marker.field .lbl{color:var(--muted);}
 .blip{position:fixed;pointer-events:none;z-index:2;transform:translate(-50%,-50%);display:none;text-align:center;}
 .blip.on{display:block;}
+.blip.off i{width:0;height:0;border-style:solid;border-width:0 7px 13px 7px;border-color:transparent;box-shadow:none;}   /* off-screen waypoint: an arrow (rotated inline) instead of the diamond */
 /* radar-pulse marks: a bigger diamond and a larger, brighter label on a dark backing so ore pings read at a glance */
 .blip i{display:block;width:9px;height:9px;border:2px solid var(--cyan);transform:rotate(45deg);margin:0 auto;box-shadow:0 0 6px rgba(94,211,240,.5);}
 .blip span{display:inline-block;font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.03em;color:#dff7ff;white-space:nowrap;margin-top:5px;padding:2px 6px;background:rgba(6,10,24,.6);border:1px solid rgba(94,211,240,.25);text-shadow:0 1px 2px #000;}
@@ -713,7 +714,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.72';
+const GAME_VERSION = '0.9.73';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -4113,15 +4114,22 @@ function updateOverlays(){
   for (let i=0;i<droneMarkers.length;i++) droneMarkers[i].box.classList.remove('on');
   if (started && !docked) collectors.forEach((c,i)=>{ const mk=droneMarker(i); placeMarker(mk.box, mk.arr, mk.lbl, c.pos, `DRONE ${i+1} · ${DRONE_WORDS[c.phase]||c.phase}${c.load>0.5?` · ${Math.round(c.load)} u`:''} · ${fmt(c.pos.distanceTo(ship.pos))}`); });
   el.fieldState.textContent=inside?inside.name:'—';
-  // radar-marked rocks: on-screen blips for every marked rock in view (no edge marker; you find ore by looking)
+  // radar-marked rocks: a blip on every marked rock in view, and for the ones out of view a waypoint pinned to the screen
+  // edge with an arrow pointing the way, so a scan tells you where to turn as well as what is ahead
   const marked=[]; if (started && !docked) for (const a of asteroids){ if (!a.dead && a.markUntil>state.time){ a.dist=a.pos.distanceTo(ship.pos); marked.push(a); } }
   marked.sort((a,b)=>a.dist-b.dist);
   let bi=0;
   for (const a of marked){
     if (bi>=BLIPS) break; if (target && target.obj===a) continue;
-    const p=project(a.pos); if (!p.on) continue;
-    const b=el.blips[bi++]; b.classList.add('on'); b.style.left=p.x+'px'; b.style.top=p.y+'px'; b.style.opacity=Math.min(1,(a.markUntil-state.time)/6);
-    b.firstChild.style.borderColor=ORES[a.ore].color; b.lastChild.textContent=bi<=4?`${ORES[a.ore].name} ${fmt(a.dist)}`:'';
+    const p=project(a.pos); let x=p.x, y=p.y; const b=el.blips[bi++], i=b.firstChild, col=ORES[a.ore].color; b.classList.add('on');
+    if (!p.on){   // off screen: clamp to the edge along the line from the centre (mirrored when it is behind the camera) and point the arrow along it
+      let dx=x-W/2, dy=y-H/2; if (p.behind){ dx=-dx; dy=-dy; }
+      const ang=Math.atan2(dy,dx), m=46, rx=W/2-m, ry=H/2-m, sc=Math.min(Math.abs(rx/Math.cos(ang)), Math.abs(ry/Math.sin(ang)));
+      x=W/2+Math.cos(ang)*sc; y=H/2+Math.sin(ang)*sc;
+      b.classList.add('off'); i.style.transform=`rotate(${ang*180/Math.PI+90}deg)`; i.style.borderColor='transparent'; i.style.borderBottomColor=col;
+    } else { b.classList.remove('off'); i.style.transform=''; i.style.borderColor=col; }
+    b.style.left=x+'px'; b.style.top=y+'px'; b.style.opacity=Math.min(1,(a.markUntil-state.time)/6);
+    b.lastChild.textContent=bi<=4?`${ORES[a.ore].name} ${fmt(a.dist)} m`:'';
   }
   for (;bi<BLIPS;bi++) el.blips[bi].classList.remove('on');
 }
