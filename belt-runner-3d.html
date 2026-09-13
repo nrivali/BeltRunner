@@ -20,7 +20,15 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);fon
 .mono{font-family:var(--mono);font-variant-numeric:tabular-nums;}
 .eyebrow{font-family:var(--display);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
 .hud{position:fixed;pointer-events:none;z-index:2;}
-.hud-tl{bottom:18px;right:20px;width:250px;display:flex;flex-direction:column;gap:12px;}   /* the ship status pane lives bottom-right */
+.hud-tl{bottom:18px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;}   /* the ship status pane lives bottom-centre */
+.hud-tl .gauges{display:flex;align-items:flex-end;gap:18px;}
+.hud-tl .gauge{width:150px;}
+.hud-tl .gauge.speed{width:auto;min-width:96px;align-items:center;}
+.hud-tl .big{font-family:var(--mono);font-size:24px;font-weight:600;line-height:1;color:#dff7ff;text-shadow:0 0 8px rgba(94,211,240,.45);font-variant-numeric:tabular-nums;}
+.hud-tl .chips{justify-content:center;min-height:0;}
+/* credits and the jump-drive fund, inside the inventory */
+.inv-credits{display:flex;align-items:center;gap:22px;margin:12px 0 4px;}
+.inv-credits .goal{flex:1;}
 .credits{display:flex;align-items:baseline;gap:8px;font-family:var(--mono);font-size:34px;font-weight:600;line-height:1;color:var(--amber2);font-variant-numeric:tabular-nums;margin-top:-6px;}
 .credits .unit{font-size:14px;color:var(--amber);font-weight:500;}
 .goal{display:flex;flex-direction:column;gap:5px;}
@@ -80,7 +88,7 @@ kbd{font-family:var(--mono);font-size:11px;color:var(--text);background:#151A30;
 .pane::before,.pane::after{content:'';position:absolute;width:16px;height:16px;pointer-events:none;}
 .pane::before{left:0;top:0;border-left:2px solid var(--hud);border-top:2px solid var(--hud);}
 .pane::after{right:0;bottom:0;border-right:2px solid var(--hud);border-bottom:2px solid var(--hud);}
-.hud-tl{position:fixed;padding:14px 16px 14px;gap:10px;box-sizing:border-box;width:262px;}
+.hud-tl{position:fixed;padding:12px 18px 12px;box-sizing:border-box;}
 .credits{color:var(--amber2);text-shadow:0 0 10px rgba(242,163,58,.55);}
 .eyebrow,.gauge-head span:first-child{color:var(--hud-dim);}
 .gauge-head .mono,.goal-text b{color:#dff7ff;text-shadow:0 0 6px rgba(94,211,240,.35);}
@@ -338,26 +346,22 @@ table.manifest td.dimmed{color:var(--dim);}
 @media (max-width:760px){.panel-body{grid-template-columns:1fr;}.panel-body .col + .col{border-left:none;border-top:1px solid var(--line);}.hud-tr,.hud-bl{display:none;}}
 @media (prefers-reduced-motion:reduce){.toast{animation-duration:0.01s;animation-delay:3s;}}
 /* HUD size (Settings): each pane scales about the corner or edge it hangs from. Last in the sheet so it wins. */
-.hud-tl{transform:scale(var(--hudScale));transform-origin:100% 100%;} .hud-tr{transform:scale(var(--hudScale));transform-origin:100% 0;} .hud-tc{transform:translateX(-50%) scale(var(--hudScale));transform-origin:50% 0;} .hud-bl{transform:scale(var(--hudScale));transform-origin:0 100%;}
+.hud-tl{transform:translateX(-50%) scale(var(--hudScale));transform-origin:50% 100%;} .hud-tr{transform:scale(var(--hudScale));transform-origin:100% 0;} .hud-tc{transform:translateX(-50%) scale(var(--hudScale));transform-origin:50% 0;} .hud-bl{transform:scale(var(--hudScale));transform-origin:0 100%;}
 .hud-center{transform:translate(-50%,-50%) scale(var(--hudScale));}
 .prompt,.notice,.dockbox{transform:translateX(-50%) scale(var(--hudScale));transform-origin:50% 100%;} .toasts{transform:translateX(-50%) scale(var(--hudScale));transform-origin:50% 0;}
 </style>
 
 <canvas id="game"></canvas>
 
+<!-- ship status, bottom centre: hull, fuel, speed, thrust, cargo (credits and the jump-drive fund live in the inventory) -->
 <div class="hud hud-tl pane">
-  <div>
-    <div class="eyebrow">Credits</div>
-    <div class="credits"><span id="credits">0</span><span class="unit">cr</span></div>
+  <div class="gauges">
+    <div class="gauge"><div class="gauge-head"><span>Hull</span><span id="hullText" class="mono"></span></div><div class="bar"><i id="hullFill"></i></div></div>
+    <div class="gauge"><div class="gauge-head"><span>Fuel</span><span id="fuelText" class="mono"></span></div><div class="bar"><i id="fuelFill"></i></div></div>
+    <div class="gauge speed"><div class="gauge-head"><span>Speed</span></div><div class="big" id="spdBig">0</div></div>
+    <div class="gauge"><div class="gauge-head"><span>Thrust</span><span id="thrText" class="mono">0%</span></div><div class="bar thr"><i id="thrFill"></i></div></div>
+    <div class="gauge"><div class="gauge-head"><span>Cargo</span><span id="cargoText" class="mono"></span></div><div class="bar"><i id="cargoFill"></i></div></div>
   </div>
-  <div class="goal">
-    <div class="bar"><i id="goalFill"></i></div>
-    <div class="goal-text">Jump drive fund · <b id="goalPct">0%</b> of 250,000 cr</div>
-  </div>
-  <div class="gauge"><div class="gauge-head"><span>Thrust</span><span id="thrText" class="mono">0%</span></div><div class="bar thr"><i id="thrFill"></i></div></div>
-  <div class="gauge"><div class="gauge-head"><span>Fuel</span><span id="fuelText" class="mono"></span></div><div class="bar"><i id="fuelFill"></i></div></div>
-  <div class="gauge"><div class="gauge-head"><span>Hull</span><span id="hullText" class="mono"></span></div><div class="bar"><i id="hullFill"></i></div></div>
-  <div class="gauge"><div class="gauge-head"><span>Cargo</span><span id="cargoText" class="mono"></span></div><div class="bar"><i id="cargoFill"></i></div></div>
   <div class="chips" id="chips"></div>
 </div>
 
@@ -516,6 +520,10 @@ table.manifest td.dimmed{color:var(--dim);}
 <div id="inv" class="overlay" hidden>
   <div class="card inv-card">
     <div class="inv-head"><div><div class="eyebrow">Cargo hold</div><h2 style="margin:2px 0 0">Inventory</h2></div><div class="inv-cap"><span class="eyebrow">Hold</span><b id="invCap" class="mono">0 / 40</b></div></div>
+    <div class="inv-credits">
+      <div><div class="eyebrow">Credits</div><div class="credits"><span id="credits">0</span><span class="unit">cr</span></div></div>
+      <div class="goal"><div class="bar"><i id="goalFill"></i></div><div class="goal-text">Jump drive fund · <b id="goalPct">0%</b> of 250,000 cr</div></div>
+    </div>
     <div class="bar inv-bar"><i id="invFill"></i></div>
     <div id="invBody"></div>
     <div class="inv-foot"><span class="hint">Each slot holds one stack of up to 25 units of one ore. Drag stacks to rearrange or pour them together; drag one off the grid (or press ✕) to jettison it. Dock with the cargo ship to stow stacks in its storage; sell at the Hub.</span><button id="invClose" class="btn">Close &nbsp;<kbd>Tab</kbd></button></div>
@@ -684,7 +692,7 @@ const UPGRADES = {
   cargo:   {name:'Cargo hold',   levels:[{slots:4},{slots:6},{slots:8},{slots:11},{slots:14},{slots:18}], costs:[200,700,2400,7500,20000]},   // slots of 25 units each
   engine:  {name:'Engines',      levels:[{thrust:840,max:1280},{thrust:1120,max:1640},{thrust:1440,max:2040},{thrust:1840,max:2520},{thrust:2360,max:3120}], costs:[300,1100,3500,10000]},
   tank:    {name:'Fuel tank',    levels:[{cap:100},{cap:160},{cap:250},{cap:400},{cap:600}], costs:[150,600,2000,6000]},
-  scanner: {name:'Scanner',      levels:[{range:28000,mine:2500},{range:46000,mine:2500},{range:74000,mine:2500},{range:135000,mine:2500}], costs:[400,1800,6000]},   // laser reach is a flat 2500; the beam loses power with distance (laserPower)
+  scanner: {name:'Scanner',      levels:[{range:28000,mine:2500},{range:46000,mine:2500},{range:74000,mine:2500},{range:135000,mine:2500}], costs:[400,1800,6000]},   // laser reach is a flat 2500 at every scanner level
   refinery:{name:'Refinery',     levels:[{bonus:0},{bonus:.15},{bonus:.35},{bonus:.6}], costs:[2500,9000,25000]},
   hull:    {name:'Hull plating', levels:[{hp:100},{hp:160},{hp:250},{hp:400},{hp:600}], costs:[250,900,3000,9000]},
 };
@@ -719,7 +727,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.35';
+const GAME_VERSION = '0.9.36';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -1579,10 +1587,6 @@ const SHAPE_WORD={cluster:'cluster', shard:'shard', hollow:'hollow', slab:'slab'
 function rockName(a){ return `${a.cls==='colossal'?'Colossal ':a.cls==='giant'?'Giant ':a.cls==='large'?'Large ':''}${a.barren?'Barren':ORES[a.ore].name} ${SHAPE_WORD[a.shape]||'rock'}`; }
 // how hard the laser has to work: ore hardness above 1 slows the cut; the ship's and the depot's lasers both use this
 function rockDps(a, rate){ const hard=a.barren?1:ORES[a.ore].hardness; return rate*5/(1+(hard-1)*0.35); }
-// the beam loses power with distance: full strength up to LASER_FULL units from the surface, tapering in a straight line to
-// LASER_FAR_POWER at the reach limit, so a rock at the edge of range takes five times longer to cut than one up close
-const LASER_FULL=500, LASER_FAR_POWER=0.2;
-function laserPower(dist){ const reach=stat('scanner').mine; if (dist<=LASER_FULL) return 1; return Math.max(LASER_FAR_POWER, 1-(1-LASER_FAR_POWER)*(dist-LASER_FULL)/Math.max(1, reach-LASER_FULL)); }
 
 // ---- breaking rocks: ore drops and scrap debris
 // When a rock's health is gone it bursts: its ore comes out as a few glowing pickups that drift off slowly and are pulled
@@ -2638,7 +2642,7 @@ function resetSave(){ resetting=true; try{ localStorage.removeItem(SAVE_KEY); }c
 const $=id=>document.getElementById(id);
 const BLIPS=36; { const c=$('blips'); for (let i=0;i<BLIPS;i++){ const d=document.createElement('div'); d.className='blip'; d.innerHTML='<i></i><span></span>'; c.appendChild(d); } }
 const el={credits:$('credits'),goalFill:$('goalFill'),goalPct:$('goalPct'),fuelText:$('fuelText'),fuelFill:$('fuelFill'),cargoText:$('cargoText'),cargoFill:$('cargoFill'),chips:$('chips'),
-  spd:$('spd'),dist:$('dist'),inv:$('inv'),invBody:$('invBody'),invCap:$('invCap'),invFill:$('invFill'),invClose:$('invClose'),target:$('target'),tEyebrow:$('tEyebrow'),tName:$('tName'),tSize:$('tSize'),tOre:$('tOre'),tRange:$('tRange'),tWarn:$('tWarn'),tHp:$('tHp'),tHpT:$('tHpT'),prompt:$('prompt'),toasts:$('toasts'),
+  spd:$('spd'),spdBig:$('spdBig'),dist:$('dist'),inv:$('inv'),invBody:$('invBody'),invCap:$('invCap'),invFill:$('invFill'),invClose:$('invClose'),target:$('target'),tEyebrow:$('tEyebrow'),tName:$('tName'),tSize:$('tSize'),tOre:$('tOre'),tRange:$('tRange'),tWarn:$('tWarn'),tHp:$('tHp'),tHpT:$('tHpT'),prompt:$('prompt'),toasts:$('toasts'),
   center:$('center'),reticle:$('reticle'),rLbl:$('rLbl'),hoverLbl:$('hoverLbl'),marker:$('marker'),mArr:$('mArr'),mLbl:$('mLbl'),fullNotice:$('fullNotice'),
   station:$('station'),pCredits:$('pCredits'),manifest:$('manifest'),upgrades:$('upgrades'),closeSvc:$('closeSvc'),reset:$('reset'),
   dockbox:$('dockbox'),dbTitle:$('dbTitle'),dbCargo:$('dbCargo'),dbCargoT:$('dbCargoT'),dbFuel:$('dbFuel'),dbFuelT:$('dbFuelT'),dbHull:$('dbHull'),dbHullT:$('dbHullT'),
@@ -3837,12 +3841,12 @@ function update(dt){
   firing=trigger && canFly;   // the beam fires whenever the trigger is held, rock or no rock; it only cuts (mining) once it is on a target it can work
   if (mining && target && target.type==='pirate'){
     // the mining laser cuts raiders too
-    const p=target.obj; p.hp-=stat('laser').rate*6*laserPower(target.dist)*dt; laserOn=true;
+    const p=target.obj; p.hp-=stat('laser').rate*6*dt; laserOn=true;
     if (Math.random()<dt*20) spawnParticle(p.pos.clone().add(V3(rand(-8,8),rand(-8,8),rand(-8,8))), 0xff6a3a);
     if (p.hp<=0) killPirate(p, true);
   } else if (mining && target && !mineReason(target)){
     // the beam wears the whole rock down; when its bar is gone it breaks and the ore comes loose as pickups
-    const a=target.obj; damageRock(a, rockDps(a, stat('laser').rate)*laserPower(target.dist)*(1+2*heatFx.heat)*dt); laserOn=true;   // a hot beam cuts up to three times faster; distance saps the beam (laserPower)
+    const a=target.obj; damageRock(a, rockDps(a, stat('laser').rate)*(1+2*heatFx.heat)*dt); laserOn=true;   // a hot beam cuts up to three times faster
     if (a.hp<=0){ breakRock(a, false); target=null; laserOn=false; }
   }
   autosaveT+=dt; if (autosaveT>30){ autosaveT=0; save(); }
@@ -4030,7 +4034,7 @@ function updateOverlays(){
   if (target && started && !docked){
     const p=project(target.obj.pos);
     if (p.on){ el.reticle.classList.add('on'); el.reticle.classList.toggle('hot', laserOn); el.reticle.classList.toggle('lock', !!target.locked); el.reticle.style.left=p.x+'px'; el.reticle.style.top=p.y+'px';
-      el.rLbl.textContent=(target.locked?'LOCK · ':'')+(target.type==='pirate'?`Raider · ${Math.max(0,Math.ceil(target.obj.hp))} hp`:`${rockName(target.obj)} · ${Math.ceil(100*target.obj.hp/target.obj.hpMax)}%`)+(target.locked?` · ${Math.round(target.dist)} u · ${Math.round(laserPower(target.dist)*100)}% pwr`:''); }   // range only for the locked object; hover the mouse for anything else
+      el.rLbl.textContent=(target.locked?'LOCK · ':'')+(target.type==='pirate'?`Raider · ${Math.max(0,Math.ceil(target.obj.hp))} hp`:`${rockName(target.obj)} · ${Math.ceil(100*target.obj.hp/target.obj.hpMax)}%`)+(target.locked?` · ${fmt(target.dist)} m`:''); }   // range only for the locked object; hover the mouse for anything else
     else el.reticle.classList.remove('on');
   } else el.reticle.classList.remove('on');
   // depot marker (clamped to the screen edge with an arrow when off screen)
@@ -4077,6 +4081,7 @@ function updateHud(dt){
   el.center.classList.toggle('hot', laserOn);
   if (invOpen) renderInventory();
   el.spd.textContent=docked?(pilotingCarrier()?'HOLDING':'DOCKED'):parked?'PARKED':Math.round(ship.vel.length());
+  el.spdBig.textContent=docked?(pilotingCarrier()?'HOLD':'DOCK'):fmt(ship.vel.length());   // the bottom gauge: the same reading, in m/s
   { const big=pilotingCarrier(); el.dist.textContent=fmt(big?ship.pos.length():ship.pos.distanceTo(STATION.pos)); const lbl=$('distLbl').firstChild; const want=big?'COLONY ':'CARGO SHIP '; if (lbl.textContent!==want) lbl.textContent=want; }
   if (docked){
     el.dbCargo.style.width=(ct/cc*100)+'%'; el.dbCargoT.textContent=`${us} / ${ns} slots · storage ${storeUsed()} / ${STORE_SLOTS}`;
@@ -4085,7 +4090,7 @@ function updateHud(dt){
     if (!el.station.hidden && document.activeElement!==el.callsign){ panelT+=0.08; if (panelT>1){ panelT=0; renderPanel(); } }
   }
   { const reach=stat('scanner').mine; el.laserRange.textContent=lock?`${fmt(lockDist)} / ${fmt(reach)} m`:`${fmt(reach)} m`; }   // range in metres: the locked object's distance against the beam's reach, else just the reach
-  el.laserState.textContent=(laserOn?`CUTTING · ${Math.round(heatFx.heat*100)}% heat · ${Math.round(laserPower(target.dist)*100)}% power`:firing?'FIRING':heatFx.heat>0.01?`ready · ${Math.round(heatFx.heat*100)}% heat`:'ready'); el.laserState.style.color=laserOn?'var(--amber2)':''; el.radarState.textContent=pulseCd>0?`${pulseCd.toFixed(1)}s`:'READY';
+  el.laserState.textContent=(laserOn?`CUTTING · ${Math.round(heatFx.heat*100)}% heat`:firing?'FIRING':heatFx.heat>0.01?`ready · ${Math.round(heatFx.heat*100)}% heat`:'ready'); el.laserState.style.color=laserOn?'var(--amber2)':''; el.radarState.textContent=pulseCd>0?`${pulseCd.toFixed(1)}s`:'READY';
   const T=lock?{type:lockType, obj:lock, dist:lockDist, locked:true}:target;   // the panel (top centre) follows the lock when there is one, else the crosshair target
   if (T && !docked){
     const t=T.obj, reach=stat('scanner').mine; el.target.classList.add('on');
@@ -4144,7 +4149,7 @@ const TUT=[
   {id:'controls', title:'Your controls', ring:['.hud-bl .controls'],
     text:'Everything you can press is listed bottom-left. The mouse steers, <kbd>W</kbd> <kbd>S</kbd> work the throttle, <kbd>Shift</kbd> cruises at five times speed, <kbd>A</kbd> <kbd>D</kbd> roll and <kbd>X</kbd> cuts the throttle. Try a lap now if you like.'},
   {id:'hud', title:'Ship and status', ring:['.hud-tl','.hud-tr'],
-    text:'Bottom-right is your ship: credits, the jump-drive fund, thrust, fuel, hull and cargo. Top-right is the situation: zone, speed, distance to your cargo ship, the laser and its heat, the radar, and whatever you are targeting.'},
+    text:'Bottom-centre is your ship: hull, fuel, speed, thrust and cargo. Credits and the jump-drive fund are in the inventory (<kbd>I</kbd>). Top-right is the situation: zone, speed, distance to your cargo ship, the laser and its heat, the radar, and whatever you are targeting.'},
   {id:'radar', title:'Find ore', ring:['#radarState'], wait:'press R',
     text:'Press <kbd>R</kbd> to pulse the radar. Every rock it reaches is marked on screen and on the scanner for a while. Ore rocks show veins and crystals in their ore\'s colour; plain grey rocks are barren.', auto:()=>tutFlags.pulsed},
   {id:'mine', title:'Mine some copper', ring:['#target'], wait:'collect copper',
