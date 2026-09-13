@@ -349,7 +349,7 @@ table.manifest td.dimmed{color:var(--dim);}
 <div class="hud hud-tr">
   <div class="pane readouts">
     <div class="readout"><span>ZONE <b id="zoneName"></b></span><span>SPD <b id="spd">0</b></span><span id="distLbl">CARGO SHIP <b id="dist">0</b></span><span>FIELD <b id="fieldState">—</b></span></div>
-    <div class="readout"><span>LASER <b id="laserState">off</b></span><span>RANGE <b id="laserRange">5,000 m</b></span><span>RADAR <b id="radarState">READY</b></span><span>THREAT <b id="threatState">none</b></span></div>
+    <div class="readout"><span>LASER <b id="laserState">off</b></span><span>RANGE <b id="laserRange">1,250 m</b></span><span>RADAR <b id="radarState">READY</b></span><span>THREAT <b id="threatState">none</b></span></div>
   </div>
 </div>
 
@@ -397,7 +397,7 @@ table.manifest td.dimmed{color:var(--dim);}
 <div class="cine" id="cine"><div class="bar top"></div><div class="bar bot"></div><div class="cap" id="cineCap"></div></div>
 <div class="hud prompt" id="prompt"></div>
 <div class="hud toasts" id="toasts"></div>
-<div class="hud notice" id="fullNotice" hidden><b>CARGO HOLD FULL</b><span>Return to the cargo ship to stow it · press <kbd>E</kbd> within 9,000 to auto-dock</span></div>
+<div class="hud notice" id="fullNotice" hidden><b>CARGO HOLD FULL</b><span>Return to the cargo ship to stow it · press <kbd>E</kbd> within 2,250 to auto-dock</span></div>
 <div id="tut" class="tut" hidden>
   <div class="tut-head"><span class="eyebrow" id="tutStep">Tutorial</span><button class="link" id="tutSkip">Skip tutorial</button></div>
   <div class="tut-title" id="tutTitle"></div>
@@ -472,9 +472,9 @@ table.manifest td.dimmed{color:var(--dim);}
       <span><kbd>A</kbd> <kbd>D</kbd> <kbd>↑</kbd> <kbd>↓</kbd></span><span>Roll left and right · pitch up and down on keys.</span>
       <span><kbd>R</kbd></span><span>Radar pulse · marks every rock in scanner range</span>
       <span><kbd>LMB</kbd></span><span>Hold to fire the mining laser (Space or L too). While you hold it, the dish under the nose swings onto whatever the crosshair is on and cuts it until it breaks. It never picks targets by itself: keep the nose on the rock.</span>
-      <span><kbd>Q</kbd></span><span>Hover the mouse over a rock, a raider or the cargo ship (the label names it), then press Q to lock the crosshair on it. The ship steers itself to keep it in the crosshair (you keep the throttle and roll) until it breaks up or goes beyond 200,000 m. Hover a different target and press Q to switch directly to it. Press Q over the current target or empty space to release the lock. A locked object always shows its range, and its details sit top centre.</span>
+      <span><kbd>Q</kbd></span><span>Hover the mouse over a rock, a raider or the cargo ship (the label names it), then press Q to lock the crosshair on it. The ship steers itself to keep it in the crosshair (you keep the throttle and roll) until it breaks up or goes beyond 50,000 m. Hover a different target and press Q to switch directly to it. Press Q over the current target or empty space to release the lock. A locked object always shows its range, and its details sit top centre.</span>
       <span><kbd>F</kbd></span><span>Flashlight: a spot beam from the nose, on or off. While docked F opens the cargo ship services instead.</span>
-      <span>Docking</span><span>Fly slowly into either mouth of the cargo ship's through-hangar, or press <kbd>E</kbd> within 9,000 of it and approach control flies you in. Once docked, <kbd>E</kbd> deposits all your ore into the cargo ship's storage. You taxi to the pad at the far end and park nose-out, so you leave straight ahead. Fuel and repairs flow while you sit on the pad, and the services panel moves ore between your hold and the cargo ship's 50-slot storage. The cargo ship warps with you; ore only sells at the Hub.</span>
+      <span>Docking</span><span>Fly slowly into either mouth of the cargo ship's through-hangar, or press <kbd>E</kbd> within 2,250 of it and approach control flies you in. Once docked, <kbd>E</kbd> deposits all your ore into the cargo ship's storage. You taxi to the pad at the far end and park nose-out, so you leave straight ahead. Fuel and repairs flow while you sit on the pad, and the services panel moves ore between your hold and the cargo ship's 50-slot storage. The cargo ship warps with you; ore only sells at the Hub.</span>
       <span><kbd>N</kbd></span><span>Open the nav map. The cargo ship makes the jump between zones, so dock in its hangar first; you ride along and arrive in Dock 1.</span>
       <span><kbd>K</kbd></span><span>Sound on or off</span>
       <span><kbd>C</kbd></span><span>Hide or show the flight controls list in the bottom-left corner. Remembered between sessions.</span>
@@ -715,7 +715,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.94';
+const GAME_VERSION = '0.9.95';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -775,7 +775,7 @@ const rand = (a,b) => a + Math.random()*(b-a);
 const fmt = n => Math.floor(n).toLocaleString('en-US');
 // the in-game metre: METRE metres per world unit for everything the player reads (distances, ranges, speeds); the world,
 // the physics and every threshold stay in world units. fm() formats a world-unit length in metres.
-const METRE = 2, fm = n => fmt(n*METRE);
+const METRE = 0.5, fm = n => fmt(n*METRE);   // a metre is two world units: every readout shows half the unit figure
 const fmtTime = s => { s=Math.floor(s); const m=Math.floor(s/60), h=Math.floor(m/60); return h? `${h}h ${m%60}m` : `${m}m ${s%60}s`; };
 const shipForward = () => V3(0,0,1).applyQuaternion(ship.q);
 const shipUp = () => V3(0,1,0).applyQuaternion(ship.q);
@@ -3011,7 +3011,7 @@ function startBerthApproach(){ startHoldApproach(); }
 function startApproach(){
   if (!started || docked || cut || tow || disabled || warping || mapOpen) return;
   if (pilotingCarrier()){ startBerthApproach(); return; }
-  if (!nearStation()){ toast('Too far from the cargo ship for an approach · close to 9,000', true); return; }
+  if (!nearStation()){ toast('Too far from the cargo ship for an approach · close to 2,250', true); return; }
   const b=nearestBay().bay, L0=depotLocal(ship.pos), side=b.side;
   const app=b.openingL.clone().add(V3(0,0,side*1400)), mouth=b.openingL.clone(), inner=V3(b.cx,-110,0), pad=b.parkL.clone();   // straight through to the far pad
   const pts=[L0]; if (L0.distanceTo(app)>900) pts.push(app); pts.push(mouth, inner, pad);
@@ -4265,7 +4265,7 @@ const TUT=[
   {id:'mine', title:'Mine some copper', ring:['#target'], wait:'collect copper',
     text:'Find a copper rock (orange veins) and get within laser reach. Hold the mining laser (left mouse, <kbd>Space</kbd> or <kbd>L</kbd>): the dish under the nose swings onto the rock and cuts while you hold, until it breaks, and the health bar top-right shows how it is going. The ore comes loose as glowing pickups; fly near and they are pulled aboard.', auto:()=>state.cargo.copper>=1},
   {id:'return', title:'Back to the cargo ship', ring:['#marker'], wait:'dock with the cargo ship',
-    text:'Copper aboard. Follow the CARGO SHIP marker home: the carrier with the hangar is yours, and it warps with you. Within 9,000 press <kbd>E</kbd> and approach control flies you into the hangar, or fly straight in through either hangar mouth yourself.', auto:()=>docked},
+    text:'Copper aboard. Follow the CARGO SHIP marker home: the carrier with the hangar is yours, and it warps with you. Within 2,250 press <kbd>E</kbd> and approach control flies you into the hangar, or fly straight in through either hangar mouth yourself.', auto:()=>docked},
   {id:'hangar', title:'In the hangar', ring:['.hud-tl'],
     text:'While you sit on the pad your tank fills from the cargo ship\'s fuel supply and hull damage is patched from its store of repair parts, one part per hull point. Both run down, and both restock at the Hub for credits from the cargo ship panel, so keep an eye on their gauges. Nothing sells here: the cargo ship has 50 storage slots of its own, and the inventory moves stacks between your hold and that storage.'},
   {id:'services', title:'Storage and refits', ring:['#station .panel'],
