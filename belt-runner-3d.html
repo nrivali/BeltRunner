@@ -717,7 +717,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.118';
+const GAME_VERSION = '0.9.119';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -3604,7 +3604,11 @@ function renderInventory(){
   if (aboard){
     const scell=(s,i)=>{ if (!s) return `<div class="slot empty" data-s="${i}"><span>empty</span></div>`; const o=ORES[s.k]; return `<div class="slot" draggable="true" data-s="${i}" style="--c:${o.color}" title="Drag to your hold (or double-click) to take it back aboard"><img class="ico" src="${oreIcon(s.k)}" alt="" draggable="false"><b>${o.name}</b><span class="n">${Math.floor(s.u)} / ${STACK}</span></div>`; };
     const cells=[]; for (let i=0;i<STORE_SLOTS;i++) cells.push(scell(st[i],i));
-    html+=`<div class="xfer-head" style="margin-top:18px"><span class="eyebrow">${CARGO_SHIP} storage</span><span class="mono">${su} / ${STORE_SLOTS} slots</span><span><button class="link" data-takeall="1">▲ Take all</button></span></div><div class="inv-grid" id="invStore">${cells.join('')}</div><p class="hint" style="margin:8px 0 0">Drag stacks between the two grids, or double-click one, to move it. The storage rides with the cargo ship and sells at the Hub.</p>`;
+    let stotal=0; for (const k of ORE_KEYS) stotal+=(state.store[k]||0)*price(k);   // what the storage would fetch at the Hub right now, same pricing as the hold line above
+    html+=`<div class="xfer-head" style="margin-top:18px"><span class="eyebrow">${CARGO_SHIP} storage</span><span class="mono">${su} / ${STORE_SLOTS} slots</span><span><button class="link" data-takeall="1">▲ Take all</button></span></div><div class="inv-grid" id="invStore">${cells.join('')}</div>`
+      + (su ? `<div class="inv-total"><span>Storage value at Hub prices</span><b>${fmt(stotal)} cr</b></div>` : '')
+      + (su && us ? `<div class="inv-total" style="margin-top:2px"><span>Everything aboard</span><b>${fmt(total+stotal)} cr</b></div>` : '')
+      + `<p class="hint" style="margin:8px 0 0">Drag stacks between the two grids, or double-click one, to move it. The storage rides with the cargo ship and sells at the Hub.</p>`;
   } else html+=`<div class="inv-total" style="border-top:none;padding-top:4px"><span>${CARGO_SHIP} storage</span><b style="color:var(--text)">${su} / ${STORE_SLOTS} slots · dock to transfer</b></div>`;
   el.invBody.innerHTML=html;
   el.invBody.querySelectorAll('[data-jet]').forEach(b=>b.addEventListener('click', e=>{ e.stopPropagation(); jettisonSlot(+b.dataset.jet); }));
