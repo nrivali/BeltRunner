@@ -710,7 +710,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.106';
+const GAME_VERSION = '0.9.107';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -3030,11 +3030,11 @@ function startDeparture(){
   leaveHangar();
   const pts=[b.parkL.clone(), V3(0,-112,out*620), V3(0,-40,out*1000), V3(0,60,out*2500)];
   const curve=new THREE.CatmullRomCurve3(pts, false, 'centripetal');
-  cut={mode:'depart', bay:b, curve, t:0, dur:5.2, len:curve.getLength(),
-    cameraStart:cameraShots.capture(camera.position,camLook,camera.up,ship.pos,STATION.q)};
-  document.body.classList.add('in-cut');
-  el.cineCap.textContent=`Departure · ${b.name} · ${CARGO_SHIP} · Space skips`; el.cine.classList.add('on'); el.center.classList.remove('on');
-  SFX.chime(); toast('Departing · approach control has the ship');
+  // no cutscene on the way out: approach control still flies the taxi, but you watch it from your own chase camera with the
+  // HUD up (the camera block skips the cinematic shot for a departure), and the controls come back the moment it lets go
+  cut={mode:'depart', bay:b, curve, t:0, dur:5.2, len:curve.getLength()};
+  el.center.classList.remove('on');
+  SFX.chime(); toast('Departing · approach control has the ship · Space skips');
 }
 function cutUpdate(dt){
   const C=cut; C.t+=dt; const k=Math.min(1, C.t/C.dur);
@@ -4118,7 +4118,7 @@ function updateVisuals(dt, t){
       camPos.copy(ship.pos).add(V3(Math.cos(a)*11500, 2600+1400*Math.sin(a*0.7), Math.sin(a)*11500)); camLook.copy(ship.pos);
     }
     cu=V3(0,1,0); cf=camLook.clone().sub(camPos).normalize(); camQ.copy(ship.q);
-  } else if (cut){
+  } else if (cut && cut.mode!=='depart'){   // a hangar departure is watched from the ordinary flight camera below
     // Ride beside the ship through the open passage. Settle onto the pad view or ease into the flight camera.
     const b=cut.bay, f=shipForward(), u=shipUp();
     const chasePosition=f.clone().multiplyScalar(-88*SHIP_SCALE).addScaledVector(u,30*SHIP_SCALE).applyQuaternion(STATION.qInv);
@@ -4326,11 +4326,11 @@ const TUT=[
 const tutEl={box:$('tut'), step:$('tutStep'), title:$('tutTitle'), text:$('tutText'), next:$('tutNext'), wait:$('tutWait'), skip:$('tutSkip'), rings:[$('tutRing'),$('tutRing2')]};
 let tutShown=-1;
 function tutLaunch(){
-  // start on the pad in Bay 1 and let the departure cutscene carry the ship out
+  // start on the pad in Bay 1 and let approach control taxi the ship out (watched from the flight camera, no cutscene)
   placeDepot(); const b=planetBay();
   docked=true; dockBay=b; ship.pos.copy(b.park); ship.q.copy(b.q); ship.vel.copy(STATION.vel); camQ.copy(ship.q);
   startDeparture();
-  el.cineCap.textContent=`Welcome aboard, ${state.custom.callsign} · launching from your ${CARGO_SHIP.toLowerCase()}`;
+  toast(`Welcome aboard, ${state.custom.callsign} · launching from your ${CARGO_SHIP.toLowerCase()}`);
 }
 function tutAdvance(){
   if (state.tut<0) return;
