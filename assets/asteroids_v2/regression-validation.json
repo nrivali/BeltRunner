@@ -1,0 +1,454 @@
+{
+  "version": "0.9.19",
+  "gameSHA256": "b1fc6248d085958ea7f4224f14a0f98799eba15c204b92afa670d9947261ed3d",
+  "carrier": [
+    {
+      "mode": "http",
+      "state": "ready",
+      "error": null,
+      "revision": 2,
+      "source": "glb",
+      "triangles": 35316,
+      "meshes": 4,
+      "dishMeshes": 3,
+      "totalTriangles": 37496,
+      "model": true,
+      "engines": [
+        [
+          -3580,
+          0,
+          -540
+        ],
+        [
+          -3580,
+          0,
+          0
+        ],
+        [
+          -3580,
+          0,
+          540
+        ]
+      ],
+      "pivot": [
+        -40,
+        995,
+        0
+      ],
+      "pads": [
+        [
+          0,
+          -100,
+          525
+        ],
+        [
+          0,
+          -100,
+          -525
+        ]
+      ],
+      "floor": -150,
+      "fields": [
+        true,
+        true
+      ],
+      "lights": 2,
+      "anchors": 13,
+      "normalMaps": true,
+      "drop": [
+        250,
+        -130,
+        0
+      ],
+      "playerReady": true,
+      "rig": {
+        "aim": [
+          {
+            "error": 2.274846706538671e-13,
+            "dot": 1
+          },
+          {
+            "error": 0,
+            "dot": 1
+          },
+          {
+            "error": 1.4210854715202004e-14,
+            "dot": 0.9999999999999998
+          }
+        ],
+        "beamError": 2.929642751054232e-13,
+        "rimEmitters": 6,
+        "clearance": 18
+      },
+      "docking": [
+        [
+          -8.322554569317801e-15,
+          -100,
+          -524.9999999999754
+        ],
+        [
+          6.31855746652428e-14,
+          -100,
+          524.9999999999729
+        ]
+      ],
+      "warp": {
+        "zone": "cinder",
+        "sameModel": true,
+        "docked": true,
+        "focusError": 5.820766091346741e-11,
+        "engines": 3
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "file",
+      "state": "ready",
+      "error": null,
+      "revision": 2,
+      "source": "script",
+      "triangles": 35316,
+      "meshes": 4,
+      "dishMeshes": 3,
+      "totalTriangles": 37496,
+      "model": true,
+      "engines": [
+        [
+          -3580,
+          0,
+          -540
+        ],
+        [
+          -3580,
+          0,
+          0
+        ],
+        [
+          -3580,
+          0,
+          540
+        ]
+      ],
+      "pivot": [
+        -40,
+        995,
+        0
+      ],
+      "pads": [
+        [
+          0,
+          -100,
+          525
+        ],
+        [
+          0,
+          -100,
+          -525
+        ]
+      ],
+      "floor": -150,
+      "fields": [
+        true,
+        true
+      ],
+      "lights": 2,
+      "anchors": 13,
+      "normalMaps": true,
+      "drop": [
+        250,
+        -130,
+        0
+      ],
+      "playerReady": true,
+      "rig": {
+        "aim": [
+          {
+            "error": 2.274846706538671e-13,
+            "dot": 1
+          },
+          {
+            "error": 0,
+            "dot": 1
+          },
+          {
+            "error": 1.4210854715202004e-14,
+            "dot": 0.9999999999999998
+          }
+        ],
+        "beamError": 5.288653160826128e-13,
+        "rimEmitters": 6,
+        "clearance": 18
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "script-fallback",
+      "state": "ready",
+      "error": null,
+      "revision": 2,
+      "source": "script",
+      "triangles": 35316,
+      "meshes": 4,
+      "dishMeshes": 3,
+      "totalTriangles": 37496,
+      "model": true,
+      "engines": [
+        [
+          -3580,
+          0,
+          -540
+        ],
+        [
+          -3580,
+          0,
+          0
+        ],
+        [
+          -3580,
+          0,
+          540
+        ]
+      ],
+      "pivot": [
+        -40,
+        995,
+        0
+      ],
+      "pads": [
+        [
+          0,
+          -100,
+          525
+        ],
+        [
+          0,
+          -100,
+          -525
+        ]
+      ],
+      "floor": -150,
+      "fields": [
+        true,
+        true
+      ],
+      "lights": 2,
+      "anchors": 13,
+      "normalMaps": true,
+      "drop": [
+        250,
+        -130,
+        0
+      ],
+      "playerReady": true,
+      "rig": {
+        "aim": [
+          {
+            "error": 2.274846706538671e-13,
+            "dot": 1
+          },
+          {
+            "error": 0,
+            "dot": 1
+          },
+          {
+            "error": 1.4210854715202004e-14,
+            "dot": 0.9999999999999998
+          }
+        ],
+        "beamError": 5.820814836872308e-11,
+        "rimEmitters": 6,
+        "clearance": 18
+      },
+      "pageErrors": []
+    },
+    {
+      "mode": "missing",
+      "state": "fallback",
+      "error": "Carrier data unavailable (Carrier HTTP 404)",
+      "model": false,
+      "engines": [
+        [
+          -3800,
+          0,
+          -540
+        ],
+        [
+          -3800,
+          0,
+          0
+        ],
+        [
+          -3800,
+          0,
+          540
+        ]
+      ],
+      "pivot": [
+        -500,
+        1360,
+        0
+      ],
+      "pads": [
+        [
+          0,
+          -138,
+          -525
+        ],
+        [
+          0,
+          -138,
+          525
+        ]
+      ],
+      "floor": -176,
+      "fields": [
+        true,
+        true
+      ],
+      "lights": 2,
+      "anchors": null,
+      "drop": [
+        250,
+        -130,
+        0
+      ],
+      "playerReady": true,
+      "pageErrors": []
+    },
+    {
+      "mode": "invalid",
+      "state": "fallback",
+      "error": "Unexpected token 'i', \"invalid model\" is not valid JSON",
+      "model": false,
+      "engines": [
+        [
+          -3800,
+          0,
+          -540
+        ],
+        [
+          -3800,
+          0,
+          0
+        ],
+        [
+          -3800,
+          0,
+          540
+        ]
+      ],
+      "pivot": [
+        -500,
+        1360,
+        0
+      ],
+      "pads": [
+        [
+          0,
+          -138,
+          -525
+        ],
+        [
+          0,
+          -138,
+          525
+        ]
+      ],
+      "floor": -176,
+      "fields": [
+        true,
+        true
+      ],
+      "lights": 2,
+      "anchors": null,
+      "drop": [
+        250,
+        -130,
+        0
+      ],
+      "playerReady": true,
+      "pageErrors": []
+    }
+  ],
+  "player": [
+    {
+      "mode": "http",
+      "state": "ready",
+      "error": null,
+      "refits": 2400,
+      "maxTriangles": 6570,
+      "aimChecks": [
+        0.9999946045595518,
+        0.9999988120319678,
+        0.9999975464553692
+      ],
+      "engines": 2,
+      "navLights": 2,
+      "scale": [
+        3,
+        3,
+        3
+      ],
+      "departureAndDocking": true,
+      "errors": []
+    },
+    {
+      "mode": "file",
+      "state": "ready",
+      "error": null,
+      "refits": 2400,
+      "maxTriangles": 6570,
+      "aimChecks": [
+        0.9999946045595518,
+        0.9999988120319678,
+        0.9999975464553692
+      ],
+      "engines": 2,
+      "navLights": 2,
+      "scale": [
+        3,
+        3,
+        3
+      ],
+      "departureAndDocking": true,
+      "errors": []
+    },
+    {
+      "mode": "missing",
+      "state": "fallback",
+      "error": "Player ship data unavailable (Player ship HTTP 404)",
+      "errors": []
+    }
+  ],
+  "rockFallback": [
+    {
+      "mode": "http",
+      "state": "ready",
+      "error": null,
+      "width": 1254,
+      "height": 1254,
+      "sharedTextures": 1,
+      "rockTypes": 4,
+      "heatShaders": 4,
+      "cloneSupport": true,
+      "errors": []
+    },
+    {
+      "mode": "file",
+      "state": "ready",
+      "error": null,
+      "width": 1254,
+      "height": 1254,
+      "sharedTextures": 1,
+      "rockTypes": 4,
+      "heatShaders": 4,
+      "cloneSupport": true,
+      "errors": []
+    },
+    {
+      "mode": "missing",
+      "state": "fallback",
+      "errors": []
+    }
+  ]
+}

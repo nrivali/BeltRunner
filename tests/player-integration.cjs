@@ -11,7 +11,10 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
    const page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[];
    page.on('pageerror',e=>{errors.push(e.message);console.error(mode,e.stack);});page.on('console',m=>{if(m.type()==='error'&&/WebGLProgram|VALIDATE_STATUS|Shader Error/.test(m.text()))errors.push(m.text());});
    await page.addInitScript(()=>{window.requestAnimationFrame=()=>0;});await page.route(/^https:\/\//,r=>r.abort());
-   if(mode==='missing')await page.route('**/player_ship.glb',r=>r.fulfill({status:404,body:'missing'}));
+   if(mode==='missing'){
+    await page.route('**/player_ship.glb',r=>r.fulfill({status:404,body:'missing'}));
+    await page.route('**/player_ship.data.js',r=>r.fulfill({status:404,body:'missing'}));
+   }
    const url=mode==='file'?pathToFileURL(path.join(root,'belt-runner-3d.html')).href:`http://127.0.0.1:${server.address().port}/belt-runner-3d.html`;
    await page.goto(url+'?debug',{waitUntil:'load'});await page.waitForFunction(()=>window.BeltRunner?.playerAsset.state && BeltRunner.playerAsset.state!=='loading',null,{polling:100});
    const result=await page.evaluate(()=>({state:BeltRunner.playerAsset.state,error:BeltRunner.playerAsset.error}));assert.equal(result.state,mode==='missing'?'fallback':'ready');

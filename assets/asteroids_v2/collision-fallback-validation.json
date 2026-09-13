@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "mode": "collision-missing",
+      "status": {
+        "state": "fallback",
+        "error": "Asteroid collision helper unavailable",
+        "drawCalls": 0,
+        "triangles": 0,
+        "visible": 0,
+        "lodCounts": [
+          0,
+          0,
+          0
+        ]
+      },
+      "count": 10909,
+      "attached": 0,
+      "scenery": 0,
+      "version": "v0.9.19",
+      "errors": []
+    }
+  ]
+}

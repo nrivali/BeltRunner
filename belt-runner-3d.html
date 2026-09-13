@@ -564,6 +564,8 @@ table.manifest td.dimmed{color:var(--dim);}
 <script src="assets/player_ship/assemble-player-ship.global.js"></script>
 <script src="assets/player_ship/load-player-ship.js"></script>
 <script src="assets/asteroid_surface/load-rock-texture.js"></script>
+<script src="assets/asteroids_v2/mesh-collision.js"></script>
+<script src="assets/asteroids_v2/load-asteroids.js"></script>
 <script>
 (() => {
 'use strict';
@@ -702,7 +704,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.18';
+const GAME_VERSION = '0.9.19';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D Â· v' + GAME_VERSION;
 
@@ -1378,6 +1380,7 @@ void main(){
 function removePlanet(p){ scene.remove(p.group); p.group.traverse(o=>{ if(o.geometry) o.geometry.dispose(); }); }
 
 // asteroids
+const rockAssets=window.BeltRunnerAsteroids;
 // rock surfaces: the baked grit texture and its bump map over the zone's rock colour; small rocks stay faceted, big ones smooth
 // small rocks (the vast majority) use a plain Lambert material: no bump, no image-based lighting, a fraction of the per-pixel cost
 const rockMat=new THREE.MeshLambertMaterial({color:0x4a5068, flatShading:true, map:rockTex.map});
@@ -1458,6 +1461,7 @@ function heatable(mat){
 // damaged rocks: each one swaps to its own copy of its material and the copy's body-heat uniform tracks the lost health
 const hotRocks=new Set();
 function setRockHeat(a, bh){
+  if (a.asset){ rockAssets.setHeat(a,bh); return; }
   if (!a.hotMat){ a.hotMat=a.mat.clone(); a.hotMat.userData.uBody={value:0}; heatable(a.hotMat); a.group.traverse(o=>{ if (o.isMesh && o.material===a.mat) o.material=a.hotMat; }); }
   a.hotMat.userData.uBody.value=bh;
 }
@@ -1555,10 +1559,10 @@ function makeAsteroid(belt, avoid, field, opts){
   const barren=opts?!!opts.barren:(!!belt.barren && Math.random()<belt.barren);   // a share of this belt's rocks carry no ore at all
   const group=new THREE.Group(); group.position.copy(pos);
   const S=ROCK_SHAPES[shape], mat=barren?barrenMat:rockMaterialFor(ore, S), seed=Math.random()*100, cave={};
-  const bodyGeo=rockGeometry(baseR, shape, seed, detailBoost, cave);
-  const body=new THREE.Mesh(bodyGeo, mat); body.userData.own=true; group.add(body);
+  const bodyGeo=rockAssets?.ready ? null : rockGeometry(baseR, shape, seed, detailBoost, cave);
+  if (bodyGeo){ const body=new THREE.Mesh(bodyGeo, mat); body.userData.own=true; group.add(body); }
   const lumps=[];
-  if (S.lumps){
+  if (S.lumps && bodyGeo){
     const n=2+Math.floor(Math.random()*3);
     for (let i=0;i<n;i++){ const lr=baseR*rand(.35,.6); const lg=rockGeometry(lr, 'lumpy', seed+i+1, 0); const lump=new THREE.Mesh(lg, mat); lump.userData.own=true; lump.position.copy(surfacePoint(bodyGeo)).multiplyScalar(0.85); lump.rotation.set(Math.random()*3,Math.random()*3,Math.random()*3); group.add(lump); lumps.push({local:lump.position.clone(), r:lr*.92}); }
   }
@@ -1570,6 +1574,7 @@ function makeAsteroid(belt, avoid, field, opts){
   const hpMax=Math.round(40+2.2*Math.pow(baseR,1.15));
   const a={id:rockId++, ang, orbit, y, pos:group.position, ore, baseR, r:baseR, amount:barren?0:amount, max:barren?0:amount, hp:hpMax, hpMax, group, bodyGeo, axis:V3(rand(-1,1),rand(-1,1),rand(-1,1)).normalize(), spin, belt, dead:false, respawnAt:0, cls, shape, field:field||null, off, seed, craters:cave.craters, lumps,
     cave:S.cave?cave:null, barren, mat};
+  rockAssets?.register(a);
   return a;
 }
 const SHAPE_WORD={cluster:'cluster', shard:'shard', hollow:'hollow', slab:'slab', spindle:'spindle', bean:'bean', boulder:'boulder', jagged:'jag', wedge:'wedge', pancake:'plate'};
@@ -1597,7 +1602,7 @@ function spawnDebris(a, vel){
   const n=a.cls==='colossal'?16:a.cls==='giant'?11:a.cls==='large'?8:5;
   const hot=a.mat.clone(); hot.userData.uBody={value:1}; heatable(hot); hot.userData.users=n;
   for (let i=0;i<n;i++){
-    const r=a.r*rand(.1,.28), geo=rockGeometry(r, 'lumpy', a.seed+7+i, 0), m=new THREE.Mesh(geo, hot);
+    const r=a.r*rand(.1,.28), geo=rockAssets?.scrapGeometry(r,a.seed+7+i)||rockGeometry(r, 'lumpy', a.seed+7+i, 0), m=new THREE.Mesh(geo, hot);
     const dir=V3(rand(-1,1),rand(-1,1),rand(-1,1)).normalize();
     m.position.copy(a.pos).addScaledVector(dir, a.r*rand(.2,.7)); m.rotation.set(Math.random()*6,Math.random()*6,Math.random()*6);
     scene.add(m);
@@ -1710,10 +1715,11 @@ function addBurn(rock, worldPos, size){
   if (!rock.group) return;
   rock.group.updateMatrixWorld(true);
   // lay the scorch on the actual mesh face under the beam: cast from just outside the hit point back in toward the rock
-  const body=rock.group.children[0], radial=worldPos.clone().sub(rock.pos).normalize(); if (!isFinite(radial.x)) return;
-  burnRay.set(worldPos.clone().addScaledVector(radial, rock.r*.6), radial.clone().negate()); burnRay.far=rock.r*1.6;
-  const hit=burnRay.intersectObject(body, false)[0]; if (!hit) return;
-  const nW=hit.face.normal.clone().transformDirection(body.matrixWorld).normalize();
+  let hit,nW;
+  if (rock.asset){ hit=rockAssets.surfaceSample(rock,worldPos); nW=hit.normal; }
+  else { const body=rock.group.children[0], radial=worldPos.clone().sub(rock.pos).normalize(); if (!body || !isFinite(radial.x)) return;
+    burnRay.set(worldPos.clone().addScaledVector(radial,rock.r*.6),radial.clone().negate());burnRay.far=rock.r*1.6;
+    hit=burnRay.intersectObject(body,false)[0];if(!hit)return;nW=hit.face.normal.clone().transformDirection(body.matrixWorld).normalize(); }
   const p=rock.group.worldToLocal(hit.point.clone()), n=nW.clone().applyQuaternion(rock.group.quaternion.clone().invert()).normalize();
   const burns=rock.burns||(rock.burns=[]);
   const last=burns[burns.length-1]; if (last && last.p.distanceTo(p)<size*.4 && Math.abs(last.s-size)<size*.3) return;   // no need to restamp the same spot
@@ -1733,11 +1739,11 @@ function rebuildBurns(rock){
   if (!rock.burnMesh){ rock.burnMesh=new THREE.Mesh(g, burnMat); rock.burnMesh.userData.own=true; rock.burnMesh.frustumCulled=false; rock.burnMesh.renderOrder=1; rock.group.add(rock.burnMesh); }
   else { rock.burnMesh.geometry.dispose(); rock.burnMesh.geometry=g; }
 }
-function removeAsteroid(a){ scene.remove(a.group); a.group.traverse(o=>{ if (o.userData.own && o.geometry) o.geometry.dispose(); }); if (a.hotMat){ a.hotMat.dispose(); a.hotMat=null; } hotRocks.delete(a); }
+function removeAsteroid(a){ rockAssets?.remove(a); scene.remove(a.group); a.group.traverse(o=>{ if (o.userData.own && o.geometry) o.geometry.dispose(); }); if (a.hotMat){ a.hotMat.dispose(); a.hotMat=null; } hotRocks.delete(a); }
 // Barren scenery rocks: big, resource-free boulders scattered across the whole zone so the space between belts is not empty.
 let scenery=[];
 function buildScenery(z){
-  for (const s of scenery){ scene.remove(s.group); s.group.traverse(o=>{ if (o.geometry) o.geometry.dispose(); }); }
+  for (const s of scenery){ rockAssets?.remove(s); scene.remove(s.group); s.group.traverse(o=>{ if (o.geometry) o.geometry.dispose(); }); }
   scenery=[];
   barrenMat.color.setHex(z.rock).multiplyScalar(0.8);
   const n=z.hub ? 140 : Math.round(600*Math.max(.7, z.density));
@@ -1748,11 +1754,12 @@ function buildScenery(z){
     while (tries<20 && (nearPlanet(pos) || pos.distanceTo(STATION.pos)<12000 || inDepotLane(pos, 800)));   // keep the depot's approaches and its orbit lane clear
     const r=120+680*Math.pow(Math.random(),1.6);
     const shape=['lumpy','chunk','potato','cratered','pancake'][Math.floor(Math.random()*5)];
-    const seed=Math.random()*100, info={}, geo=rockGeometry(r, shape, seed, 1, info);
-    const group=new THREE.Group(); group.position.copy(pos); group.add(new THREE.Mesh(geo, barrenMat));
+    const seed=Math.random()*100, info={}, geo=rockAssets?.ready ? null : rockGeometry(r, shape, seed, 1, info);
+    const group=new THREE.Group(); group.position.copy(pos); if (geo) group.add(new THREE.Mesh(geo, barrenMat));
     group.rotation.set(Math.random()*6,Math.random()*6,Math.random()*6);   // joins the scene only when near
     const orbit=Math.hypot(pos.x,pos.z);
     scenery.push({pos:group.position, r, baseR:r, group, shape, seed, craters:info.craters, ang:Math.atan2(pos.z,pos.x), orbit, y:pos.y, axis:V3(rand(-1,1),rand(-1,1),rand(-1,1)).normalize(), spin:rand(.01,.05)});
+    rockAssets?.register(scenery[scenery.length-1],true);
   }
 }
 // Belts seen from afar: rocks are only drawn as meshes when close, so every rock also gets a fixed-size point, and the dense
@@ -1793,7 +1800,7 @@ void main(){
 function updateBeltCloud(){
   if (!beltCloud) return;
   const p=beltCloud.geometry.attributes.position;
-  for (let i=0;i<asteroids.length && i<p.count;i++){ const a=asteroids[i]; if (a.dead) p.setXYZ(i, 1e8, 1e8, 1e8); else p.setXYZ(i, a.pos.x, a.pos.y, a.pos.z); }
+  for (let i=0;i<asteroids.length && i<p.count;i++){ const a=asteroids[i]; if (a.dead || a.asset?.drawn) p.setXYZ(i, 1e8, 1e8, 1e8); else p.setXYZ(i, a.pos.x, a.pos.y, a.pos.z); }
   p.needsUpdate=true;
 }
 // The Hub's colony stands where every other zone has its planet: at the origin. Two boxy habitat rings joined by spokes
@@ -2796,7 +2803,7 @@ function updateDepot(dt){
     }
     if (dl.rock){
       // the cannon slews onto the rock first; it only fires once both axes are within a degree or so, and stops if the aim drifts
-      const a=dl.rock, want=turretAnglesTo(a.pos);
+      const a=dl.rock, aim=a.asset?rockAssets.aimPoint(a,turretMuzzleWorld(dl.yaw,dl.pitch)):a.pos, want=turretAnglesTo(aim);
       if (!inArc(want, a.pos)){ dl.rock=null; dl.firing=false; }
       else {
         dl.yaw=slewYaw(dl.yaw, want.yaw); dl.pitch=slew(dl.pitch, want.pitch);
@@ -2804,7 +2811,7 @@ function updateDepot(dt){
         if (dl.firing ? err>0.06 : err>0.02) dl.firing=false; else dl.firing=true;
         if (dl.firing){
           // the beam lands on the rock's near side; the rock breaks when its bar is gone and its ore sells on the spot
-          const muzzle=turretMuzzleWorld(dl.yaw, dl.pitch); dl.hit=a.pos.clone().add(muzzle.sub(a.pos).normalize().multiplyScalar(a.r*0.85));
+          const muzzle=turretMuzzleWorld(dl.yaw, dl.pitch); dl.hit=a.asset?rockAssets.aimPoint(a,muzzle,aim):a.pos.clone().add(muzzle.sub(a.pos).normalize().multiplyScalar(a.r*0.85));
           damageRock(a, rockDps(a, L.rate)*(1+2*depotHeatFx.heat)*dt);   // a hot beam cuts up to three times faster
           if (a.hp<=0) breakRock(a, true);
         }
@@ -2819,6 +2826,7 @@ function updateDepot(dt){
 const nearRocks=[], rockCells=new Map(), ROCK_CELL=1200, BIG_ROCK=500;
 const tmpQ2=new THREE.Quaternion(), tmpN=V3(), tmpU=V3();
 function radiusAlong(a, nWorld){   // distance from the rock's centre to its surface along a world direction
+  if (a.asset) return rockAssets.radiusAlong(a,nWorld);
   const st=ROCK_SHAPES[a.shape].stretch;
   tmpU.copy(nWorld).applyQuaternion(tmpQ2.copy(a.group.quaternion).invert());
   tmpU.set(tmpU.x/st[0], tmpU.y/st[1], tmpU.z/st[2]); const k=tmpU.length(); tmpU.divideScalar(k);
@@ -3538,11 +3546,14 @@ function rockSurface(a, n){   // radial multiplier of the surface in unit direct
   return s;
 }
 function rockInside(a, wp){   // is this world point inside the rock's true surface? (no margin)
+  if (a.asset) return rockAssets.inside(a,wp);
   const S=ROCK_SHAPES[a.shape], st=S.stretch; a.group.updateMatrixWorld(true);
   const lp=a.group.worldToLocal(wp.clone()), u=V3(lp.x/st[0], lp.y/st[1], lp.z/st[2]), d=u.length(); if (d<1e-3) return true;
   return d<rockSurface(a, u.divideScalar(d))*a.baseR;
 }
 function noisyCollide(a, wp){   // wp: a world point on the ship's path this frame; true (and the ship resolved) if it is inside the rock
+  if (a.asset){ const hit=rockAssets.contact(a,wp,SHIP_R); if(!hit)return false; const vn=ship.vel.dot(hit.normal);ship.pos.copy(hit.position);
+    if(vn<0){impact(-vn,ship.pos.clone().addScaledVector(hit.normal,-SHIP_R));ship.vel.addScaledVector(hit.normal,-vn*1.4);if(a.belt)bumpRock(a,hit.normal.clone().negate(),-vn);}return true; }
   const S=ROCK_SHAPES[a.shape], st=S.stretch;
   a.group.updateMatrixWorld(true);
   const lp=a.group.worldToLocal(wp.clone());
@@ -3556,6 +3567,7 @@ function noisyCollide(a, wp){   // wp: a world point on the ship's path this fra
   return true;
 }
 function intricateCollide(a){
+  if (a.asset){ noisyCollide(a,ship.pos); return; }
   a.group.updateMatrixWorld(true);
   const lp=a.group.worldToLocal(ship.pos.clone());
   let newLocal=null;
@@ -3591,6 +3603,11 @@ function findTarget(){
   // rocks: the whole body is the target; the beam lands wherever the ray meets the surface
   const reachSq=(reach+1700)*(reach+1700);
   for (const a of asteroids){
+    if (a.asset){
+      if(a.dead || a.pos.distanceToSquared(origin)>Math.pow(reach+a.boundR,2))continue;
+      const hit=rockAssets.rayHit(a,origin,dir,reach);
+      if(hit && hit.distance<bd){bd=hit.distance;best={type:'rock',obj:a,dist:hit.distance,hitT:hit.distance,hitPoint:hit.point};}continue;
+    }
     if (a.dead || a.pos.distanceToSquared(origin)>reachSq) continue;   // cheap cull first: only rocks within reach get the vector maths
     const to=a.pos.clone().sub(origin), t=to.dot(dir); if (t<0 || t-a.r>reach) continue;
     const d2=to.lengthSq()-t*t; if (d2>(a.r+40)*(a.r+40)) continue;
@@ -3750,10 +3767,10 @@ function update(dt){
     if (big) colonyCollide(); else depotCollide();
     const solids=planets.map(p=>({pos:p.pos,r:p.r*1.006}));   // just above the highest terrain
     // rocks: swept along this frame's path in short steps so a fast ship can't skip through a small rock, then tested against the true surface
-    const stepLen=ship.pos.distanceTo(shipPrev), K=Math.min(8, Math.max(1, Math.ceil(stepLen/40))), reach=60+stepLen;
+    const stepLen=ship.pos.distanceTo(shipPrev), K=Math.min(64, Math.max(1, Math.ceil(stepLen/24))), reach=60+stepLen;
     const sweep=a=>{ for (let i=1;i<=K;i++){ if (noisyCollide(a, shipPrev.clone().lerp(ship.pos, i/K))) return; } };
-    for (const a of asteroids) if (!a.dead && Math.abs(a.pos.x-ship.pos.x)<a.r*1.5+reach && Math.abs(a.pos.z-ship.pos.z)<a.r*1.5+reach && Math.abs(a.pos.y-ship.pos.y)<a.r*1.5+reach){ if (a.cave) intricateCollide(a); else sweep(a); }
-    for (const s of scenery) if (Math.abs(s.pos.x-ship.pos.x)<s.r*1.5+reach && Math.abs(s.pos.z-ship.pos.z)<s.r*1.5+reach && Math.abs(s.pos.y-ship.pos.y)<s.r*1.5+reach) sweep(s);
+    for (const a of asteroids) if (!a.dead && Math.abs(a.pos.x-ship.pos.x)<(a.boundR||a.r*1.5)+reach && Math.abs(a.pos.z-ship.pos.z)<(a.boundR||a.r*1.5)+reach && Math.abs(a.pos.y-ship.pos.y)<(a.boundR||a.r*1.5)+reach){ if (a.cave && !a.asset) intricateCollide(a); else sweep(a); }
+    for (const s of scenery) if (Math.abs(s.pos.x-ship.pos.x)<(s.boundR||s.r*1.5)+reach && Math.abs(s.pos.z-ship.pos.z)<(s.boundR||s.r*1.5)+reach && Math.abs(s.pos.y-ship.pos.y)<(s.boundR||s.r*1.5)+reach) sweep(s);
     for (const h of derelicts) if (Math.abs(h.pos.x-ship.pos.x)<h.r+60 && Math.abs(h.pos.z-ship.pos.z)<h.r+60 && Math.abs(h.pos.y-ship.pos.y)<h.r+60) solids.push({pos:h.pos, r:h.r});
     for (const b of debris) if (Math.abs(b.pos.x-ship.pos.x)<b.r+reach && Math.abs(b.pos.z-ship.pos.z)<b.r+reach && Math.abs(b.pos.y-ship.pos.y)<b.r+reach) solids.push({pos:b.pos, r:b.r*0.9, chunk:b});
     for (const s of solids){
@@ -3778,7 +3795,10 @@ function update(dt){
     if (best) target={type:'rock', obj:best, dist:Math.max(0,bd), hitT:0, auto:true};
   }
   // the beam always goes to the centre of its target; the heat, sparks and scorch sit where it enters the surface on the dish's side
-  if (target){ laserAim=target.obj.pos.clone(); const toDish=shipDishPivotWorld().sub(target.obj.pos).normalize(); laserHit=target.type==='pirate' ? target.obj.pos.clone() : target.obj.pos.clone().addScaledVector(toDish, radiusAlong(target.obj, toDish)); }
+  if (target){
+    if(target.obj.asset){laserHit=rockAssets.aimPoint(target.obj,shipDishPivotWorld(),target.hitPoint);laserAim=laserHit.clone();}
+    else {laserAim=target.obj.pos.clone();const toDish=shipDishPivotWorld().sub(target.obj.pos).normalize();laserHit=target.type==='pirate'?target.obj.pos.clone():target.obj.pos.clone().addScaledVector(toDish,radiusAlong(target.obj,toDish));}
+  }
   else laserAim=laserHit=null;
   mining=autoMine && canFly && !!target && (target.type==='pirate' || !mineReason(target)) && shipAim.aimed; firing=mining;
   if (mining && target && target.type==='pirate'){
@@ -4054,6 +4074,7 @@ function frame(now){
   const dt=Math.min(0.05,(now-last)/1000); last=now; t0+=dt;
   if (started && !paused) update(dt); else if (!started) { for (const a of asteroids) if(a.inScene) a.group.rotateOnAxis(a.axis, a.spin*dt); }
   updateVisuals(dt, t0);
+  rockAssets?.render(camera,quality);
   renderer.render(scene, camera);
   updateHud(dt); updateOverlays(); tutUpdate();
   requestAnimationFrame(frame);
@@ -4145,11 +4166,12 @@ camQ.copy(ship.q); camPos.copy(ship.pos).addScaledVector(shipForward(),-88*SHIP_
 target=findTarget();
 if(window.loadBeltRunnerPlayerShip)window.loadBeltRunnerPlayerShip({renderer,install:installPlayerModel,status:playerAsset});
 else {playerAsset.state='fallback';playerAsset.error='Player asset script unavailable';}
-if(window.BeltRunnerRockSurface)BeltRunnerRockSurface.load({renderer,baseMaterials:[rockMat,rockMatSmooth,rockMatCave,barrenMat],oreMaterials:oreRockMats,ores:ORES,veinMask,veinSize:VEIN_N,asteroids:()=>asteroids,heatable});
+const fallbackRockTextures=()=>window.BeltRunnerRockSurface?.load({renderer,baseMaterials:[rockMat,rockMatSmooth,rockMatCave,barrenMat],oreMaterials:oreRockMats,ores:ORES,veinMask,veinSize:VEIN_N,asteroids:()=>asteroids,heatable});
+if(rockAssets)rockAssets.load({renderer,scene,heatable,asteroids:()=>asteroids,scenery:()=>scenery,fallback:fallbackRockTextures});else fallbackRockTextures();
 if (window.loadBeltRunnerCarrier) window.loadBeltRunnerCarrier({station, renderer, glowTexture:texSoft, install:installCarrierModel, status:carrierAsset});
 else { carrierAsset.state='fallback'; carrierAsset.error='Carrier asset script unavailable'; }
 if(window.BeltRunner){
-  Object.assign(window.BeltRunner,{shipGroup,playerAsset,shipAim,shipDishAnglesTo,shipDishFocusWorld,startGame,setLaserAim:p=>{laserAim=p;}, carrierAsset, station, stationEngines, TURRET_PIVOT, forceFields, stationPointLights, droneDock, depotDish, turretAnglesTo, turretMuzzleWorld, updateDepot, depotBeam, DROP_PAD});
+  Object.assign(window.BeltRunner,{rockAssets,makeAsteroid,findTarget,noisyCollide,radiusAlong,SHIP_R,shipPrev,damageRock,removeAsteroid,shipGroup,playerAsset,shipAim,shipDishAnglesTo,shipDishFocusWorld,startGame,setLaserAim:p=>{laserAim=p;}, carrierAsset, station, stationEngines, TURRET_PIVOT, forceFields, stationPointLights, droneDock, depotDish, turretAnglesTo, turretMuzzleWorld, updateDepot, depotBeam, DROP_PAD});
   Object.defineProperties(window.BeltRunner,{playerModel:{get:()=>playerModel},shipDish:{get:()=>shipDish},exhausts:{get:()=>exhausts},navLights:{get:()=>navLights}});
 }
 requestAnimationFrame(frame);

@@ -6,6 +6,8 @@ const server=http.createServer((req,res)=>{const p=path.resolve(root,'.'+new URL
 (async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',args:['--enable-webgl','--use-angle=swiftshader','--enable-unsafe-swiftshader']});const results=[];
 try{for(const mode of ['http','file','missing']){
  const page=await browser.newPage({viewport:{width:1500,height:1000}}),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'&&/WebGLProgram|Shader Error/.test(m.text()))errors.push(m.text());});await page.addInitScript(()=>{window.requestAnimationFrame=()=>0;});
+ // This suite now verifies the retained procedural texture fallback.
+ await page.route('**/load-asteroids.js',r=>r.fulfill({status:200,contentType:'text/javascript',body:''}));
  let imageRequest,release;const gate=new Promise(r=>release=r);
  if(mode==='http')await page.route('**/asteroid_albedo.png',async r=>{imageRequest=true;await gate;await r.continue();});
  if(mode==='missing')await page.route('**/asteroid_albedo.png',r=>r.fulfill({status:404,body:'missing'}));

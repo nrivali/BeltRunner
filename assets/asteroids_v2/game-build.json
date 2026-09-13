@@ -1,0 +1,9 @@
+{
+  "models": 84,
+  "textures": 6,
+  "rawBytes": 28660472,
+  "gzipBytes": 21740967,
+  "drawCallsPerBatch": 1,
+  "source": "Approved Blender GLBs",
+  "normalTangentQuantization": 16
+}

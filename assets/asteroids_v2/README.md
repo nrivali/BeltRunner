@@ -1,6 +1,6 @@
 # Textured asteroid asset library
 
-Blender assets based on the approved **Recognition at Distance** concept. The set preserves all 14 current game shape families, with two variations per family, three detail levels, and all 17 ore materials plus barren rock. This is an asset delivery; the live game's asteroid generation, mining, collisions and rendering have not been replaced.
+Blender assets based on the approved **Recognition at Distance** concept. The set preserves all 14 current game shape families, with two variations per family, three detail levels, and all 17 ore materials plus barren rock. Integrated into game version **0.9.19**. See `INTEGRATION.md` for the runtime, collision and validation details.
 
 - `asteroids.blend`: editable library with all 84 meshes, all 18 materials, and packed PBR textures. LOD 0 is visible in the viewport; lower detail meshes are hidden. Assets retain the current shape names and nominal base radius 1.
 - `asteroid_studio.blend`: ready-to-render material lineup with Cycles sunlight and broad reflected fill.
@@ -15,7 +15,7 @@ The shape families are lumpy, chunk, potato, shard, pancake, cratered, cluster, 
 
 Ore covers approximately 31–36% of the high-detail surface. Dark, rough stone contrasts with silver iron, orange copper, yellow gold, teal platinum, violet voidcrystal and the remaining regional game colors. Brighter native-metal color factors improve reflectance while retaining the game's color families. No ore emits light. Metal highlights move with the lighting and view; shadows and highlights are not baked into albedo. The mineral colors are the game's visual language rather than mineralogical claims.
 
-Near models contain 4,778–10,358 triangles; medium models 1,322–2,902; distant models 310–752. Each ore-bearing rock has two material primitives. All models share six texture images within each GLB. The GLB sizes are approximately 27.7 MB, 16.9 MB and 12.9 MB. These are interchange assets; full-belt loading, instancing, texture compression, draw-call budgets and LOD transitions still need to be measured during game integration.
+Near models contain 4,778–10,358 triangles; medium models 1,322–2,902; distant models 310–752. Each ore-bearing interchange model has two material primitives. All models share six texture images within each GLB. The GLB sizes are approximately 27.7 MB, 16.9 MB and 12.9 MB. The game uses a separate 21.7 MB compressed library with merged primitives, shared textures, instancing and screen-size LOD selection.
 
 To preview locally from the project root:
 
@@ -38,6 +38,6 @@ The packaging step preserves the Blender material tint factors that this exporte
 
 For integration, select `<shape>_<A|B>_LOD<0|1|2>` from the desired GLB and reset its gallery translation to zero. glTF uses the game's Y-up coordinates; dimensions recorded by Blender in `asset-report.json` use Blender Z-up. Apply the asteroid's base radius and orientation, then compute bounds from the resulting geometry. The standard material variant extension maps the ore primitive to each named material and to the stone material for barren rocks. Loaders without variant support show iron by default; `preview.html` demonstrates explicit material selection using the existing loader.
 
-The current game uses procedural collision profiles. Those must be reconciled with these new silhouettes during integration, especially for the hollow pocket, through-arch, clustered bodies, mining raycasts and spawned fragments. The asset validation checks that the deep pocket is retained and the arch center is clear at every LOD, but does not claim live gameplay collision or full-belt performance validation.
+The integrated game uses triangle BVHs of these high-detail meshes for ship collision, inside tests and mining rays. Hollow pockets and through-arches remain open. Mining fragments and scrap also use the new geometry and textures. The earlier procedural system remains available if the runtime asset library cannot load.
 
-Validation passed for all 84 closed meshes, all three GLB libraries, all texture maps and material variants, finite vertex attributes, declining LOD triangle counts, real Three.js loading/rendering, and cave/arch raycasts. No WebGL shader errors were reported. The game file receives only its required asset-commit version bump, to 0.9.18.
+Validation passed for all 84 closed meshes, all three GLB libraries, all texture maps and material variants, finite vertex attributes, declining LOD triangle counts, real Three.js loading/rendering, and cave/arch raycasts. Runtime integration checks are recorded separately in `integration-validation.json`. The source assets were created in 0.9.18 and integrated in 0.9.19.
