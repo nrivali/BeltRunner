@@ -671,7 +671,7 @@ let zone = HOME_ZONE, planets = [];
 const UPGRADES = {
   laser:   {name:'Mining laser', levels:[{rate:3},{rate:5},{rate:8},{rate:12},{rate:18}], costs:[350,1400,5000,16000]},
   cargo:   {name:'Cargo hold',   levels:[{slots:4},{slots:6},{slots:8},{slots:11},{slots:14},{slots:18}], costs:[200,700,2400,7500,20000]},   // slots of 25 units each
-  engine:  {name:'Engines',      levels:[{thrust:840,max:1280},{thrust:1120,max:1640},{thrust:1440,max:2040},{thrust:1840,max:2520},{thrust:2360,max:3120}], costs:[300,1100,3500,10000]},
+  engine:  {name:'Engines',      levels:[{thrust:164,max:250},{thrust:219,max:320},{thrust:281,max:400},{thrust:359,max:490},{thrust:461,max:610}], costs:[300,1100,3500,10000]},   // top speed 250 at level 1; thrust scaled with it so the time to reach it is unchanged (Shift cruise is still BOOST times this)
   tank:    {name:'Fuel tank',    levels:[{cap:100},{cap:160},{cap:250},{cap:400},{cap:600}], costs:[150,600,2000,6000]},
   scanner: {name:'Scanner',      levels:[{range:28000,mine:2500},{range:46000,mine:2500},{range:74000,mine:2500},{range:135000,mine:2500}], costs:[400,1800,6000]},   // laser reach is a flat 2500 at every scanner level
   refinery:{name:'Refinery',     levels:[{bonus:0},{bonus:.15},{bonus:.35},{bonus:.6}], costs:[2500,9000,25000]},
@@ -708,7 +708,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.60';
+const GAME_VERSION = '0.9.61';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
