@@ -714,7 +714,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.74';
+const GAME_VERSION = '0.9.75';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -3153,10 +3153,7 @@ function renderCargoSummary(){
     html+=`<div class="row-actions" style="margin-top:12px"><button class="btn ${fuelCost>0&&state.credits>=1?'primary':''}" data-refuel="1" ${fuelCost>0?'':'disabled'}>${fuelCost>0?`Refuel supply · ${fmt(fuelCost)} cr`:'Fuel supply full'}</button><button class="btn ${partsCost>0&&state.credits>=PARTS_PRICE?'primary':''}" data-parts="1" ${partsCost>0?'':'disabled'}>${partsCost>0?`Restock parts · ${fmt(partsCost)} cr`:'Parts store full'}</button></div>`
         + ``;
   }
-  // deposit everything in the hold into the storage (the same action as E in the hangar and Stow all in the inventory); no explanatory text here
-  const aboard=cargoTotal();
-  html+=`<div class="row-actions" style="margin-top:12px"><button class="btn ${aboard>0.5?'primary':''}" data-stow="1" ${aboard>0.5?'':'disabled'}>${aboard>0.5?`Deposit all · ${fmt(aboard)} u`:'Deposit all · hold empty'}</button></div>`;
-  return html;
+  return html;   // gauges only: Deposit all lives in the inventory (I / Tab), where the stacks are
 }
 function renderMarket(){
   const z=zone; let rows='', total=0, any=false;
@@ -3185,7 +3182,6 @@ function renderPanel(){
   el.manifest.querySelectorAll('[data-sellstore]').forEach(b=>b.addEventListener('click',()=>sellOre(ORE_KEYS, false, true)));
   el.manifest.querySelectorAll('[data-refuel]').forEach(b=>b.addEventListener('click',refuelCargoShip));
   el.manifest.querySelectorAll('[data-parts]').forEach(b=>b.addEventListener('click',buyParts));
-  el.manifest.querySelectorAll('[data-stow]').forEach(b=>b.addEventListener('click',stowAll));
   let html='';
   for (const k in UPGRADES){
     const u=UPGRADES[k], i=state.up[k], maxed=i>=u.costs.length;
@@ -3491,13 +3487,17 @@ function renderInventory(){
   el.invCap.textContent=`${us} / ${ns} slots · ${Math.floor(ct)} u`; el.invFill.style.width=(us/ns*100)+'%'; el.invFill.className=holdFull()?'full':'';
   let total=0; for (const s of S) if (s) total+=s.u*price(s.k);
   const cell=(s,i)=>{ if (!s) return `<div class="slot empty" data-i="${i}"><span>empty</span></div>`; const o=ORES[s.k]; return `<div class="slot" draggable="true" data-i="${i}" style="--c:${o.color}" title="${aboard?'Drag to the storage grid (or double-click) to stow it aboard the cargo ship':''}"><img class="ico" src="${oreIcon(s.k)}" alt="" draggable="false"><b>${o.name}</b><span class="n">${Math.floor(s.u)} / ${STACK}</span><span class="v">${fmt(s.u*price(s.k))} cr</span><button class="x" data-jet="${i}" title="Jettison this stack">✕</button></div>`; };
-  let html=`<div class="inv-grid" id="invHold">${S.map(cell).join('')}</div><div class="inv-drop" id="invDrop">Drag a stack here to jettison it into space</div>`;
+  // the hold grid, then Deposit all (everything in the hold into the cargo ship's storage; only while docked at it). There is no
+  // drop zone any more: dragging a stack anywhere off the grids jettisons it.
+  const canDeposit=docked && !pilotingCarrier() && cargoTotal()>0.5;
+  let html=`<div class="inv-grid" id="invHold">${S.map(cell).join('')}</div>`
+    + `<div class="row-actions" style="margin:10px 0 2px"><button class="btn ${canDeposit?'primary':''}" data-stowall="1" ${canDeposit?'':'disabled'}>${canDeposit?`Deposit all · ${fmt(cargoTotal())} u`:docked&&!pilotingCarrier()?'Deposit all · hold empty':'Deposit all · dock with the cargo ship'}</button></div>`;
   if (S.length>ns) html+=`<p class="hint" style="color:var(--amber)">Over capacity by ${S.length-ns} slot${S.length-ns>1?'s':''} · jettison something.</p>`;
   html+=us ? `<div class="inv-total"><span>Hold value at Hub prices</span><b>${fmt(total)} cr</b></div>` : `<div class="inv-empty">The hold is empty. Break a rock and fly through the ore it drops.</div>`;
   if (aboard){
     const scell=(s,i)=>{ if (!s) return `<div class="slot empty" data-s="${i}"><span>empty</span></div>`; const o=ORES[s.k]; return `<div class="slot" draggable="true" data-s="${i}" style="--c:${o.color}" title="Drag to your hold (or double-click) to take it back aboard"><img class="ico" src="${oreIcon(s.k)}" alt="" draggable="false"><b>${o.name}</b><span class="n">${Math.floor(s.u)} / ${STACK}</span></div>`; };
     const cells=[]; for (let i=0;i<STORE_SLOTS;i++) cells.push(scell(st[i],i));
-    html+=`<div class="xfer-head" style="margin-top:18px"><span class="eyebrow">${CARGO_SHIP} storage</span><span class="mono">${su} / ${STORE_SLOTS} slots · ${Math.floor(storeTotal())} u</span><span><button class="link" data-stowall="1">Stow all ▼</button> <button class="link" data-takeall="1">▲ Take all</button></span></div><div class="inv-grid small" id="invStore">${cells.join('')}</div><p class="hint" style="margin:8px 0 0">Drag stacks between the two grids, or double-click one, to move it. The storage rides with the cargo ship and sells at the Hub.</p>`;
+    html+=`<div class="xfer-head" style="margin-top:18px"><span class="eyebrow">${CARGO_SHIP} storage</span><span class="mono">${su} / ${STORE_SLOTS} slots · ${Math.floor(storeTotal())} u</span><span><button class="link" data-takeall="1">▲ Take all</button></span></div><div class="inv-grid small" id="invStore">${cells.join('')}</div><p class="hint" style="margin:8px 0 0">Drag stacks between the two grids, or double-click one, to move it. The storage rides with the cargo ship and sells at the Hub.</p>`;
   } else html+=`<div class="inv-total" style="border-top:none;padding-top:4px"><span>${CARGO_SHIP} storage</span><b style="color:var(--text)">${su} / ${STORE_SLOTS} slots · ${Math.floor(storeTotal())} u · dock to transfer</b></div>`;
   el.invBody.innerHTML=html;
   el.invBody.querySelectorAll('[data-jet]').forEach(b=>b.addEventListener('click', e=>{ e.stopPropagation(); jettisonSlot(+b.dataset.jet); }));
@@ -3515,12 +3515,11 @@ function invSlotAt(e){ const s=e.target.closest && e.target.closest('.slot'); re
 function invStoreAt(e){ const s=e.target.closest && e.target.closest('.slot'); return s && s.dataset.s!==undefined ? +s.dataset.s : -1; }
 function wireInventoryDrag(){
   el.invBody.addEventListener('dragstart', e=>{ const i=invSlotAt(e), si=invStoreAt(e); if (i<0 && si<0){ e.preventDefault(); return; } dragI=i; dragS=si; e.dataTransfer.effectAllowed='move'; try{ e.dataTransfer.setData('text/plain', String(i)); }catch(err){} e.target.closest('.slot').classList.add('dragging'); });
-  el.invBody.addEventListener('dragend', ()=>{ dragI=-1; dragS=-1; el.invBody.querySelectorAll('.slot').forEach(s=>s.classList.remove('dragging','over')); const z=$('invDrop'); if (z) z.classList.remove('over'); });
+  el.invBody.addEventListener('dragend', ()=>{ dragI=-1; dragS=-1; el.invBody.querySelectorAll('.slot').forEach(s=>s.classList.remove('dragging','over')); });
   el.inv.addEventListener('dragover', e=>{ if (dragI<0 && dragS<0) return; e.preventDefault(); e.dataTransfer.dropEffect='move';
     const i=invSlotAt(e), inHold=!!e.target.closest('#invHold'), inStore=!!e.target.closest('#invStore');
     el.invBody.querySelectorAll('#invHold .slot').forEach(s=>s.classList.toggle('over', dragI>=0 ? (+s.dataset.i===i && i!==dragI) : inHold));
-    el.invBody.querySelectorAll('#invStore .slot').forEach(s=>s.classList.toggle('over', dragI>=0 && inStore));
-    const z=$('invDrop'); if (z) z.classList.toggle('over', dragI>=0 && !inHold && !inStore); });
+    el.invBody.querySelectorAll('#invStore .slot').forEach(s=>s.classList.toggle('over', dragI>=0 && inStore)); });   // anywhere else in the panel is a jettison drop
   el.inv.addEventListener('drop', e=>{ if (dragI<0 && dragS<0) return; e.preventDefault(); const i=dragI, si=dragS; dragI=-1; dragS=-1;
     const inHold=!!e.target.closest('#invHold'), inStore=!!e.target.closest('#invStore');
     if (si>=0){ if (inHold){ const x=storeStacks()[si]; if (x) takeStack(x.k, x.u); } return; }   // storage stacks only ever come back to the hold
