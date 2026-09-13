@@ -363,6 +363,7 @@ table.manifest td.dimmed{color:var(--dim);}
     <span><kbd>W</kbd> <kbd>S</kbd></span><span>Throttle up · down (or scroll wheel)</span>
     <span><kbd>X</kbd></span><span>Cut throttle · <kbd>S</kbd> at zero fires retros</span>
     <span><kbd>A</kbd> <kbd>D</kbd></span><span>Roll left · right</span>
+    <span><kbd>Shift</kbd></span><span>Afterburner while throttled up (needs the refit · ×2 to ×5 speed · burns fuel fast)</span>
     <span><kbd>↑</kbd> <kbd>↓</kbd></span><span>Pitch</span>
     <span><kbd>LMB</kbd></span><span>Hold to fire the mining laser (<kbd>Space</kbd> or <kbd>L</kbd> too). It cuts only what the crosshair is on: aim the nose at a rock</span>
     <span><kbd>RMB</kbd></span><span>Hold to look around · release to snap back</span>
@@ -465,6 +466,7 @@ table.manifest td.dimmed{color:var(--dim);}
       <span>Mouse</span><span>Aim the ship: cursor left or right of centre yaws, above or below pitches.</span>
       <span><kbd>W</kbd> <kbd>S</kbd></span><span>Throttle up and down, or roll the scroll wheel. The engines hold whatever setting you leave them at. X cuts to zero; S at zero fires the retro thrusters.</span>
       <span><kbd>A</kbd> <kbd>D</kbd> <kbd>↑</kbd> <kbd>↓</kbd></span><span>Roll left and right · pitch up and down on keys.</span>
+      <span><kbd>Shift</kbd></span><span>Afterburner: hold it with the throttle open and thrust and top speed multiply, ×2 with the first Afterburner refit up to ×5 at the top level. It burns fuel far faster (×3 at ×2, ×20 at ×5), so use it in bursts. Let go and the extra speed bleeds off on drag.</span>
       <span><kbd>R</kbd></span><span>Radar pulse · marks every rock in scanner range</span>
       <span><kbd>LMB</kbd></span><span>Hold to fire the mining laser (Space or L too). While you hold it, the dish under the nose swings onto whatever the crosshair is on and cuts it until it breaks. It never picks targets by itself: keep the nose on the rock.</span>
       <span><kbd>RMB</kbd></span><span>Hold the right mouse button to look around without turning the ship; the view eases back to straight ahead when you let go.</span>
@@ -680,7 +682,11 @@ const UPGRADES = {
   scanner: {name:'Scanner',      levels:[{range:28000},{range:46000},{range:74000},{range:135000}], costs:[400,1800,6000]},   // scan range only; laser reach is its own upgrade below
   range:   {name:'Laser range',  levels:[{reach:2500},{reach:3500},{reach:5000},{reach:7000}], costs:[2500,9000,25000]},   // how far the mining laser reaches (replaces the old refinery)
   hull:    {name:'Hull plating', levels:[{hp:100},{hp:160},{hp:250},{hp:400},{hp:600}], costs:[250,900,3000,9000]},
+  // Afterburner: hold Shift with the throttle up and thrust and the speed cap multiply by `mult` (x2 at the first level, x5
+  // at the top), but the burn multiplies by 0.8 x mult squared, so x5 drinks twenty times the fuel. Level 0 = not fitted.
+  thrusters:{name:'Afterburner',  levels:[{mult:1},{mult:2},{mult:3},{mult:4},{mult:5}], costs:[800,3000,9000,24000]},
 };
+const burnMult = m => m>1 ? 0.8*m*m : 1;   // fuel burn multiplier for an afterburner setting
 const JUMP_COST = 250000, FUEL_PRICE = 1.2, FUEL_BURN = 0.55;   // (no cruise multiplier any more: the engine cap is the top speed)
 let WORLD_R = 14000*WORLD_SCALE, planetR = 20000;   // both set per zone in loadZone
 // The depot carrier orbits the planet inside the ring belt, nose-first and a little faster than the rocks, so the belt slides
@@ -711,14 +717,14 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.117';
+const GAME_VERSION = '0.9.118';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
 // ---------------------------------------------------------------- state
 const state = {
   credits:60, cargo:{}, store:{}, fuel:100, jump:false,   // cargo: the ship's hold; store: the cargo ship's storage, which travels with you
-  up:{laser:0,cargo:0,engine:0,tank:0,scanner:0,range:0,hull:0}, hull:100,
+  up:{laser:0,cargo:0,engine:0,tank:0,scanner:0,range:0,hull:0,thrusters:0}, hull:100,
   depot:{laser:0, collectors:0}, droneUnits:0, shipFuel:1200, parts:120,   // cargo ship upgrades: level 0 = not installed; droneUnits: ore the collectors have stowed; shipFuel: the cargo ship's fuel supply
   market:{}, marketNext:{}, marketT:0, mined:0, minedBy:{}, earned:0, time:0,
 };
@@ -3170,6 +3176,7 @@ function describe(k,i){
     case 'laser': return `${L.rate} dmg/s`;
     case 'cargo': return `${L.slots} slots`;
     case 'engine': return `${Math.round(L.thrust*METRE)} thrust · ${Math.round(L.max*METRE)} top speed`;
+    case 'thrusters': return L.mult>1 ? `×${L.mult} speed on Shift · ×${burnMult(L.mult)} fuel burn` : 'not fitted';
     case 'tank': return `${L.cap} fuel`;
     case 'scanner': return `${fm(L.range)} m scan`;
     case 'range': return `${fm(L.reach)} m laser reach`;
@@ -3932,6 +3939,8 @@ function update(dt){
   // thrust (or hold station while parked)
   // the carrier has its own heavy engines: slower to build speed, a lower top speed, and a reactor that burns no fuel
   const big=pilotingCarrier(), eng=big?{thrust:700, max:1050}:stat('engine'), burn=big?0:FUEL_BURN; ship.thrusting=false; ship.braking=false; ship.boosting=false;
+  // afterburner: Shift with the throttle open, if the refit is fitted and there is fuel to feed it
+  const abMult=stat('thrusters').mult, ab=!big && canFly && throttle>0 && key('shift') && abMult>1 && state.fuel>0, mult=ab?abMult:1;
   const fwd=shipForward();
   shipPrev.copy(ship.pos);   // where this frame's motion starts: the rock collision sweeps from here to wherever the ship ends up
   // throttle: W raises, S lowers, X cuts. Holding S at zero throttle fires the retro thrusters.
@@ -3947,7 +3956,7 @@ function update(dt){
   } else if (!towed){
     const spBefore=ship.vel.length();
     if ((state.fuel>0 || big) && canFly){
-      if (throttle>0){ ship.vel.addScaledVector(fwd, eng.thrust*throttle*dt); state.fuel=Math.max(0,state.fuel-burn*throttle*dt); ship.thrusting=true; }
+      if (throttle>0){ ship.vel.addScaledVector(fwd, eng.thrust*throttle*mult*dt); state.fuel=Math.max(0,state.fuel-burn*throttle*burnMult(mult)*dt); ship.thrusting=true; ship.boosting=ab; }
       else if (key('s')){ const sp=ship.vel.length(); if (sp>1){ const f=Math.min(sp, eng.thrust*0.4*dt); ship.vel.addScaledVector(ship.vel.clone().divideScalar(sp), -f); state.fuel=Math.max(0,state.fuel-burn*0.35*dt); ship.braking=true; } }   // retros: a quarter of main thrust, so stopping takes real time
     }
     // the planet's pull: inverse-square from the surface value, always toward the origin. Strong enough to drag a drifting ship down, weak enough to climb out of on main thrust.
@@ -3957,7 +3966,7 @@ function update(dt){
     const dragK=throttle>0?0.32:1.28; ship.vel.multiplyScalar(Math.exp(-dragK*dt));
     // speed cap: thrust can never push past the engine's top speed. Anything above it (a shove from a rock, a planet's pull)
     // is not snapped down but only allowed to fall away on drag.
-    const sp=ship.vel.length(), vmax=eng.max, lim=Math.max(vmax, spBefore*Math.exp(-dragK*dt)); if (sp>lim) ship.vel.multiplyScalar(lim/sp);
+    const sp=ship.vel.length(), vmax=eng.max*mult, lim=Math.max(vmax, spBefore*Math.exp(-dragK*dt)); if (sp>lim) ship.vel.multiplyScalar(lim/sp);   // the afterburner raises the cap; let go and the excess falls away on drag
     ship.pos.addScaledVector(ship.vel, dt);
   }
 
