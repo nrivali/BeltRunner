@@ -364,6 +364,7 @@ table.manifest td.dimmed{color:var(--dim);}
     <span><kbd>X</kbd></span><span>Cut throttle · <kbd>S</kbd> at zero fires retros</span>
     <span><kbd>A</kbd> <kbd>D</kbd></span><span>Roll left · right</span>
     <span><kbd>Shift</kbd></span><span>Afterburner while throttled up (needs the refit · ×2 to ×5 speed · burns fuel fast)</span>
+    <span><kbd>G</kbd></span><span>Laser overcharge on · off (needs the refit · up to ×3 damage · the beam draws fuel while it cuts)</span>
     <span><kbd>↑</kbd> <kbd>↓</kbd></span><span>Pitch</span>
     <span><kbd>LMB</kbd></span><span>Hold to fire the mining laser (<kbd>Space</kbd> or <kbd>L</kbd> too). It cuts only what the crosshair is on: aim the nose at a rock</span>
     <span><kbd>RMB</kbd></span><span>Hold to look around · release to snap back</span>
@@ -466,6 +467,7 @@ table.manifest td.dimmed{color:var(--dim);}
       <span>Mouse</span><span>Aim the ship: cursor left or right of centre yaws, above or below pitches.</span>
       <span><kbd>W</kbd> <kbd>S</kbd></span><span>Throttle up and down, or roll the scroll wheel. The engines hold whatever setting you leave them at. X cuts to zero; S at zero fires the retro thrusters.</span>
       <span><kbd>A</kbd> <kbd>D</kbd> <kbd>↑</kbd> <kbd>↓</kbd></span><span>Roll left and right · pitch up and down on keys.</span>
+      <span><kbd>G</kbd></span><span>Laser overcharge on or off. With the Laser overcharge refit fitted, the beam cuts ×1.5 to ×3 harder while it is armed, and the reactor feeds it from your fuel tank the whole time it is cutting (1.7 to 3.3 fuel a second). It switches itself off when the tank runs dry.</span>
       <span><kbd>Shift</kbd></span><span>Afterburner: hold it with the throttle open and thrust and top speed multiply, ×2 with the first Afterburner refit up to ×5 at the top level. It burns fuel far faster (×3 at ×2, ×20 at ×5), so use it in bursts. Let go and the extra speed bleeds off on drag.</span>
       <span><kbd>R</kbd></span><span>Radar pulse · marks every rock in scanner range</span>
       <span><kbd>LMB</kbd></span><span>Hold to fire the mining laser (Space or L too). While you hold it, the dish under the nose swings onto whatever the crosshair is on and cuts it until it breaks. It never picks targets by itself: keep the nose on the rock.</span>
@@ -685,7 +687,11 @@ const UPGRADES = {
   // Afterburner: hold Shift with the throttle up and thrust and the speed cap multiply by `mult` (x2 at the first level, x5
   // at the top), but the burn multiplies by 0.8 x mult squared, so x5 drinks twenty times the fuel. Level 0 = not fitted.
   thrusters:{name:'Afterburner',  levels:[{mult:1},{mult:2},{mult:3},{mult:4},{mult:5}], costs:[800,3000,9000,24000]},
+  // Laser overcharge: G arms it, and while the beam is cutting the damage multiplies by `mult` and the reactor feeds the
+  // laser from the fuel tank (OVER_BURN x mult a second). It disarms itself when the tank runs dry. Level 0 = not fitted.
+  overcharge:{name:'Laser overcharge', levels:[{mult:1},{mult:1.5},{mult:2},{mult:2.5},{mult:3}], costs:[600,2200,7000,18000]},
 };
+const OVER_BURN=1.1;   // fuel a second the overcharged laser draws at x1 (twice the main engine's burn at full throttle), scaled by the multiplier
 const burnMult = m => m>1 ? 0.8*m*m : 1;   // fuel burn multiplier for an afterburner setting
 const JUMP_COST = 250000, FUEL_PRICE = 1.2, FUEL_BURN = 0.55;   // (no cruise multiplier any more: the engine cap is the top speed)
 let WORLD_R = 14000*WORLD_SCALE, planetR = 20000;   // both set per zone in loadZone
@@ -717,20 +723,27 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.119';
+const GAME_VERSION = '0.9.120';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
 // ---------------------------------------------------------------- state
 const state = {
   credits:60, cargo:{}, store:{}, fuel:100, jump:false,   // cargo: the ship's hold; store: the cargo ship's storage, which travels with you
-  up:{laser:0,cargo:0,engine:0,tank:0,scanner:0,range:0,hull:0,thrusters:0}, hull:100,
+  up:{laser:0,cargo:0,engine:0,tank:0,scanner:0,range:0,hull:0,thrusters:0,overcharge:0}, hull:100,
   depot:{laser:0, collectors:0}, droneUnits:0, shipFuel:1200, parts:120,   // cargo ship upgrades: level 0 = not installed; droneUnits: ore the collectors have stowed; shipFuel: the cargo ship's fuel supply
   market:{}, marketNext:{}, marketT:0, mined:0, minedBy:{}, earned:0, time:0,
 };
 ORE_KEYS.forEach(k => { state.cargo[k]=0; state.store[k]=0; state.market[k]=1; state.marketNext[k]=1; });
 const ship = {pos:V3(450,-22,760), vel:V3(), q:new THREE.Quaternion(0,1,0,0), thrusting:false, braking:false};
 let asteroids=[], docked=false, mining=false, firing=false, target=null, laserOn=false, started=false, mouseAim=true, mapOpen=false, warping=false, mapSel=null;
+let overcharge=false;   // G: the laser overcharge is armed (only does anything with the refit fitted and fuel in the tank)
+function toggleOvercharge(){
+  if (!started) return;
+  if (stat('overcharge').mult<=1){ toast('No laser overcharge fitted · it is a refit in the cargo ship services', true); return; }
+  overcharge=!overcharge; SFX.chime();
+  toast(overcharge ? `Laser overcharge armed · ×${stat('overcharge').mult} damage · draws ${(OVER_BURN*stat('overcharge').mult).toFixed(1)} fuel/s while cutting` : 'Laser overcharge off');
+}
 let parked=null, pulse=null, pulseCd=0, fields=[], dockBay=null, panelT=0, throttle=0;
 state.custom={hull:'#D9DEF0', trim:'#F2A33A', wings:'delta', callsign:'KB-7 Drifter'};
 const PULSE_TIME=2.6, PULSE_CD=5, MARK_TIME=30;
@@ -2745,6 +2758,7 @@ window.addEventListener('keydown', e => {
   if (e.key===' ' && !e.repeat && (cut || warpCut)) skipCutscene();
   if (k==='q' && !e.repeat && !docked) toggleLock();
   if (k==='r' && !e.repeat) radarPulse();
+  if (k==='g' && !e.repeat) toggleOvercharge();
   if ((k==='i' || e.key==='Tab') && !e.repeat) toggleInventory();
   if (e.key==='Escape' && invOpen){ closeInventory(); return; }
   if (e.key==='Escape' && mapOpen) closeMap();
@@ -3177,6 +3191,7 @@ function describe(k,i){
     case 'cargo': return `${L.slots} slots`;
     case 'engine': return `${Math.round(L.thrust*METRE)} thrust · ${Math.round(L.max*METRE)} top speed`;
     case 'thrusters': return L.mult>1 ? `×${L.mult} speed on Shift · ×${burnMult(L.mult)} fuel burn` : 'not fitted';
+    case 'overcharge': return L.mult>1 ? `×${L.mult} laser damage · ${(OVER_BURN*L.mult).toFixed(1)} fuel/s while cutting` : 'not fitted';
     case 'tank': return `${L.cap} fuel`;
     case 'scanner': return `${fm(L.range)} m scan`;
     case 'range': return `${fm(L.reach)} m laser reach`;
@@ -4029,16 +4044,19 @@ function update(dt){
   else laserAim=laserHit=null;
   mining=trigger && canFly && !!target && (target.type==='pirate' || !mineReason(target)) && shipAim.aimed;
   firing=trigger && canFly;   // the beam fires whenever the trigger is held, rock or no rock; it only cuts (mining) once it is on a target it can work
+  // overcharge: with the refit armed (G) and fuel in the tank the beam cuts harder, and the reactor drinks fuel for every second it cuts
+  const oc=overcharge && state.fuel>0 ? stat('overcharge').mult : 1, rate=stat('laser').rate*oc;
   if (mining && target && target.type==='pirate'){
     // the mining laser cuts raiders too
-    const p=target.obj; p.hp-=stat('laser').rate*6*dt; laserOn=true;
+    const p=target.obj; p.hp-=rate*6*dt; laserOn=true;
     if (Math.random()<dt*20) spawnParticle(p.pos.clone().add(V3(rand(-8,8),rand(-8,8),rand(-8,8))), 0xff6a3a);
     if (p.hp<=0) killPirate(p, true);
   } else if (mining && target && !mineReason(target)){
     // the beam wears the whole rock down; when its bar is gone it breaks and the ore comes loose as pickups
-    const a=target.obj; damageRock(a, rockDps(a, stat('laser').rate)*dt); laserOn=true;   // a steady rate: the heat glow is only an effect, it no longer speeds the cut
+    const a=target.obj; damageRock(a, rockDps(a, rate)*dt); laserOn=true;   // a steady rate: the heat glow is only an effect, it no longer speeds the cut
     if (a.hp<=0){ breakRock(a, false); target=null; laserOn=false; }
   }
+  if (laserOn && oc>1){ state.fuel=Math.max(0, state.fuel-OVER_BURN*oc*dt); if (state.fuel<=0){ overcharge=false; toast('Overcharge off · fuel tank dry', true); } }
   autosaveT+=dt; if (autosaveT>30){ autosaveT=0; save(); }
 }
 
@@ -4304,7 +4322,7 @@ function updateHud(dt){
     if (!el.station.hidden){ panelT+=0.08; if (panelT>1){ panelT=0; renderPanel(); } }
   }
   { const reach=stat('range').reach; el.laserRange.textContent=lock?`${fm(lockDist)} / ${fm(reach)} m`:`${fm(reach)} m`; }   // range in metres: the locked object's distance against the beam's reach, else just the reach
-  el.laserState.textContent=(laserOn?'CUTTING':firing?'FIRING':'ready');   // (heat is only a visual now, so it is not reported) el.laserState.style.color=laserOn?'var(--amber2)':''; el.radarState.textContent=pulseCd>0?`${pulseCd.toFixed(1)}s`:'READY';
+  el.laserState.textContent=(laserOn?'CUTTING':firing?'FIRING':'ready')+(overcharge?` ⚡×${stat('overcharge').mult}`:'');   // (heat is only a visual now, so it is not reported) el.laserState.style.color=laserOn?'var(--amber2)':''; el.radarState.textContent=pulseCd>0?`${pulseCd.toFixed(1)}s`:'READY';
   const T=lock?{type:lockType, obj:lock, dist:lockDist, locked:true}:target;   // the panel (top centre) follows the lock when there is one, else the crosshair target
   if (T && !docked){
     const t=T.obj, reach=stat('range').reach; el.target.classList.add('on');
@@ -4456,7 +4474,8 @@ if (state.hull<=0){ if (pilotingCarrier()) state.hull=1; else requestTow('breach
 renderMenu();
 try { if (sessionStorage.getItem(AUTOSTART)){ sessionStorage.removeItem(AUTOSTART); startGame(); } } catch(e){}
 // dev hook: open the page with ?debug to reach the live objects from the console
-if (location.search.includes('debug')) window.BeltRunner={ship, state, camPos, keys, get asteroids(){ return asteroids; }, get planets(){ return planets; }, get fields(){ return fields; }, get warpCut(){ return warpCut; }, get flags(){ return {docked, warping, exitPending, depWait, started, parked:!!parked, bay:dockBay&&dockBay.name, disabled, tow:tow&&{phase:tow.phase, leg:tow.leg, pos:tow.pos.toArray().map(Math.round)}}; }, radarPulse, buildShip, requestTow, get tow(){ return tow; }, get pirates(){ return pirates; }, get mines(){ return mines; }, get derelicts(){ return derelicts; }, get scenery(){ return scenery; }, get beltCloud(){ return beltCloud; }, renderer, scene, camera, update, updateVisuals, heatFx, SPARKS, drops, debris, breakRock, depotLaser, collectors, rockInside, addBurn, get target(){ return target; }, STATION, DEPOT, depotLocal, SFX, MUSIC, startApproach, startDeparture, get cut(){ return cut; }, get colony(){ return colony; }, get traffic(){ return traffic; }, get padSlots(){ return padSlots; }, get zone(){ return zone; }, ZONES, warpTo, loadZone, renderPanel, stowAll, takeAll, sellOre, enterHangar, tutUpdate, tutAdvance, tutRestart, tutFlags, TUT};
+if (location.search.includes('debug')) window.BeltRunner={ship, state, camPos, keys, get asteroids(){ return asteroids; }, get planets(){ return planets; }, get fields(){ return fields; }, get warpCut(){ return warpCut; }, get flags(){ return {docked, warping, exitPending, depWait, started, parked:!!parked, bay:dockBay&&dockBay.name, disabled, tow:tow&&{phase:tow.phase, leg:tow.leg, pos:tow.pos.toArray().map(Math.round)}}; }, radarPulse, buildShip, requestTow, get tow(){ return tow; }, get pirates(){ return pirates; }, get mines(){ return mines; }, get derelicts(){ return derelicts; }, get scenery(){ return scenery; }, get beltCloud(){ return beltCloud; }, renderer, scene, camera, update, updateVisuals, heatFx, SPARKS, drops, debris, breakRock, depotLaser, collectors, rockInside, addBurn, get target(){ return target; }, STATION, DEPOT, depotLocal, SFX, MUSIC, startApproach, startDeparture, get cut(){ return cut; }, get colony(){ return colony; }, get traffic(){ return traffic; }, get padSlots(){ return padSlots; }, get zone(){ return zone; }, ZONES, warpTo, loadZone, renderPanel, stowAll, takeAll, sellOre, enterHangar, tutUpdate, tutAdvance, tutRestart, tutFlags, TUT,
+  get laserDbg(){ return {mining, trigger, firing, laserOn, overcharge, aimed:shipAim.aimed, laserAim:!!laserAim, reason:mineReason(target), disabled, tow:!!tow, cut:!!cut}; }};
 camQ.copy(ship.q); camPos.copy(ship.pos).addScaledVector(shipForward(),-88*SHIP_SCALE).addScaledVector(shipUp(),30*SHIP_SCALE);
 target=findTarget();
 if(window.loadBeltRunnerPlayerShip)window.loadBeltRunnerPlayerShip({renderer,install:installPlayerModel,status:playerAsset});
