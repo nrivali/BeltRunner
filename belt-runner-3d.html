@@ -1,4 +1,4 @@
-<title>Belt Runner 3D</title>
+﻿<title>Belt Runner 3D</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
@@ -344,7 +344,7 @@ table.manifest td.dimmed{color:var(--dim);}
   </div>
   <div class="goal">
     <div class="bar"><i id="goalFill"></i></div>
-    <div class="goal-text">Jump drive fund · <b id="goalPct">0%</b> of 250,000 cr</div>
+    <div class="goal-text">Jump drive fund Â· <b id="goalPct">0%</b> of 250,000 cr</div>
   </div>
   <div class="gauge"><div class="gauge-head"><span>Thrust</span><span id="thrText" class="mono">0%</span></div><div class="bar thr"><i id="thrFill"></i></div></div>
   <div class="gauge"><div class="gauge-head"><span>Fuel</span><span id="fuelText" class="mono"></span></div><div class="bar"><i id="fuelFill"></i></div></div>
@@ -355,7 +355,7 @@ table.manifest td.dimmed{color:var(--dim);}
 
 <div class="hud hud-tr">
   <div class="pane readouts">
-    <div class="readout"><span>ZONE <b id="zoneName"></b></span><span>SPD <b id="spd">0</b></span><span id="distLbl">CARGO SHIP <b id="dist">0</b></span><span>FIELD <b id="fieldState">—</b></span></div>
+    <div class="readout"><span>ZONE <b id="zoneName"></b></span><span>SPD <b id="spd">0</b></span><span id="distLbl">CARGO SHIP <b id="dist">0</b></span><span>FIELD <b id="fieldState">â€”</b></span></div>
     <div class="readout"><span>LASER <b id="laserState">off</b></span><span>RADAR <b id="radarState">READY</b></span><span>THREAT <b id="threatState">none</b></span></div>
   </div>
   <div class="target" id="target">
@@ -370,19 +370,19 @@ table.manifest td.dimmed{color:var(--dim);}
 <div class="hud hud-bl">
   <div class="controls pane">
     <span class="ctl-head">Flight controls</span>
-    <span>Mouse</span><span>Yaw · pitch</span>
-    <span><kbd>W</kbd> <kbd>S</kbd></span><span>Throttle up · down (or scroll wheel)</span>
-    <span><kbd>X</kbd></span><span>Cut throttle · <kbd>S</kbd> at zero fires retros</span>
-    <span><kbd>Shift</kbd></span><span>Cruise ×5 while throttled up</span>
-    <span><kbd>A</kbd> <kbd>D</kbd></span><span>Roll left · right</span>
-    <span><kbd>↑</kbd> <kbd>↓</kbd></span><span>Pitch</span>
-    <span><kbd>LMB</kbd></span><span>Mining laser on · off (<kbd>Space</kbd> or <kbd>L</kbd> too). It cuts what the crosshair is on, or the nearest rock in reach</span>
-    <span><kbd>P</kbd></span><span>Park · release</span>
+    <span>Mouse</span><span>Yaw Â· pitch</span>
+    <span><kbd>W</kbd> <kbd>S</kbd></span><span>Throttle up Â· down (or scroll wheel)</span>
+    <span><kbd>X</kbd></span><span>Cut throttle Â· <kbd>S</kbd> at zero fires retros</span>
+    <span><kbd>Shift</kbd></span><span>Cruise Ã—5 while throttled up</span>
+    <span><kbd>A</kbd> <kbd>D</kbd></span><span>Roll left Â· right</span>
+    <span><kbd>â†‘</kbd> <kbd>â†“</kbd></span><span>Pitch</span>
+    <span><kbd>LMB</kbd></span><span>Mining laser on Â· off (<kbd>Space</kbd> or <kbd>L</kbd> too). It cuts what the crosshair is on, or the nearest rock in reach</span>
+    <span><kbd>P</kbd></span><span>Park Â· release</span>
     <span><kbd>R</kbd></span><span>Radar pulse</span>
-    <span><kbd>F</kbd></span><span>Cargo ship services (docked) · store ore, refit, sell at the Hub</span>
-    <span><kbd>Tab</kbd> <kbd>I</kbd></span><span>Inventory · slots of 25 · jettison stacks</span>
-    <span><kbd>N</kbd></span><span>Nav map · warp (docked in the cargo ship)</span>
-    <span><kbd>K</kbd></span><span>Sound on · off</span>
+    <span><kbd>F</kbd></span><span>Cargo ship services (docked) Â· store ore, refit, sell at the Hub</span>
+    <span><kbd>Tab</kbd> <kbd>I</kbd></span><span>Inventory Â· slots of 25 Â· jettison stacks</span>
+    <span><kbd>N</kbd></span><span>Nav map Â· warp (docked in the cargo ship)</span>
+    <span><kbd>K</kbd></span><span>Sound on Â· off</span>
   </div>
 </div>
 
@@ -397,14 +397,14 @@ table.manifest td.dimmed{color:var(--dim);}
 <div class="dmg" id="dmg"></div>
 <div class="cine" id="cine"><div class="bar top"></div><div class="bar bot"></div><div class="cap" id="cineCap"></div></div>
 <div class="dockbox" id="dockbox" hidden>
-  <div class="db-head"><span class="eyebrow" id="dbTitle">Docked</span><span class="db-hint"><kbd>F</kbd> services · storage <kbd>W</kbd> depart</span></div>
+  <div class="db-head"><span class="eyebrow" id="dbTitle">Docked</span><span class="db-hint"><kbd>F</kbd> services Â· storage <kbd>W</kbd> depart</span></div>
   <div class="db-row"><span>Cargo</span><div class="bar"><i id="dbCargo"></i></div><b id="dbCargoT"></b></div>
   <div class="db-row"><span>Fuel</span><div class="bar"><i id="dbFuel" class="f"></i></div><b id="dbFuelT"></b></div>
   <div class="db-row"><span>Hull</span><div class="bar"><i id="dbHull" class="h"></i></div><b id="dbHullT"></b></div>
 </div>
 <div class="hud prompt" id="prompt"></div>
 <div class="hud toasts" id="toasts"></div>
-<div class="hud notice" id="fullNotice" hidden><b>CARGO HOLD FULL</b><span>Return to the cargo ship to stow it · press <kbd>E</kbd> within 4,500 to auto-dock</span></div>
+<div class="hud notice" id="fullNotice" hidden><b>CARGO HOLD FULL</b><span>Return to the cargo ship to stow it Â· press <kbd>E</kbd> within 4,500 to auto-dock</span></div>
 <div id="tut" class="tut" hidden>
   <div class="tut-head"><span class="eyebrow" id="tutStep">Tutorial</span><button class="link" id="tutSkip">Skip tutorial</button></div>
   <div class="tut-title" id="tutTitle"></div>
@@ -460,7 +460,7 @@ table.manifest td.dimmed{color:var(--dim);}
 
 <div id="intro" class="overlay">
   <div class="card menu">
-    <div class="eyebrow">Kessler belt · sector 7</div>
+    <div class="eyebrow">Kessler belt Â· sector 7</div>
     <h1>Belt Runner</h1>
     <p class="tag">One ship, one laser, an empty hold. Cut ore from the rocks, stow it aboard your cargo ship, sell it at the Hub, and refit the ship until it can afford a jump drive out.</p>
     <div id="menuMain" class="menu-page">
@@ -485,14 +485,14 @@ table.manifest td.dimmed{color:var(--dim);}
       <span>Mouse</span><span>Aim the ship: cursor left or right of centre yaws, above or below pitches.</span>
       <span><kbd>W</kbd> <kbd>S</kbd></span><span>Throttle up and down, or roll the scroll wheel. The engines hold whatever setting you leave them at. X cuts to zero; S at zero fires the retro thrusters.</span>
       <span><kbd>Shift</kbd></span><span>Hold to cruise at five times speed while throttled up. Zones are vast.</span>
-      <span><kbd>A</kbd> <kbd>D</kbd> <kbd>↑</kbd> <kbd>↓</kbd></span><span>Roll left and right · pitch up and down on keys.</span>
-      <span><kbd>R</kbd></span><span>Radar pulse · marks every rock in scanner range</span>
+      <span><kbd>A</kbd> <kbd>D</kbd> <kbd>â†‘</kbd> <kbd>â†“</kbd></span><span>Roll left and right Â· pitch up and down on keys.</span>
+      <span><kbd>R</kbd></span><span>Radar pulse Â· marks every rock in scanner range</span>
       <span><kbd>LMB</kbd></span><span>Click to switch the mining laser on or off (Space or L too). While it is on, the dish under the nose swings onto whatever the crosshair is on, or the nearest rock in reach, and cuts it until it breaks.</span>
-      <span><kbd>P</kbd></span><span>Park beside a rock or planet · thrust to leave</span>
+      <span><kbd>P</kbd></span><span>Park beside a rock or planet Â· thrust to leave</span>
       <span>Docking</span><span>Fly slowly into either mouth of the cargo ship's through-hangar, or press <kbd>E</kbd> within 4,500 of it and approach control flies you in. You taxi to the pad at the far end and park nose-out, so you leave straight ahead. Fuel and repairs flow while you sit on the pad, and the services panel moves ore between your hold and the cargo ship's 50-slot storage. The cargo ship warps with you; ore only sells at the Hub.</span>
       <span><kbd>N</kbd></span><span>Open the nav map. The cargo ship makes the jump between zones, so dock in its hangar first; you ride along and arrive in Dock 1.</span>
       <span><kbd>K</kbd></span><span>Sound on or off</span>
-      <span><kbd>Esc</kbd></span><span>Pause · opens this menu with Settings and Controls</span>
+      <span><kbd>Esc</kbd></span><span>Pause Â· opens this menu with Settings and Controls</span>
     </div>
     <button class="btn menu-back">Back</button>
     </div>
@@ -504,7 +504,7 @@ table.manifest td.dimmed{color:var(--dim);}
     <div class="inv-head"><div><div class="eyebrow">Cargo hold</div><h2 style="margin:2px 0 0">Inventory</h2></div><div class="inv-cap"><span class="eyebrow">Hold</span><b id="invCap" class="mono">0 / 40</b></div></div>
     <div class="bar inv-bar"><i id="invFill"></i></div>
     <div id="invBody"></div>
-    <div class="inv-foot"><span class="hint">Each slot holds one stack of up to 25 units of one ore. Drag stacks to rearrange or pour them together; drag one off the grid (or press ✕) to jettison it. Dock with the cargo ship to stow stacks in its storage; sell at the Hub.</span><button id="invClose" class="btn">Close &nbsp;<kbd>Tab</kbd></button></div>
+    <div class="inv-foot"><span class="hint">Each slot holds one stack of up to 25 units of one ore. Drag stacks to rearrange or pour them together; drag one off the grid (or press âœ•) to jettison it. Dock with the cargo ship to stow stacks in its storage; sell at the Hub.</span><button id="invClose" class="btn">Close &nbsp;<kbd>Tab</kbd></button></div>
   </div>
 </div>
 <div id="map" class="overlay" hidden>
@@ -613,7 +613,7 @@ function inDepotLane(p, m){ m=m||0; const dO=Math.hypot(STATION.pos.x,STATION.po
 const RING_BELT = {name:'Ring belt', rMin:400000, rMax:450000, count:5600, size:[16,54], amount:[30,95], spread:9000, barren:0.55,
   ores:{iron:.48, copper:.3, gold:.12, platinum:.06, crystal:.04}};
 const WORLD_EDGE_BASE = 11800;   // zone edge, in base units beyond the planet surface
-const GRAVITY_SURFACE = 55;      // u/s² at the planet surface, falling off with the square of distance
+const GRAVITY_SURFACE = 55;      // u/sÂ² at the planet surface, falling off with the square of distance
 // Map positions are chart units (0-100 wide); light-years derive from them.
 // The player's own cargo ship (the carrier with the hangar) warps with them and is the same in every zone; belts are where
 // ore is cut, and the Hub is the one zone with a colony that buys it.
@@ -677,7 +677,7 @@ let WORLD_R = 14000*WORLD_SCALE, planetR = 20000;   // both set per zone in load
 // past it astern. pos/q are its world transform; everything about docking is computed in the carrier's local frame.
 const STATION = {pos:V3(0,0,425000), q:new THREE.Quaternion(), qInv:new THREE.Quaternion(), ang:Math.PI/2, orbit:425000, speed:34, vel:V3()};
 // The depot is a carrier hull along the X axis with four open hangar bays on its flanks (two per side).
-// Hull runs from the engine bells at x≈-3550 to the prow tip at x≈4600; the collision box covers the fat part and the prow is a cone (see depotCollide).
+// Hull runs from the engine bells at xâ‰ˆ-3550 to the prow tip at xâ‰ˆ4600; the collision box covers the fat part and the prow is a cone (see depotCollide).
 const DEPOT = {half:V3(3700,540,900), prow:{x0:3700, x1:4600, r0:800}, bays:[]};
 // One hangar runs straight through the hull amidships, open on both flanks. Each "bay" below is one of its two mouths:
 // enter through it and the ship taxis to the pad at the FAR end, parked nose-out, so it leaves straight ahead and never turns.
@@ -702,9 +702,9 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.10';
+const GAME_VERSION = '0.9.11';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
-document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
+document.getElementById('menuVersion').textContent = 'Belt Runner 3D Â· v' + GAME_VERSION;
 
 // ---------------------------------------------------------------- state
 const state = {
@@ -727,7 +727,7 @@ const DEPOT_UPGRADES={
   laser:{name:'Cargo ship mining laser', levels:[null,{range:12000,rate:2},{range:20000,rate:4},{range:32000,rate:7}], costs:[5000,14000,40000]},
   collectors:{name:'Collector drones', levels:[null,{ships:1,cap:120,speed:260,range:20000},{ships:2,cap:180,speed:300,range:35000},{ships:3,cap:260,speed:340,range:60000}], costs:[8000,20000,45000]},
 };
-function describeDepot(k,i){ const L=DEPOT_UPGRADES[k].levels[i]; if (!L) return 'not installed'; return k==='radar' ? `pulse every ${L.period}s · ${fmt(L.range)} range` : k==='laser' ? `${fmt(L.range)} reach · ${L.rate} u/s · hardness ≤ ${i+1}` : `${L.ships} drone${L.ships>1?'s':''} · ${L.cap} u hold · ${fmt(L.range)} range`; }
+function describeDepot(k,i){ const L=DEPOT_UPGRADES[k].levels[i]; if (!L) return 'not installed'; return k==='radar' ? `pulse every ${L.period}s Â· ${fmt(L.range)} range` : k==='laser' ? `${fmt(L.range)} reach Â· ${L.rate} u/s Â· hardness â‰¤ ${i+1}` : `${L.ships} drone${L.ships>1?'s':''} Â· ${L.cap} u hold Â· ${fmt(L.range)} range`; }
 const depotPulse={on:false, t:0, r:0, cd:2}, depotLaser={rock:null, hit:null, retarget:0, since:0, toastT:0, yaw:0, pitch:0.15, firing:false};
 const keys={}, mouse={x:0,y:0,inside:false,down:false};
 
@@ -767,7 +767,7 @@ const shipRight = () => V3(-1,0,0).applyQuaternion(ship.q);
 // ---------------------------------------------------------------- music
 // Generative soundtrack, all synthesised. Most of the time it is a slow ambient bed: a detuned pad drifting through four
 // chords under a sub drone, with echoing sparkle notes and the odd distant swell. Every few minutes a groove fades in for a
-// minute or so — kick, hats, snare, a bouncing bassline and a square-wave arp on the same chords — then dissolves back.
+// minute or so â€” kick, hats, snare, a bouncing bassline and a square-wave arp on the same chords â€” then dissolves back.
 // Recorded audio comes from sfx/<name>.mp3 when the page is served over http. Opened straight from disk (file://) the
 // browser refuses fetch, so the same bytes come from sfx/sfx.data.js, a base64 pack built by build-sfx-data.ps1, which
 // is also the fallback if a fetch fails for any other reason. Both paths hand back an ArrayBuffer for decodeAudioData.
@@ -782,7 +782,7 @@ async function fetchAudio(name){
 const MUSIC_PROC=(()=>{
   let ctx=null, out=null, noise=null, on=true, timer=null, onGroove=null, onTrack=null;
   let step=0, nextT=0, mode='ambient', modeUntil=0, chord=0, groove=null, pad=null, sub=null, delay=null, lfo=null, track=0, STEP=60/112/2;
-  const hz=m=>440*Math.pow(2,(m-69)/12);   // MIDI note → Hz
+  const hz=m=>440*Math.pow(2,(m-69)/12);   // MIDI note â†’ Hz
   const ch=(root, ...notes)=>({root:hz(root), rootMidi:root, notes:notes.map(hz)});
   // Pad recipes: each is a set of oscillators per chord note [wave, detune cents, gain, octave multiple]
   const PADS={
@@ -919,40 +919,38 @@ const MUSIC_PROC=(()=>{
     set onGroove(fn){ onGroove=fn; }, set onTrack(fn){ onTrack=fn; },
     get state(){ return ctx?ctx.state:'none'; }, get step(){ return step; }, cue(){ modeUntil=0; } };   // cue(): bring the next section on at the next bar (debug)
 })();
-// The soundtrack: no songs. A recorded deep-space ambience bed (ElevenLabs) plays quietly under the procedural pad engine
-// in ambient-only mode, which keeps the harmony moving: its chords change every half minute and it drifts to a new pad
-// colour every few minutes, so no one note ever sits still. Every couple of minutes a short recorded beat phrase fades in
-// over the top and out again. If the bed cannot be loaded the pads simply play on their own.
+// The soundtrack: no songs and no synth pads. A recorded deep-space ambience bed (ElevenLabs) is the whole harmony: two
+// voices take turns playing it, each pitched to a different note of a minor scale, crossfading every half minute or so,
+// so the tone keeps moving instead of sitting on one note. Every couple of minutes a short recorded beat phrase fades in
+// over the top and out again. Nothing else plays; if the bed cannot be loaded only the beats remain.
 const MUSIC=(()=>{
-  const BEDS=['ambient_bed_a'], BEATS=['beat_1','beat_2','beat_3','beat_4'], BED_GAIN=.45;   // beds that are missing drop out of the rotation on their own
-  let ctx=null, out=null, on=true, vol=1, bed=null, bedIdx=Math.floor(Math.random()*BEDS.length), beat=null, useProc=false, timer=null, onTrack=null, onGroove=null, nextBeatAt=0, nextBedAt=0, procArgs=null;
+  const BEDS=['ambient_bed_a'], BEATS=['beat_1','beat_2','beat_3','beat_4'], BED_GAIN=.8;
+  const STEPS=[0,-5,-2,3,5,-3,2,7];   // semitone offsets the bed drifts between: a minor scale round the original note
+  let ctx=null, out=null, on=true, vol=1, bed=null, bedIdx=0, voice=null, semi=0, beat=null, timer=null, onTrack=null, onGroove=null, nextBeatAt=0, nextShiftAt=0;
   const bufs={}, rnd=(a,b)=>a+Math.random()*(b-a);
-  function init(c, master, noiseSrc){
-    if (ctx) return; ctx=c; procArgs=[c, master, noiseSrc];
-    out=ctx.createGain(); out.gain.value=on?0.55*vol:0; out.connect(ctx.destination);   // its own path to the speakers, so the music slider is independent of the sound slider
-    // the moving pads: the procedural engine, grooves disabled, at a level that sits over the bed
-    MUSIC_PROC.ambientOnly=true; MUSIC_PROC.setOn(on); MUSIC_PROC.setVolume(vol*0.8); MUSIC_PROC.init(c, master, noiseSrc);
-    (async()=>{   // any bed that is there will do; with none the pads carry the ambience alone
-      for (let k=0;k<BEDS.length;k++){ const i=(bedIdx+k)%BEDS.length; if (await load(BEDS[i])){ startBed(i); return; } }
-      fallback();
+  function init(c){
+    if (ctx) return; ctx=c;
+    out=ctx.createGain(); out.gain.value=on?0.55*vol:0; out.connect(ctx.destination);   // its own path to the speakers, so the ambience slider is independent of the sound slider
+    (async()=>{
+      for (let k=0;k<BEDS.length;k++){ if (await load(BEDS[k])){ bedIdx=k; startVoice(0, 4); nextShiftAt=ctx.currentTime+rnd(20,40); break; } }
+      if (!timer) timer=setInterval(tick, 1000); nextBeatAt=ctx.currentTime+rnd(25,60); for (const b of BEATS) load(b);
     })();
   }
-  function fallback(){ useProc=true; if (!timer) timer=setInterval(tick, 1000); nextBeatAt=ctx.currentTime+rnd(25,60); for (const b of BEATS) load(b); }
   function load(name){ if (bufs[name]) return Promise.resolve(true); return fetchAudio(name).then(b=>ctx.decodeAudioData(b)).then(buf=>{ bufs[name]=buf; return true; }).catch(()=>false); }
-  function startBed(i){
-    const src=ctx.createBufferSource(), g=ctx.createGain(); src.buffer=bufs[BEDS[i]]; src.loop=true; g.gain.value=0; src.connect(g); g.connect(out); src.start(); g.gain.setTargetAtTime(BED_GAIN, ctx.currentTime, 4);
-    if (bed){ const old=bed; old.g.gain.setTargetAtTime(0, ctx.currentTime, 4); setTimeout(()=>{ try{ old.src.stop(); }catch(e){} }, 14000); }
-    bed={src, g}; bedIdx=i; nextBedAt=ctx.currentTime+rnd(150,240); if (!nextBeatAt) nextBeatAt=ctx.currentTime+rnd(25,60);   // beds rotate every few minutes so the harmony keeps moving; the first beat is never far off
-    load(BEDS[(i+1)%BEDS.length]); for (const b of BEATS) load(b);
-    if (!timer) timer=setInterval(tick, 1000);
+  // a voice: the bed looping at a pitch, started somewhere along its length; the previous voice fades out as the new one fades in
+  function startVoice(s, fade){
+    const buf=bufs[BEDS[bedIdx]], src=ctx.createBufferSource(), g=ctx.createGain(); src.buffer=buf; src.loop=true; src.playbackRate.value=Math.pow(2, s/12);
+    g.gain.value=0; src.connect(g); g.connect(out); src.start(0, Math.random()*buf.duration*0.8); g.gain.setTargetAtTime(BED_GAIN, ctx.currentTime, fade);
+    if (voice){ const old=voice; old.g.gain.setTargetAtTime(0, ctx.currentTime, fade); setTimeout(()=>{ try{ old.src.stop(); }catch(e){} }, fade*4000+500); }
+    voice={src, g}; bed=voice; semi=s;
   }
   function tick(){
     if (!ctx || ctx.state!=='running') return;
     const t=ctx.currentTime;
-    if (bed && t>=nextBedAt && BEDS.length>1){ const n=(bedIdx+1)%BEDS.length; nextBedAt=Infinity; load(BEDS[n]).then(ok=>{ if (ok) startBed(n); else { BEDS.splice(n,1); bedIdx=BEDS.indexOf(BEDS[bedIdx])<0?0:bedIdx; nextBedAt=Infinity; } }); }   // a bed that is not there is dropped from the rotation
+    if (voice && t>=nextShiftAt){ let s; do { s=STEPS[Math.floor(Math.random()*STEPS.length)]; } while (s===semi); startVoice(s, 5); nextShiftAt=t+rnd(22,45); }
     if (!beat && t>=nextBeatAt) playBeat();
   }
-  // a beat phrase: fades in over three seconds, rides the bed, fades out before its end, then a long quiet gap
+  // a beat phrase: fades in over a couple of seconds, rides the bed, fades out before its end, then a long quiet gap
   function playBeat(){
     const ready=BEATS.filter(b=>bufs[b]); if (!ready.length){ nextBeatAt=ctx.currentTime+20; return; }
     const name=ready[Math.floor(Math.random()*ready.length)], buf=bufs[name], t=ctx.currentTime;
@@ -961,11 +959,11 @@ const MUSIC=(()=>{
     beat={src, g, name}; src.onended=()=>{ beat=null; nextBeatAt=ctx.currentTime+rnd(70,150); };
   }
   return { init,
-    setOn(v){ on=v; MUSIC_PROC.setOn(v); if (out) out.gain.setTargetAtTime(v?0.55*vol:0, ctx.currentTime, .3); }, get on(){ return on; },
-    setVolume(v){ vol=Math.max(0, Math.min(1, v)); MUSIC_PROC.setVolume(vol*0.8); if (out) out.gain.setTargetAtTime(on?0.55*vol:0, ctx.currentTime, .08); }, get volume(){ return vol; },
-    get mode(){ return beat?'beat':'ambient'; }, get track(){ return beat?beat.name:MUSIC_PROC.track+(bed?' + '+BEDS[bedIdx]:''); }, get recorded(){ return !!bed; }, get pads(){ return MUSIC_PROC.track; },
+    setOn(v){ on=v; if (out) out.gain.setTargetAtTime(v?0.55*vol:0, ctx.currentTime, .3); }, get on(){ return on; },
+    setVolume(v){ vol=Math.max(0, Math.min(1, v)); if (out) out.gain.setTargetAtTime(on?0.55*vol:0, ctx.currentTime, .08); }, get volume(){ return vol; },
+    get mode(){ return beat?'beat':'ambient'; }, get track(){ return beat?beat.name:(bed?`${BEDS[bedIdx]} ${semi>=0?'+':''}${semi} st`:'silent'); }, get recorded(){ return !!bed; }, get semitone(){ return semi; },
     set onGroove(fn){ onGroove=fn; }, set onTrack(fn){ onTrack=fn; },
-    get state(){ return ctx?ctx.state:'none'; }, get step(){ return MUSIC_PROC.step; }, cue(){ if (!beat) playBeat(); else MUSIC_PROC.cue(); } };
+    get state(){ return ctx?ctx.state:'none'; }, get step(){ return 0; }, cue(){ if (!beat) playBeat(); else nextShiftAt=0; } };
 })();
 
 const SFX=(()=>{
@@ -1674,7 +1672,7 @@ function collideDebris(){
   }
 }
 function coolDebris(b){ if (!b.hot) return; b.mesh.material=b.base; if (--b.hot.userData.users<=0) b.hot.dispose(); b.hot=null; }
-// Big rocks break into smaller mineable rocks (colossal → giants → large → small); only a small rock's remains are scrap.
+// Big rocks break into smaller mineable rocks (colossal â†’ giants â†’ large â†’ small); only a small rock's remains are scrap.
 // A quarter of a big rock's ore comes loose at once, the rest is carried by its fragments.
 const SPLIT_CLASS={colossal:'giant', giant:'large', large:'small'};
 function splitRock(a, vel){
@@ -1697,8 +1695,8 @@ function breakRock(a, byDepot){
   const k=splits ? splitRock(a, vel) : 0;
   // the dish works on its own, so its breaks are only announced every 20 s or so; your own always are
   const quiet=byDepot && state.time-depotLaser.toastT<20; if (byDepot && !quiet) depotLaser.toastT=state.time;
-  if (!quiet){ const who=byDepot?'Cargo ship dish: ':'', ore=a.barren?'':` · ${Math.round(loose)} u ${ORES[a.ore].name} loose`;
-    toast(splits ? `${who}${rockName(a)} broken into ${k} ${SPLIT_CLASS[a.cls]} rocks${ore}` : a.barren ? `${who}${rockName(a)} broken · scrap only` : `${who}${rockName(a)} broken${ore}`); }
+  if (!quiet){ const who=byDepot?'Cargo ship dish: ':'', ore=a.barren?'':` Â· ${Math.round(loose)} u ${ORES[a.ore].name} loose`;
+    toast(splits ? `${who}${rockName(a)} broken into ${k} ${SPLIT_CLASS[a.cls]} rocks${ore}` : a.barren ? `${who}${rockName(a)} broken Â· scrap only` : `${who}${rockName(a)} broken${ore}`); }
   a.dead=true; a.hp=0; a.respawnAt=state.time+300; removeAsteroid(a); a.inScene=false;
   if (target && target.obj===a) target=null;
   if (parked && parked.obj===a) parked=null;
@@ -1718,10 +1716,10 @@ function updateDrops(dt){
         const free=cargoRoom(d.ore), take=Math.min(d.amount, free);
         if (take>0.01){ state.cargo[d.ore]+=take; state.mined+=take; state.minedBy[d.ore]=(state.minedBy[d.ore]||0)+take; d.amount-=take; if (take>=0.5){ toast(`+${Math.round(take)} u ${ORES[d.ore].name}`); SFX.pickup(); } }
         if (d.amount<=0.05){ scene.remove(d.group); drops.splice(i,1); continue; }
-        if (state.time-dropFullT>5){ dropFullT=state.time; toast('Cargo hold full · head back to the cargo ship'); }
+        if (state.time-dropFullT>5){ dropFullT=state.time; toast('Cargo hold full Â· head back to the cargo ship'); }
         d.vel.addScaledVector(to.divideScalar(dist), -60);   // full hold: the pickup is nudged back out
       } else if (dist<1500 && cargoRoom(d.ore)>0.01){
-        const pull=1200+2400*(1-dist/1500);   // u/s² of magnetic pull, strongest up close
+        const pull=1200+2400*(1-dist/1500);   // u/sÂ² of magnetic pull, strongest up close
         d.vel.addScaledVector(to.divideScalar(dist), pull*dt);
         // steer the drift toward the ship so a pickup never orbits it: kill velocity that is not aimed at the hull
         const along=d.vel.dot(to); d.vel.multiplyScalar(0.6).addScaledVector(to, along*0.4);
@@ -1853,7 +1851,7 @@ const COLONY_SITES=[
   {name:'Meridian Colony', pos:V3(0,0,0), scale:1, rot:0, main:true},
   {name:'Vesper Station', pos:V3(230000, 26000, -150000), scale:0.55, rot:0.8},
   {name:'Kestrel Yards', pos:V3(-270000, -18000, 95000), scale:0.48, rot:2.4},
-  {name:'Tannhäuser Ring', pos:V3(110000, -40000, 275000), scale:0.62, rot:4.1},
+  {name:'TannhÃ¤user Ring', pos:V3(110000, -40000, 275000), scale:0.62, rot:4.1},
 ];
 const UPV=V3(0,1,0);
 const cw=(c,x,y,z)=>V3(x,y,z).multiplyScalar(c.scale).applyAxisAngle(UPV, c.rot).add(c.pos);   // a colony-local point (scaled) in world space
@@ -2197,7 +2195,7 @@ function loadZone(z){
   if (!docked && !z.hub && (ship.pos.length()<planetR+400 || (Math.abs(lp.x)<H.x+40 && Math.abs(lp.y)<H.y+40 && Math.abs(lp.z)<H.z+40 && !bayCorridor(ship.pos)))) spawnAtDepot();
 }
 
-// ship — a parametric model rebuilt from the player's paint, trim, wing style and every refit level
+// ship â€” a parametric model rebuilt from the player's paint, trim, wing style and every refit level
 const HULL_PAINTS=['#D9DEF0','#8E96B4','#3A4368','#B33A3A','#2F6F8F','#6B8F3A','#C07A2A','#1E2130'];
 const TRIM_PAINTS=['#F2A33A','#5ED3F0','#FF2E63','#6BD69A','#B98CFF','#FFFFFF','#FFD36B','#D0834C'];
 const WING_STYLES={delta:'Delta', swept:'Swept', forward:'Forward', twin:'Twin boom'};
@@ -2215,7 +2213,7 @@ const engineMat=new THREE.MeshStandardMaterial({color:0x3a4058, metalness:.85, r
 const lightRedMat=new THREE.MeshBasicMaterial({color:0xff4040}), lightGreenMat=new THREE.MeshBasicMaterial({color:0x40ff80});
 const exhaustTex=glowTexture('rgba(220,245,255,1)','rgba(94,211,240,.6)');
 let exhausts=[], navLights=[], laserMuzzle=new THREE.Object3D();   // the game is third person only: the chase camera is the view
-// the ship's dish mount, under the nose: dish forward (+x of the turret → +z of the ship), yaw ring up against the hull
+// the ship's dish mount, under the nose: dish forward (+x of the turret â†’ +z of the ship), yaw ring up against the hull
 const SHIP_DISH_POS=V3(0,-4.5,7), SHIP_DISH_ARC=Math.PI/2, shipDishQ=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(V3(0,0,1), V3(0,-1,0), V3(1,0,0))), shipDishQInv=shipDishQ.clone().invert();
 let shipDish=null, shipDishMount=null; const shipAim={yaw:0, pitch:0, aimed:false};
 let autoMine=true, laserAim=null, laserHit=null;   // auto-mine: the dish picks the nearest rock in reach and cuts it on its own; laserAim is where the beam is going this frame
@@ -2408,8 +2406,8 @@ function unloadDrone(c){
   let units=0, left=0;
   for (const k in c.cargo){ const u=c.cargo[k]; if (u<=0.01){ delete c.cargo[k]; continue; } const fit=Math.min(u, storeRoom(k)); if (fit>0.01){ state.store[k]=(state.store[k]||0)+fit; c.cargo[k]-=fit; units+=fit; } if (c.cargo[k]<=0.01) delete c.cargo[k]; else left+=c.cargo[k]; }
   c.load=left;
-  if (units>0.5){ state.droneUnits+=units; invSig=''; toast(`Collector ${c.idx+1} stowed ${Math.round(units)} u aboard the cargo ship${left>0.5?` · storage full, ${Math.round(left)} u kept aboard`:''}`); if (docked && !el.station.hidden) renderPanel(); }
-  else if (left>0.5) toast(`Collector ${c.idx+1} · cargo ship storage is full`, true);
+  if (units>0.5){ state.droneUnits+=units; invSig=''; toast(`Collector ${c.idx+1} stowed ${Math.round(units)} u aboard the cargo ship${left>0.5?` Â· storage full, ${Math.round(left)} u kept aboard`:''}`); if (docked && !el.station.hidden) renderPanel(); }
+  else if (left>0.5) toast(`Collector ${c.idx+1} Â· cargo ship storage is full`, true);
 }
 function updateCollectors(dt){
   const L=DEPOT_UPGRADES.collectors.levels[state.depot.collectors], want=L?L.ships:0;
@@ -2661,7 +2659,7 @@ window.addEventListener('keydown', e => {
   if (!started){ startGame(); return; }
   if (paused){ if (e.key==='Escape') resumeGame(); return; }   // nothing else answers while the pause menu is up
   const k=e.key.toLowerCase(); keys[k]=true;
-  if (k==='f' && !e.repeat){ if (docked) toggleServices(); else if (pilotingCarrier() && nearColony()) toast('Berth at the colony first · press E for an approach', true); else if (!pilotingCarrier() && nearStation()) toast('Fly into the hangar to dock, or press E for an auto-dock', true); }
+  if (k==='f' && !e.repeat){ if (docked) toggleServices(); else if (pilotingCarrier() && nearColony()) toast('Berth at the colony first Â· press E for an approach', true); else if (!pilotingCarrier() && nearStation()) toast('Fly into the hangar to dock, or press E for an auto-dock', true); }
   if (k==='e' && !e.repeat) startApproach();
   if (k==='t' && !e.repeat) callTow();
   if (k==='n' && !e.repeat) toggleMap();
@@ -2693,10 +2691,10 @@ window.addEventListener('wheel', e => {
 }, {passive:false});
 document.addEventListener('mouseleave', () => { mouse.inside=false; });
 // ---- start menu
-function toggleAutoMine(){ autoMine=!autoMine; toast(autoMine?'Mining laser on · the dish cuts what you aim at, or the nearest rock in reach':'Mining laser off'); save(); }
+function toggleAutoMine(){ autoMine=!autoMine; toast(autoMine?'Mining laser on Â· the dish cuts what you aim at, or the nearest rock in reach':'Mining laser off'); save(); }
 function toggleSound(){ SFX.init(); SFX.setMuted(!SFX.muted); toast(SFX.muted?'Sound off':'Sound on'); save(); syncSettings(); }
 function toggleMusic(){ SFX.init(); MUSIC.setOn(!MUSIC.on); toast(MUSIC.on?'Ambience on':'Ambience off'); save(); syncSettings(); }
-function cycleQuality(){ const keys=Object.keys(QUALITY); quality=keys[(keys.indexOf(quality)+1)%keys.length]; applyQuality(); toast(`Quality: ${QUALITY[quality].label}${(quality==='low')!==(savedQuality==='low')?' · anti-aliasing changes on next load':''}`); save(); syncSettings(); }
+function cycleQuality(){ const keys=Object.keys(QUALITY); quality=keys[(keys.indexOf(quality)+1)%keys.length]; applyQuality(); toast(`Quality: ${QUALITY[quality].label}${(quality==='low')!==(savedQuality==='low')?' Â· anti-aliasing changes on next load':''}`); save(); syncSettings(); }
 // HUD size: a slider from 70% to 160%; the fixed HUD panes scale about the corner they hang from, the boresight and markers stay as they are
 let hudSize=1;
 function applyHudSize(){ hudSize=Math.max(.7, Math.min(1.6, hudSize)); document.documentElement.style.setProperty('--hudScale', String(hudSize)); }
@@ -2708,14 +2706,14 @@ volEl.sfx.addEventListener('input', ()=>{ SFX.init(); SFX.setVolume(volEl.sfx.va
 volEl.sfx.addEventListener('change', ()=>{ SFX.click(); save(); });
 volEl.music.addEventListener('input', ()=>{ SFX.init(); MUSIC.setVolume(volEl.music.value/100); volEl.musicT.textContent=volEl.music.value+'%'; });
 volEl.music.addEventListener('change', save);
-MUSIC.onGroove=name=>{ if (started) toast(`♪ ${name} · groove on the comm channel`); };
-MUSIC.onTrack=name=>{ if (started) toast(`♪ Now drifting: ${name}`); };
+MUSIC.onGroove=name=>{ if (started) toast(`â™ª ${name} Â· groove on the comm channel`); };
+MUSIC.onTrack=name=>{ if (started) toast(`â™ª Now drifting: ${name}`); };
 let hasSave=false, newArmed=false;
 function showMenuPage(p){ for (const m of [el.menuMain, el.menuSettings, el.menuControls]) m.hidden=m!==p; }
 function renderMenu(){
   el.mContinue.hidden=!hasSave && !started;
   el.mContinue.childNodes[0].nodeValue=started?'Resume':'Continue';
-  el.mSaveInfo.textContent=started?'paused':hasSave?`${state.custom.callsign} · ${fmt(state.credits)} cr · ${zone.name}`:'';
+  el.mSaveInfo.textContent=started?'paused':hasSave?`${state.custom.callsign} Â· ${fmt(state.credits)} cr Â· ${zone.name}`:'';
   el.mNew.classList.toggle('primary', !hasSave && !started); el.mNewInfo.textContent=(hasSave||started)?'wipes the save':'';
   syncSettings(); showMenuPage(el.menuMain);
 }
@@ -2867,7 +2865,7 @@ function radiusAlong(a, nWorld){   // distance from the rock's centre to its sur
   return rockSurface(a, tmpU)*a.baseR/k;
 }
 function rockPair(a, b){
-  tmpN.subVectors(b.pos, a.pos); const d=tmpN.length(); if (d<1e-3 || d>(a.r+b.r)*3) return;   // 3×: a spindle reaches almost three radii along its axis
+  tmpN.subVectors(b.pos, a.pos); const d=tmpN.length(); if (d<1e-3 || d>(a.r+b.r)*3) return;   // 3Ã—: a spindle reaches almost three radii along its axis
   tmpN.divideScalar(d);
   const ra=radiusAlong(a, tmpN), rb=radiusAlong(b, tmpN.clone().negate()), minD=ra+rb+4; if (d>=minD) return;
   const ma=a.r*a.r*a.r, mb=b.r*b.r*b.r, tot=ma+mb, overlap=minD-d;
@@ -2908,7 +2906,7 @@ function bumpRock(a, dir, speed){
 }
 function enterHangar(b){
   docked=true; dockBay=b; mining=false; laserOn=false; parked=null; depWait=true; throttle=0; ship.vel.set(0,0,0);
-  el.center.classList.remove('on'); el.dockbox.hidden=false; el.dbTitle.textContent=`Docked · ${b.name} · ${CARGO_SHIP}${zone.hub?' · '+zone.colony:''}`; SFX.clip('dock', SFX.dock);
+  el.center.classList.remove('on'); el.dockbox.hidden=false; el.dbTitle.textContent=`Docked Â· ${b.name} Â· ${CARGO_SHIP}${zone.hub?' Â· '+zone.colony:''}`; SFX.clip('dock', SFX.dock);
   // the hangar view: HUD clears, the camera walks slowly round the ship on the pad, and the services panel opens beside it
   document.body.classList.add('in-hangar'); hangarT=0; renderPanel(); el.station.hidden=false; openInventory();   // the inventory opens on the left, with the cargo ship's storage under your hold
   if (tow && tow.phase==='haul'){
@@ -2918,8 +2916,8 @@ function enterHangar(b){
     if (state.fuel<stat('tank').cap*0.3) state.fuel=stat('tank').cap*0.3;
     disabled=false; lowHullWarned=false;
     tow.phase='leave'; tow.t=0; tow.dir.copy(depotDir(V3(0,0,-b.side))); tow.pos.copy(ship.pos).add(V3(0,45,0));   // the tug carries on out of the far mouth
-    toast(`Tow complete · ${fmt(fee)} cr fee${tow.reason==='breach'?' · emergency hull patch applied':''}`);
-  } else toast(zone.hub ? `Docked in ${b.name} · the colony market is open` : `Docked in ${b.name} · stow cargo from the services panel`);
+    toast(`Tow complete Â· ${fmt(fee)} cr fee${tow.reason==='breach'?' Â· emergency hull patch applied':''}`);
+  } else toast(zone.hub ? `Docked in ${b.name} Â· the colony market is open` : `Docked in ${b.name} Â· stow cargo from the services panel`);
   save();
 }
 // ---- auto-dock cutscene: press E near the carrier and the ship flies itself into the nearest bay while the camera watches
@@ -2931,9 +2929,9 @@ let cut=null;
 const HOLD={name:'Holding station', berth:true, hold:true, side:1, park:V3(-40000, 14000, 56000), q:levelHeading(V3(40000, -9000, -56000).normalize())};
 function enterBerth(b){
   docked=true; dockBay=b; mining=false; laserOn=false; parked=null; depWait=true; throttle=0; ship.vel.set(0,0,0);
-  el.center.classList.remove('on'); el.dockbox.hidden=false; el.dbTitle.textContent=`${b.hold?'Holding station':'Berthed · '+b.name} · ${zone.colony}`; SFX.clip('dock', SFX.dock); setTimeout(()=>SFX.clip('colony_control'), 900);
+  el.center.classList.remove('on'); el.dockbox.hidden=false; el.dbTitle.textContent=`${b.hold?'Holding station':'Berthed Â· '+b.name} Â· ${zone.colony}`; SFX.clip('dock', SFX.dock); setTimeout(()=>SFX.clip('colony_control'), 900);
   document.body.classList.remove('in-cut'); document.body.classList.add('in-hangar'); hangarT=0; renderPanel(); el.station.hidden=false; openInventory();
-  toast(`Holding station off ${zone.colony} · the market is open`); save();
+  toast(`Holding station off ${zone.colony} Â· the market is open`); save();
 }
 function holdAtColony(){ if (docked || cut) return; ship.pos.copy(HOLD.park); ship.q.copy(HOLD.q); placeDepot(); enterBerth(HOLD); }
 // Every arrival at the Hub is a cutscene: the cargo ship comes in from deep space behind its holding point, sweeps wide past
@@ -2949,21 +2947,21 @@ function startHoldApproach(){
   const curve=new THREE.CatmullRomCurve3(pts, false, 'centripetal'), len=curve.getLength();
   cut={mode:'dock', bay:HOLD, world:true, curve, t:0, dur:Math.max(14, Math.min(28, len/6500)), len};
   if (parked) releasePark(); throttle=0;
-  el.cineCap.textContent=`Arrival · ${zone.colony}`; el.cine.classList.add('on'); el.center.classList.remove('on'); SFX.chime();
+  el.cineCap.textContent=`Arrival Â· ${zone.colony}`; el.cine.classList.add('on'); el.center.classList.remove('on'); SFX.chime();
 }
 function startBerthApproach(){ startHoldApproach(); }
 function startApproach(){
   if (!started || docked || cut || tow || disabled || warping || mapOpen) return;
   if (pilotingCarrier()){ startBerthApproach(); return; }
-  if (!nearStation()){ toast('Too far from the cargo ship for an approach · close to 4,500', true); return; }
+  if (!nearStation()){ toast('Too far from the cargo ship for an approach Â· close to 4,500', true); return; }
   const b=nearestBay().bay, L0=depotLocal(ship.pos), side=b.side;
   const app=b.openingL.clone().add(V3(0,0,side*1400)), mouth=b.openingL.clone(), inner=V3(b.cx,-110,0), pad=b.parkL.clone();   // straight through to the far pad
   const pts=[L0]; if (L0.distanceTo(app)>900) pts.push(app); pts.push(mouth, inner, pad);
   const curve=new THREE.CatmullRomCurve3(pts, false, 'centripetal'); const len=curve.getLength();
   cut={mode:'dock', bay:b, curve, t:0, dur:Math.max(5, Math.min(12, len/380)), len};
   if (parked) releasePark(); mining=false; laserOn=false; throttle=0;
-  el.cineCap.textContent=`Approach · ${b.name} · ${CARGO_SHIP}`; el.cine.classList.add('on'); el.center.classList.remove('on');
-  SFX.chime(); SFX.clip('approach_control'); toast(`Approach control has the ship · ${b.name}`);
+  el.cineCap.textContent=`Approach Â· ${b.name} Â· ${CARGO_SHIP}`; el.cine.classList.add('on'); el.center.classList.remove('on');
+  SFX.chime(); SFX.clip('approach_control'); toast(`Approach control has the ship Â· ${b.name}`);
 }
 // Departure cutscene: the ship taxis off the pad, out through the far mouth and clear of the hull, then control comes back
 // with it already under way. Launched by W on the pad or the Depart button.
@@ -2978,8 +2976,8 @@ function startDeparture(){
   const pts=[b.parkL.clone(), V3(0,-112,out*620), V3(0,-40,out*1000), V3(0,60,out*2500)];
   const curve=new THREE.CatmullRomCurve3(pts, false, 'centripetal');
   cut={mode:'depart', bay:b, curve, t:0, dur:5.2, len:curve.getLength()};
-  el.cineCap.textContent=`Departure · ${b.name} · ${CARGO_SHIP}`; el.cine.classList.add('on'); el.center.classList.remove('on');
-  SFX.chime(); toast('Departing · approach control has the ship');
+  el.cineCap.textContent=`Departure Â· ${b.name} Â· ${CARGO_SHIP}`; el.cine.classList.add('on'); el.center.classList.remove('on');
+  SFX.chime(); toast('Departing Â· approach control has the ship');
 }
 function cutUpdate(dt){
   const C=cut; C.t+=dt; const k=Math.min(1, C.t/C.dur);
@@ -3015,7 +3013,7 @@ function dockUpdate(dt){
   // nothing sells or unloads on its own: cargo moves between the hold and the cargo ship's storage from the services panel
   // at the Hub the cargo ship buys fuel from the colony for credits; your ship's tank fills from the cargo ship's supply for free
   if (zone.hub && state.shipFuel<CARGO_FUEL_CAP){ const u=Math.min(CARGO_FUEL_RATE*dt, CARGO_FUEL_CAP-state.shipFuel, state.credits/CARGO_FUEL_PRICE); if (u>0){ state.shipFuel+=u; state.credits-=u*CARGO_FUEL_PRICE; fuelDryWarned=false; if (state.shipFuel>=CARGO_FUEL_CAP-0.01) toast('Cargo ship fuel supply full'); } }
-  const tank=stat('tank').cap; if (state.fuel<tank){ const u=Math.min(fuelRate()*dt, tank-state.fuel, state.shipFuel); if (u>0){ state.fuel+=u; state.shipFuel-=u; } else if (state.shipFuel<0.5 && !fuelDryWarned){ fuelDryWarned=true; toast('Cargo ship fuel supply is dry · resupply at the Hub', true); } }
+  const tank=stat('tank').cap; if (state.fuel<tank){ const u=Math.min(fuelRate()*dt, tank-state.fuel, state.shipFuel); if (u>0){ state.fuel+=u; state.shipFuel-=u; } else if (state.shipFuel<0.5 && !fuelDryWarned){ fuelDryWarned=true; toast('Cargo ship fuel supply is dry Â· resupply at the Hub', true); } }
   const hp=stat('hull').hp; if (state.hull<hp){ const u=Math.min(repairRate()*dt, hp-state.hull, state.credits/2); if (u>0){ state.hull+=u; state.credits-=u*2; lowHullWarned=false; } }
   // W departs, but only after it has been released once since docking (you usually fly in holding it)
   if (!key('w')) depWait=false; else if (!depWait) startDeparture();
@@ -3042,7 +3040,7 @@ function renderHangar(){
   el.hullSw.querySelectorAll('[data-hull]').forEach(b=>b.addEventListener('click',()=>{ c.hull=b.dataset.hull; buildShip(); renderHangar(); save(); }));
   el.trimSw.querySelectorAll('[data-trim]').forEach(b=>b.addEventListener('click',()=>{ c.trim=b.dataset.trim; buildShip(); renderHangar(); save(); }));
   el.wingSeg.querySelectorAll('[data-wings]').forEach(b=>b.addEventListener('click',()=>{ c.wings=b.dataset.wings; buildShip(); renderHangar(); save(); }));
-  el.dockedEyebrow.textContent=`Docked · ${c.callsign}`;
+  el.dockedEyebrow.textContent=`Docked Â· ${c.callsign}`;
 }
 function buyJump(){
   if (state.credits<JUMP_COST){ toast('Not enough credits', true); return; }
@@ -3054,11 +3052,11 @@ function cutsList(level){ const names=COMMON_KEYS.filter(k=>ORES[k].hardness<=le
 function describe(k,i){
   const L=UPGRADES[k].levels[i];
   switch(k){
-    case 'laser': return `${L.rate} u/s · hardness ≤ ${i+1} · ${cutsList(i+1)}`;
-    case 'cargo': return `${L.slots} slots · ${L.slots*STACK} u`;
-    case 'engine': return `${L.thrust} thrust · ${L.max} top speed`;
+    case 'laser': return `${L.rate} u/s Â· hardness â‰¤ ${i+1} Â· ${cutsList(i+1)}`;
+    case 'cargo': return `${L.slots} slots Â· ${L.slots*STACK} u`;
+    case 'engine': return `${L.thrust} thrust Â· ${L.max} top speed`;
     case 'tank': return `${L.cap} fuel`;
-    case 'scanner': return `${L.range} scan · ${L.mine} laser reach`;
+    case 'scanner': return `${L.range} scan Â· ${L.mine} laser reach`;
     case 'refinery': return L.bonus? `+${Math.round(L.bonus*100)}% sale price` : 'raw ore prices';
     case 'hull': return `${L.hp} hull points`;
   }
@@ -3080,7 +3078,7 @@ function takeStack(k, want){
 function stowAll(){
   let moved=0; for (const k of ORE_KEYS){ const u=Math.min(state.cargo[k], storeRoom(k)); if (u>0.01){ state.cargo[k]-=u; state.store[k]=(state.store[k]||0)+u; moved+=u; if (state.cargo[k]<0.01) state.cargo[k]=0; } }
   if (moved<0.5){ toast(cargoTotal()>0.5?'Cargo ship storage is full':'Nothing in the hold to stow', true); return; }
-  toast(`Stowed ${Math.round(moved)} u aboard the cargo ship${cargoTotal()>0.5?' · storage full, the rest stays in the hold':''}`); invSig=''; SFX.clip('stow', SFX.click); renderPanel(); save();
+  toast(`Stowed ${Math.round(moved)} u aboard the cargo ship${cargoTotal()>0.5?' Â· storage full, the rest stays in the hold':''}`); invSig=''; SFX.clip('stow', SFX.click); renderPanel(); save();
 }
 function takeAll(){
   let moved=0; for (const k of ORE_KEYS){ const u=Math.min(state.store[k]||0, cargoRoom(k)); if (u>0.01){ state.store[k]-=u; state.cargo[k]+=u; moved+=u; if (state.store[k]<0.01) state.store[k]=0; } }
@@ -3092,15 +3090,15 @@ function sellOre(keys, fromHold, fromStore){
   let cr=0, units=0;
   for (const k of keys){ let u=0; if (fromHold){ u+=state.cargo[k]; state.cargo[k]=0; } if (fromStore){ u+=state.store[k]||0; state.store[k]=0; } if (u>0.01){ cr+=u*price(k); units+=u; } }
   if (units<0.5){ toast('Nothing to sell', true); return; }
-  state.credits+=cr; state.earned+=cr; toast(`Sold ${Math.round(units)} u · +${fmt(cr)} cr`); SFX.clip('cash', SFX.cash); invSig=''; renderPanel(); save();
+  state.credits+=cr; state.earned+=cr; toast(`Sold ${Math.round(units)} u Â· +${fmt(cr)} cr`); SFX.clip('cash', SFX.cash); invSig=''; renderPanel(); save();
 }
 // the services panel only summarises the cargo: moving stacks between the hold and the storage is done in the inventory (Tab)
 let fuelDryWarned=false;
 function renderCargoSummary(){
   const sf=state.shipFuel;
-  return `<div class="inv-total" style="border-top:none;padding-top:0"><span>Ship hold</span><b style="color:var(--text)">${usedSlots()} / ${cargoSlots()} slots · ${Math.floor(cargoTotal())} u</b></div>`
-       + `<div class="inv-total" style="border-top:none;padding-top:4px"><span>${CARGO_SHIP} storage</span><b style="color:var(--text)">${storeUsed()} / ${STORE_SLOTS} slots · ${Math.floor(storeTotal())} u</b></div>`
-       + `<div class="inv-total" style="border-top:none;padding-top:4px"><span>${CARGO_SHIP} fuel supply</span><b style="color:${sf<CARGO_FUEL_CAP*0.2?'var(--amber)':'var(--text)'}">${Math.floor(sf)} / ${CARGO_FUEL_CAP} u${zone.hub?(sf<CARGO_FUEL_CAP-0.5?` · resupplying at ${CARGO_FUEL_PRICE} cr/u`:' · full'):' · your tank fills from it'}</b></div>`
+  return `<div class="inv-total" style="border-top:none;padding-top:0"><span>Ship hold</span><b style="color:var(--text)">${usedSlots()} / ${cargoSlots()} slots Â· ${Math.floor(cargoTotal())} u</b></div>`
+       + `<div class="inv-total" style="border-top:none;padding-top:4px"><span>${CARGO_SHIP} storage</span><b style="color:var(--text)">${storeUsed()} / ${STORE_SLOTS} slots Â· ${Math.floor(storeTotal())} u</b></div>`
+       + `<div class="inv-total" style="border-top:none;padding-top:4px"><span>${CARGO_SHIP} fuel supply</span><b style="color:${sf<CARGO_FUEL_CAP*0.2?'var(--amber)':'var(--text)'}">${Math.floor(sf)} / ${CARGO_FUEL_CAP} u${zone.hub?(sf<CARGO_FUEL_CAP-0.5?` Â· resupplying at ${CARGO_FUEL_PRICE} cr/u`:' Â· full'):' Â· your tank fills from it'}</b></div>`
        + `<p class="hint" style="margin:8px 0 0">Open the inventory (<kbd>Tab</kbd>) to move stacks between your hold and the cargo ship's storage. ${zone.hub?'The colony market below buys from both.':'Nothing sells here: the storage rides with the cargo ship, and the Hub buys the lot.'}</p>`;
 }
 function renderMarket(){
@@ -3108,11 +3106,11 @@ function renderMarket(){
   for (const k of ORE_KEYS){
     const h=state.cargo[k], s=state.store[k]||0; if (h+s<0.5) continue; any=true;
     const p=price(k), v=(h+s)*p; total+=v; const d=Math.round((state.market[k]-1)*100);
-    const delta=d===0?'':`<span class="delta ${d>0?'up':'down'}">${d>0?'▲':'▼'}${Math.abs(d)}%</span>`;
+    const delta=d===0?'':`<span class="delta ${d>0?'up':'down'}">${d>0?'â–²':'â–¼'}${Math.abs(d)}%</span>`;
     const exp=isExport(k)?`<span class="delta up">exotic +${Math.round((EXPORT_BONUS-1)*100)}%</span>`:'';
     rows+=`<tr><td><span class="dot" style="background:${ORES[k].color}"></span>${ORES[k].name}${exp}</td><td>${fmt(h)}</td><td>${fmt(s)}</td><td>${p.toFixed(1)}${delta}</td><td>${fmt(v)}</td><td><button class="link" data-sell="${k}">sell</button></td></tr>`;
   }
-  const list=ORE_KEYS.map(k=>{ const d=Math.round((state.market[k]-1)*100); return `<tr><td><span class="dot" style="background:${ORES[k].color}"></span>${ORES[k].name}${ORES[k].zone?' <span class="delta" style="color:var(--dim)">exotic</span>':''}</td><td class="dimmed">${ORES[k].hardness>state.up.laser+1?'needs laser Lv'+ORES[k].hardness:''}</td><td>${price(k).toFixed(1)}${d?`<span class="delta ${d>0?'up':'down'}">${d>0?'▲':'▼'}${Math.abs(d)}%</span>`:''}</td></tr>`; }).join('');
+  const list=ORE_KEYS.map(k=>{ const d=Math.round((state.market[k]-1)*100); return `<tr><td><span class="dot" style="background:${ORES[k].color}"></span>${ORES[k].name}${ORES[k].zone?' <span class="delta" style="color:var(--dim)">exotic</span>':''}</td><td class="dimmed">${ORES[k].hardness>state.up.laser+1?'needs laser Lv'+ORES[k].hardness:''}</td><td>${price(k).toFixed(1)}${d?`<span class="delta ${d>0?'up':'down'}">${d>0?'â–²':'â–¼'}${Math.abs(d)}%</span>`:''}</td></tr>`; }).join('');
   return `<h3 style="margin:22px 0 10px">${z.colony} market</h3>`+(any
     ? `<table class="manifest"><thead><tr><th>Ore</th><th>Hold</th><th>Storage</th><th>cr / u</th><th>Value</th><th></th></tr></thead><tbody>${rows}</tbody></table><div class="total"><span>Everything aboard</span><b>${fmt(total)} cr</b></div><div class="row-actions"><button class="btn primary" data-sellall="1">Sell everything</button><button class="btn" data-sellhold="1">Sell hold only</button><button class="btn" data-sellstore="1">Sell storage only</button></div>`
     : `<div class="empty">Nothing aboard to sell. Cut ore in a belt zone and bring it back.</div>`)
@@ -3130,20 +3128,20 @@ function renderPanel(){
   let html='';
   for (const k in UPGRADES){
     const u=UPGRADES[k], i=state.up[k], maxed=i>=u.costs.length;
-    const pips=Array.from({length:u.levels.length},(_,j)=>j<=i?'■':'<span>■</span>').join('');
-    const desc=maxed?`<b>${describe(k,i)}</b> · fully refitted`:`${describe(k,i)} → <b>${describe(k,i+1)}</b>`;
+    const pips=Array.from({length:u.levels.length},(_,j)=>j<=i?'â– ':'<span>â– </span>').join('');
+    const desc=maxed?`<b>${describe(k,i)}</b> Â· fully refitted`:`${describe(k,i)} â†’ <b>${describe(k,i+1)}</b>`;
     const btn=maxed?`<button class="btn" disabled>Max</button>`:`<button class="btn ${state.credits>=u.costs[i]?'primary':''}" data-up="${k}" ${state.credits<u.costs[i]?'disabled':''}>${fmt(u.costs[i])} cr</button>`;
     html+=`<div class="up"><div class="up-head"><span class="up-name">${u.name}</span><span class="pips">${pips}</span></div><div class="up-desc">${desc}</div>${btn}</div>`;
   }
   html+=`<h3 style="margin:18px 0 10px">${CARGO_SHIP}</h3>`;
   for (const k in DEPOT_UPGRADES){
     const u=DEPOT_UPGRADES[k], i=state.depot[k], maxed=i>=u.costs.length;
-    const pips=Array.from({length:u.costs.length},(_,j)=>j<i?'■':'<span>■</span>').join('');
-    const desc=maxed?`<b>${describeDepot(k,i)}</b> · fully upgraded`:`${describeDepot(k,i)} → <b>${describeDepot(k,i+1)}</b>`;
+    const pips=Array.from({length:u.costs.length},(_,j)=>j<i?'â– ':'<span>â– </span>').join('');
+    const desc=maxed?`<b>${describeDepot(k,i)}</b> Â· fully upgraded`:`${describeDepot(k,i)} â†’ <b>${describeDepot(k,i+1)}</b>`;
     const btn=maxed?`<button class="btn" disabled>Max</button>`:`<button class="btn ${state.credits>=u.costs[i]?'primary':''}" data-dup="${k}" ${state.credits<u.costs[i]?'disabled':''}>${fmt(u.costs[i])} cr</button>`;
     html+=`<div class="up"><div class="up-head"><span class="up-name">${u.name}</span><span class="pips">${pips}</span></div><div class="up-desc">${desc}</div>${btn}</div>`;
   }
-  html+=`<p class="hint" style="margin:4px 0 10px">The dish leaves the ore it frees adrift for you to pick up. Collector drones gather it and stow it in the cargo ship's storage${state.droneUnits>0.5?` · <b>${fmt(state.droneUnits)} u</b> stowed so far`:''}.</p>`;
+  html+=`<p class="hint" style="margin:4px 0 10px">The dish leaves the ore it frees adrift for you to pick up. Collector drones gather it and stow it in the cargo ship's storage${state.droneUnits>0.5?` Â· <b>${fmt(state.droneUnits)} u</b> stowed so far`:''}.</p>`;
   html+=`<div class="up jump"><div class="up-head"><span class="up-name">Jump drive</span></div><div class="up-desc">${state.jump?'<b>Installed.</b> You can leave whenever you like.':'Leaves the belt for good. One purchase, no refunds.'}</div>${state.jump?'<button class="btn" disabled>Owned</button>':`<button class="btn ${state.credits>=JUMP_COST?'primary':''}" data-jump="1" ${state.credits<JUMP_COST?'disabled':''}>${fmt(JUMP_COST)} cr</button>`}</div>`;
   el.upgrades.innerHTML=html;
   el.upgrades.querySelectorAll('[data-up]').forEach(b=>b.addEventListener('click',()=>buy(b.dataset.up)));
@@ -3157,7 +3155,7 @@ function togglePark(){
   else { parked={obj:null}; toast('Holding position'); }
   ship.vel.set(0,0,0);
 }
-function releasePark(){ if (!parked) return; parked=null; toast('Released · drifting'); }
+function releasePark(){ if (!parked) return; parked=null; toast('Released Â· drifting'); }
 function radarPulse(force){
   if (!started || docked || warping) return;
   if (!force && (pulse || pulseCd>0)) return;
@@ -3174,9 +3172,9 @@ function impact(speed, at){
   state.hull=Math.max(big?1:0, state.hull-dmg); shake=Math.min(1, 0.3+dmg/60); SFX.hit();
   el.dmg.classList.remove('on'); void el.dmg.offsetWidth; el.dmg.classList.add('on');
   SPARKS.burst(at, 60+Math.round(dmg*2), 260, 0xffb060, 1.2);
-  toast(`Hull hit · −${dmg}`, true);
+  toast(`Hull hit Â· âˆ’${dmg}`, true);
   if (state.hull<=0){ requestTow('breach'); return; }
-  if (state.hull<stat('hull').hp*0.25 && !lowHullWarned){ lowHullWarned=true; toast('Hull critical · repair at the cargo ship', true); }
+  if (state.hull<stat('hull').hp*0.25 && !lowHullWarned){ lowHullWarned=true; toast('Hull critical Â· repair at the cargo ship', true); }
 }
 // ---------------------------------------------------------------- tow tug
 // A hull breach disables the ship: it drifts with no thrust or steering until a tug from the depot arrives,
@@ -3191,14 +3189,14 @@ function requestTow(reason){
     disabled=true; throttle=0; mining=false; laserOn=false; if (parked) releasePark();
     el.dmg.classList.add('wreck'); setTimeout(()=>el.dmg.classList.remove('wreck'), 1400);
     SFX.boom(true); SFX.alarm();
-    toast('Hull breach · systems down · distress beacon sent', true);
+    toast('Hull breach Â· systems down Â· distress beacon sent', true);
     // raiders that were on you strip the hold and leave
     if (pirates.some(p=>p.state==='attack')){
       let lost=0; for (const k of ORE_KEYS){ const l=state.cargo[k]*0.35; state.cargo[k]-=l; lost+=l; }
       for (const p of pirates){ p.state='idle'; p.wp=p.home.clone(); }
       if (lost>0.5) toast(`Raiders stripped ${Math.floor(lost)} u of cargo from the hold`, true);
     }
-  } else toast('Tow requested · tug inbound');
+  } else toast('Tow requested Â· tug inbound');
 }
 const towSpeed = T => Math.max(650, T.dist0/80);
 // orientation whose forward (+Z) points along dir with the wings level to the belt plane (world +Y up)
@@ -3212,7 +3210,7 @@ function towUpdate(dt){
   const T=tow; T.t+=dt;
   if (T.phase==='approach'){
     const to=ship.pos.clone().sub(T.pos), d=to.length();
-    if (d<=75){ T.phase='latch'; T.t=0; toast('Tug on station · latching'); SFX.chime(); }
+    if (d<=75){ T.phase='latch'; T.t=0; toast('Tug on station Â· latching'); SFX.chime(); }
     else { to.divideScalar(d); T.dir.copy(to); T.pos.addScaledVector(to, Math.min(d-70, towSpeed(T)*dt)); }
   } else if (T.phase==='latch'){
     // kill the drift, then swing round to the depot side of the ship and hold there while the beam locks
@@ -3237,14 +3235,14 @@ function towUpdate(dt){
 }
 function towStatus(){
   if (!tow) return '';
-  if (tow.phase==='approach') return `Tug inbound · ${Math.ceil(ship.pos.distanceTo(tow.pos)/towSpeed(tow))}s`;
+  if (tow.phase==='approach') return `Tug inbound Â· ${Math.ceil(ship.pos.distanceTo(tow.pos)/towSpeed(tow))}s`;
   if (tow.phase==='latch') return 'Tug latching on';
-  if (tow.phase==='haul') return `Under tow to ${tow.bay.name} · ${CARGO_SHIP}`;
+  if (tow.phase==='haul') return `Under tow to ${tow.bay.name} Â· ${CARGO_SHIP}`;
   return '';
 }
 function callTow(){
   if (docked || tow || state.fuel>0.5) return;
-  if (pilotingCarrier()){ toast('The cargo ship runs on its own reactor · berth at the colony to refuel the tanks', true); return; }
+  if (pilotingCarrier()){ toast('The cargo ship runs on its own reactor Â· berth at the colony to refuel the tanks', true); return; }
   requestTow('fuel');
 }
 
@@ -3318,9 +3316,9 @@ function hurt(dmg, at, label){
   state.hull=Math.max(0, state.hull-dmg); shake=Math.min(1, 0.25+dmg/50); SFX.hit();
   el.dmg.classList.remove('on'); void el.dmg.offsetWidth; el.dmg.classList.add('on');
   if (at) SPARKS.burst(at, 40+Math.round(dmg*2), 220, 0xff7a4a, 1.2);
-  if (label) toast(`${label} · −${dmg}`, true);
+  if (label) toast(`${label} Â· âˆ’${dmg}`, true);
   if (state.hull<=0){ requestTow('breach'); return; }
-  if (state.hull<stat('hull').hp*0.25 && !lowHullWarned){ lowHullWarned=true; toast('Hull critical · repair at the cargo ship', true); }
+  if (state.hull<stat('hull').hp*0.25 && !lowHullWarned){ lowHullWarned=true; toast('Hull critical Â· repair at the cargo ship', true); }
 }
 function killPirate(p, byPlayer){
   scene.remove(p.group); pirates.splice(pirates.indexOf(p),1); SFX.boom(false);
@@ -3328,8 +3326,8 @@ function killPirate(p, byPlayer){
   for (let i=0;i<20;i++) spawnParticle(p.pos.clone().add(V3(rand(-14,14),rand(-14,14),rand(-14,14))), i%3?0xff6a3a:0xffe0a0);
   if (byPlayer){
     state.credits+=p.bounty; state.earned+=p.bounty; let drop='';
-    if (Math.random()<0.35){ const ks=Object.keys(zone.belts[2]); const k=ks[Math.floor(Math.random()*ks.length)]; const u=Math.min(rand(8,28), cargoRoom(k)); if (u>0.5){ state.cargo[k]+=u; drop=` · salvaged ${Math.floor(u)} u ${ORES[k].name}`; } }
-    toast(`Raider destroyed · +${fmt(p.bounty)} cr bounty${drop}`);
+    if (Math.random()<0.35){ const ks=Object.keys(zone.belts[2]); const k=ks[Math.floor(Math.random()*ks.length)]; const u=Math.min(rand(8,28), cargoRoom(k)); if (u>0.5){ state.cargo[k]+=u; drop=` Â· salvaged ${Math.floor(u)} u ${ORES[k].name}`; } }
+    toast(`Raider destroyed Â· +${fmt(p.bounty)} cr bounty${drop}`);
   }
   if (target && target.obj===p) target=null;
 }
@@ -3435,17 +3433,17 @@ function renderInventory(){
   // stacks move between the two grids by drag or click
   const aboard=docked, st=aboard?storeStacks():[], su=storeUsed();
   const sig=ns+'|'+JSON.stringify(S.map(s=>s?[s.k,Math.floor(s.u)]:0))+'|'+zone.id+'|'+(aboard?JSON.stringify(st.map(s=>[s.k,Math.floor(s.u)])):'-'); if (sig===invSig) return; invSig=sig;
-  el.invCap.textContent=`${us} / ${ns} slots · ${Math.floor(ct)} u`; el.invFill.style.width=(us/ns*100)+'%'; el.invFill.className=holdFull()?'full':'';
+  el.invCap.textContent=`${us} / ${ns} slots Â· ${Math.floor(ct)} u`; el.invFill.style.width=(us/ns*100)+'%'; el.invFill.className=holdFull()?'full':'';
   let total=0; for (const s of S) if (s) total+=s.u*price(s.k);
-  const cell=(s,i)=>{ if (!s) return `<div class="slot empty" data-i="${i}"><span>empty</span></div>`; const o=ORES[s.k]; return `<div class="slot" draggable="true" data-i="${i}" style="--c:${o.color}" title="${aboard?'Drag to the storage grid (or double-click) to stow it aboard the cargo ship':''}"><img class="ico" src="${oreIcon(s.k)}" alt="" draggable="false"><b>${o.name}</b><span class="n">${Math.floor(s.u)} / ${STACK}</span><span class="v">${fmt(s.u*price(s.k))} cr</span><button class="x" data-jet="${i}" title="Jettison this stack">✕</button></div>`; };
+  const cell=(s,i)=>{ if (!s) return `<div class="slot empty" data-i="${i}"><span>empty</span></div>`; const o=ORES[s.k]; return `<div class="slot" draggable="true" data-i="${i}" style="--c:${o.color}" title="${aboard?'Drag to the storage grid (or double-click) to stow it aboard the cargo ship':''}"><img class="ico" src="${oreIcon(s.k)}" alt="" draggable="false"><b>${o.name}</b><span class="n">${Math.floor(s.u)} / ${STACK}</span><span class="v">${fmt(s.u*price(s.k))} cr</span><button class="x" data-jet="${i}" title="Jettison this stack">âœ•</button></div>`; };
   let html=`<div class="inv-grid" id="invHold">${S.map(cell).join('')}</div><div class="inv-drop" id="invDrop">Drag a stack here to jettison it into space</div>`;
-  if (S.length>ns) html+=`<p class="hint" style="color:var(--amber)">Over capacity by ${S.length-ns} slot${S.length-ns>1?'s':''} · jettison something.</p>`;
+  if (S.length>ns) html+=`<p class="hint" style="color:var(--amber)">Over capacity by ${S.length-ns} slot${S.length-ns>1?'s':''} Â· jettison something.</p>`;
   html+=us ? `<div class="inv-total"><span>Hold value at Hub prices</span><b>${fmt(total)} cr</b></div>` : `<div class="inv-empty">The hold is empty. Break a rock and fly through the ore it drops.</div>`;
   if (aboard){
     const scell=(s,i)=>{ if (!s) return `<div class="slot empty" data-s="${i}"><span>empty</span></div>`; const o=ORES[s.k]; return `<div class="slot" draggable="true" data-s="${i}" style="--c:${o.color}" title="Drag to your hold (or double-click) to take it back aboard"><img class="ico" src="${oreIcon(s.k)}" alt="" draggable="false"><b>${o.name}</b><span class="n">${Math.floor(s.u)} / ${STACK}</span></div>`; };
     const cells=[]; for (let i=0;i<STORE_SLOTS;i++) cells.push(scell(st[i],i));
-    html+=`<div class="xfer-head" style="margin-top:18px"><span class="eyebrow">${CARGO_SHIP} storage</span><span class="mono">${su} / ${STORE_SLOTS} slots · ${Math.floor(storeTotal())} u</span><span><button class="link" data-stowall="1">Stow all ▼</button> <button class="link" data-takeall="1">▲ Take all</button></span></div><div class="inv-grid small" id="invStore">${cells.join('')}</div><p class="hint" style="margin:8px 0 0">Drag stacks between the two grids, or double-click one, to move it. The storage rides with the cargo ship and sells at the Hub.</p>`;
-  } else html+=`<div class="inv-total" style="border-top:none;padding-top:4px"><span>${CARGO_SHIP} storage</span><b style="color:var(--text)">${su} / ${STORE_SLOTS} slots · ${Math.floor(storeTotal())} u · dock to transfer</b></div>`;
+    html+=`<div class="xfer-head" style="margin-top:18px"><span class="eyebrow">${CARGO_SHIP} storage</span><span class="mono">${su} / ${STORE_SLOTS} slots Â· ${Math.floor(storeTotal())} u</span><span><button class="link" data-stowall="1">Stow all â–¼</button> <button class="link" data-takeall="1">â–² Take all</button></span></div><div class="inv-grid small" id="invStore">${cells.join('')}</div><p class="hint" style="margin:8px 0 0">Drag stacks between the two grids, or double-click one, to move it. The storage rides with the cargo ship and sells at the Hub.</p>`;
+  } else html+=`<div class="inv-total" style="border-top:none;padding-top:4px"><span>${CARGO_SHIP} storage</span><b style="color:var(--text)">${su} / ${STORE_SLOTS} slots Â· ${Math.floor(storeTotal())} u Â· dock to transfer</b></div>`;
   el.invBody.innerHTML=html;
   el.invBody.querySelectorAll('[data-jet]').forEach(b=>b.addEventListener('click', e=>{ e.stopPropagation(); jettisonSlot(+b.dataset.jet); }));
   el.invBody.querySelectorAll('[data-stowall]').forEach(b=>b.addEventListener('click', stowAll));
@@ -3481,7 +3479,7 @@ function openMap(){ mapOpen=true; if (mapSel===zone) mapSel=null; renderMap(); e
 function closeMap(){ mapOpen=false; el.map.hidden=true; if (started && !docked) el.center.classList.add('on'); }
 function oreRow(k){
   const o=ORES[k], locked=o.hardness>state.up.laser+1;
-  return `<div class="ore"><span><span class="dot" style="background:${o.color}"></span>${o.name}</span><span class="rar">hardness ${o.hardness}${locked?` · needs laser Lv${o.hardness}`:''}</span><span class="pr">${Math.round(o.price*EXPORT_BONUS)} cr<br><span style="font-size:11px">at the Hub</span></span></div>`;
+  return `<div class="ore"><span><span class="dot" style="background:${o.color}"></span>${o.name}</span><span class="rar">hardness ${o.hardness}${locked?` Â· needs laser Lv${o.hardness}`:''}</span><span class="pr">${Math.round(o.price*EXPORT_BONUS)} cr<br><span style="font-size:11px">at the Hub</span></span></div>`;
 }
 function renderMap(){
   el.mFuel.textContent=`${Math.floor(state.shipFuel)} / ${CARGO_FUEL_CAP}`;
@@ -3501,27 +3499,27 @@ function renderMap(){
     if (isSel) svg+=`<circle cx="${x}" cy="${y}" r="4.6" fill="none" stroke="#FFC466" stroke-width=".25" stroke-dasharray=".8 .6"/>`;
     if (z.hub) svg+=`<circle cx="${x}" cy="${y}" r="2.1" fill="none" stroke="${z.accent}" stroke-width=".7"/><circle cx="${x}" cy="${y}" r=".7" fill="${z.accent}"/>`;
     else svg+=`<rect x="${x-1.6}" y="${y-1.6}" width="3.2" height="3.2" fill="${z.accent}" transform="rotate(45 ${x} ${y})"/>`;
-    svg+=`<text x="${tx}" y="${y+1}" text-anchor="${anchor}">${z.name}</text><text class="sub" x="${tx}" y="${y+4.2}" text-anchor="${anchor}">${isCur?'current position':z.hub?'colony · sells ore':ORES[ex[0]].name+' · '+ORES[ex[1]].name}</text></g>`;
+    svg+=`<text x="${tx}" y="${y+1}" text-anchor="${anchor}">${z.name}</text><text class="sub" x="${tx}" y="${y+4.2}" text-anchor="${anchor}">${isCur?'current position':z.hub?'colony Â· sells ore':ORES[ex[0]].name+' Â· '+ORES[ex[1]].name}</text></g>`;
   }
   el.chart.innerHTML=svg+'</svg>';
   el.chart.querySelectorAll('.node').forEach(n=>n.addEventListener('click',()=>{ mapSel=zoneById(n.dataset.zone); renderMap(); }));
   const z=sel, cost=warpCost(cur,z), can=z!==cur && docked;   // the cargo ship makes the jump: you have to be aboard it (and the jump itself is free)
   const nFields=FIELDS_PER_BELT.reduce((s,n)=>s+n,0);
-  const fieldList=z===cur? fields.filter(f=>!f.pocket).map(f=>`${f.name} · ${ORES[f.ore].name}`).join(', ')+` · plus ${fields.filter(f=>f.pocket).length} rich pockets` : `${nFields} fields and ~30 rich pockets, surveyed on arrival`;
+  const fieldList=z===cur? fields.filter(f=>!f.pocket).map(f=>`${f.name} Â· ${ORES[f.ore].name}`).join(', ')+` Â· plus ${fields.filter(f=>f.pocket).length} rich pockets` : `${nFields} fields and ~30 rich pockets, surveyed on arrival`;
   const aboard=Math.floor(cargoTotal()+storeTotal());
   const detail=z.hub
-    ? `<div class="kv"><span>Distance</span><b>${z===cur?'here':zoneLy(cur,z)+' ly'}</b><span>Colony</span><b>${z.colony}</b><span>Market</span><b>buys every ore · exotics +${Math.round((EXPORT_BONUS-1)*100)}%</b><span>Fuel</span><b>cargo ship resupplies here · ${CARGO_FUEL_PRICE} cr/u</b><span>Danger</span><b>none · colony patrols</b></div>
-       <div><h3>Aboard to sell</h3><p class="tag" style="font-family:var(--mono);font-size:12px">${aboard>0?`${aboard} u across the hold and the cargo ship's storage`:'nothing yet · the storage rides with the cargo ship'}</p></div>
+    ? `<div class="kv"><span>Distance</span><b>${z===cur?'here':zoneLy(cur,z)+' ly'}</b><span>Colony</span><b>${z.colony}</b><span>Market</span><b>buys every ore Â· exotics +${Math.round((EXPORT_BONUS-1)*100)}%</b><span>Fuel</span><b>cargo ship resupplies here Â· ${CARGO_FUEL_PRICE} cr/u</b><span>Danger</span><b>none Â· colony patrols</b></div>
+       <div><h3>Aboard to sell</h3><p class="tag" style="font-family:var(--mono);font-size:12px">${aboard>0?`${aboard} u across the hold and the cargo ship's storage`:'nothing yet Â· the storage rides with the cargo ship'}</p></div>
        <div><h3>Holding station</h3><p class="tag" style="font-family:var(--mono);font-size:12px">On arrival the cargo ship flies in and takes up station off Meridian Colony, and the market and services open from there. Set a course here to leave.</p></div>`
-    : `<div class="kv"><span>Distance</span><b>${z===cur?'here':zoneLy(cur,z)+' ly'}</b><span>Market</span><b>none · sell at the Hub</b><span>Belts</span><b>${z.amountMult>1.2?'rich seams':z.density<1?'sparse':'typical'} · ${nFields} fields</b><span>Danger</span><b style="color:${z.danger>1.6?'var(--red)':z.danger>1.1?'var(--amber)':'var(--text)'}">${z.danger<=0.6?'quiet · light patrols':z.danger<=1.1?'patrolled · mines near rich fields':z.danger<=1.6?'contested · raider holds':'lawless · heavy raider presence'}</b></div>
+    : `<div class="kv"><span>Distance</span><b>${z===cur?'here':zoneLy(cur,z)+' ly'}</b><span>Market</span><b>none Â· sell at the Hub</b><span>Belts</span><b>${z.amountMult>1.2?'rich seams':z.density<1?'sparse':'typical'} Â· ${nFields} fields</b><span>Danger</span><b style="color:${z.danger>1.6?'var(--red)':z.danger>1.1?'var(--amber)':'var(--text)'}">${z.danger<=0.6?'quiet Â· light patrols':z.danger<=1.1?'patrolled Â· mines near rich fields':z.danger<=1.6?'contested Â· raider holds':'lawless Â· heavy raider presence'}</b></div>
        <div><h3>Asteroid fields</h3><p class="tag" style="font-family:var(--mono);font-size:12px">${fieldList}</p></div>
        <div><h3>Exclusive ore</h3><div class="orelist">${exclusivesOf(z).map(oreRow).join('')}</div></div>
-       <div><h3>Planet</h3><div class="orelist">${[z.planet].map(p=>`<div class="ore"><span><span class="dot" style="background:#${p.tint.toString(16).padStart(6,'0')}"></span>${p.name}</span><span class="rar">central world · not mineable</span></div>`).join('')}</div></div>`;
+       <div><h3>Planet</h3><div class="orelist">${[z.planet].map(p=>`<div class="ore"><span><span class="dot" style="background:#${p.tint.toString(16).padStart(6,'0')}"></span>${p.name}</span><span class="rar">central world Â· not mineable</span></div>`).join('')}</div></div>`;
   el.zinfo.innerHTML=`
     <div><div class="eyebrow" style="color:${z.accent}">${z===cur?'Current zone':z.hub?'Colony zone':'Charted belt'}</div><h4>${z.name}</h4></div>
     <p class="tag">${z.tag}</p>
     ${detail}
-    <button class="btn ${can?'primary':''}" id="warpBtn" ${can?'':'disabled'}>${z===cur?'You are here':!docked?'Dock with the cargo ship to warp':`Warp · ${zoneLy(cur,z)} ly`}</button>`;
+    <button class="btn ${can?'primary':''}" id="warpBtn" ${can?'':'disabled'}>${z===cur?'You are here':!docked?'Dock with the cargo ship to warp':`Warp Â· ${zoneLy(cur,z)} ly`}</button>`;
   const wb=$('warpBtn'); if (wb && can) wb.addEventListener('click',()=>warpTo(z));
 }
 // The warp is a cutscene of the cargo ship itself, with you docked aboard. A fixed camera off its flank watches the drives
@@ -3532,13 +3530,13 @@ let warpCut=null;
 const stationEngines=station.children.filter(o=>o.isSprite && o.position.x<-3500);
 function warpTo(z){
   if (warping || z===zone) return;
-  if (!docked){ toast('Dock with the cargo ship before warping · it makes the jump', true); return; }
+  if (!docked){ toast('Dock with the cargo ship before warping Â· it makes the jump', true); return; }
   const ly=zoneLy(zone,z); closeMap(); warping=true; el.center.classList.remove('on');
   el.station.hidden=true; el.dockbox.hidden=true; document.body.classList.remove('in-hangar'); document.body.classList.add('in-cut'); if (invOpen) closeInventory();
   el.wName.textContent=z.name; el.wSub.textContent=`${ly} light-years`;
   const nose=depotDir(V3(1,0,0)), side=depotDir(V3(0,0,1));
   warpCut={phase:'depart', t:0, z, nose, camPos:STATION.pos.clone().addScaledVector(side, 9500).addScaledVector(nose, -2500).add(V3(0,3800,0)), flashed:false};
-  el.cineCap.textContent=`Warp · ${z.name}`; el.cine.classList.add('on'); SFX.chime(); SFX.clip('warp_charge');
+  el.cineCap.textContent=`Warp Â· ${z.name}`; el.cine.classList.add('on'); SFX.chime(); SFX.clip('warp_charge');
 }
 function warpCutUpdate(dt){
   const W=warpCut; W.t+=dt;
@@ -3551,7 +3549,7 @@ function warpCutUpdate(dt){
     if (W.t>=5.0){
       // the jump: the new zone loads under the flash and the carrier is placed at its station there
       STATION.warpOff=0; loadZone(W.z); spawnAtDepot(); camQ.copy(ship.q); mapSel=null;
-      if (W.z.hub){ glow(1); warpCut=null; warping=false; docked=false; dockBay=null; document.body.classList.remove('in-cut'); toast(`Arrived · ${W.z.name}`); startHoldApproach(); save(); setTimeout(()=>el.warp.classList.remove('on'), 900); return; }
+      if (W.z.hub){ glow(1); warpCut=null; warping=false; docked=false; dockBay=null; document.body.classList.remove('in-cut'); toast(`Arrived Â· ${W.z.name}`); startHoldApproach(); save(); setTimeout(()=>el.warp.classList.remove('on'), 900); return; }
       dockBay=DEPOT.bays[0];
       const nose=depotDir(V3(1,0,0)), side=depotDir(V3(0,0,1));
       W.phase='arrive'; W.t=0; W.nose=nose; W.camPos=STATION.pos.clone().addScaledVector(side, 11000).addScaledVector(nose, 6500).add(V3(0,4200,0));
@@ -3560,7 +3558,7 @@ function warpCutUpdate(dt){
   } else {
     const k=Math.min(1, W.t/4.4); STATION.warpOff=-90000*Math.pow(1-k, 3); glow(1+2.2*(1-k)); shake=Math.max(shake, .25*(1-k));
     if (!W.cleared && W.t>0.9){ W.cleared=true; el.warp.classList.remove('on'); }   // the flash lifts with the carrier already streaking in
-    if (k>=1){ STATION.warpOff=0; glow(1); warpCut=null; warping=false; document.body.classList.remove('in-cut'); el.cine.classList.remove('on'); toast(`Arrived · ${W.z.name}`); enterHangar(DEPOT.bays[0]); save(); }
+    if (k>=1){ STATION.warpOff=0; glow(1); warpCut=null; warping=false; document.body.classList.remove('in-cut'); el.cine.classList.remove('on'); toast(`Arrived Â· ${W.z.name}`); enterHangar(DEPOT.bays[0]); save(); }
   }
 }
 el.mapClose.addEventListener('click', closeMap);
@@ -3625,7 +3623,7 @@ function findTarget(){
   const test=(pos, r, type, obj, extra)=>{
     const to=pos.clone().sub(origin), t=to.dot(dir); if (t<0) return;
     const lim=reach+(extra||0)+r; if (t-r>lim) return;
-    const d2=to.lengthSq()-t*t, tol=r+8+t*0.035;           // ~2° of slack plus a few units
+    const d2=to.lengthSq()-t*t, tol=r+8+t*0.035;           // ~2Â° of slack plus a few units
     if (d2>tol*tol) return;
     if (t<bd){ bd=t; best={type, obj, dist:Math.max(0,t-r), hitT:Math.max(4, t-r*0.85)}; }
   };
@@ -3652,7 +3650,7 @@ function mineReason(t){
   if (!t) return null;
   if (t.type==='pirate') return null;
   const need=t.obj.barren?1:ORES[t.obj.ore].hardness, lvl=state.up.laser+1;
-  if (lvl<need) return `Laser Lv${lvl} can't break this · needs Lv${need}`;
+  if (lvl<need) return `Laser Lv${lvl} can't break this Â· needs Lv${need}`;
   return null;
 }
 const tmpQ=new THREE.Quaternion(), tmpV=V3();
@@ -3816,7 +3814,7 @@ function update(dt){
   target=findTarget(); laserOn=false;
   if (autoMine && canFly && !(target && (target.type==='pirate' || !mineReason(target)))){
     const reach=stat('scanner').mine, o=shipDishPivotWorld(); let best=null, bd=Infinity;
-    for (const a of asteroids){ if (a.dead || a.barren || a.amount<=0.05 || ORES[a.ore].hardness>state.up.laser+1) continue; const d=a.pos.distanceTo(o)-a.r; if (d<reach && d<bd && Math.abs(shipDishAnglesTo(a.pos).yaw)<=SHIP_DISH_ARC){ bd=d; best=a; } }   // only the forward half: the dish covers 180°
+    for (const a of asteroids){ if (a.dead || a.barren || a.amount<=0.05 || ORES[a.ore].hardness>state.up.laser+1) continue; const d=a.pos.distanceTo(o)-a.r; if (d<reach && d<bd && Math.abs(shipDishAnglesTo(a.pos).yaw)<=SHIP_DISH_ARC){ bd=d; best=a; } }   // only the forward half: the dish covers 180Â°
     if (best) target={type:'rock', obj:best, dist:Math.max(0,bd), hitT:0, auto:true};
   }
   // the beam always goes to the centre of its target; the heat, sparks and scorch sit where it enters the surface on the dish's side
@@ -3893,7 +3891,7 @@ function updateVisuals(dt, t){
   // the ship's dish swings onto whatever the beam is going to (fast, a few radians a second) and settles forward when idle;
   // auto-mine only opens fire once it is on target
   { const want=laserAim ? shipDishAnglesTo(laserAim) : {yaw:0, pitch:0.05}, rate=3.5*dt;
-    const inArc=Math.abs(want.yaw)<=SHIP_DISH_ARC;   // the dish only covers the forward half: 90° either side of the nose
+    const inArc=Math.abs(want.yaw)<=SHIP_DISH_ARC;   // the dish only covers the forward half: 90Â° either side of the nose
     want.yaw=Math.max(-SHIP_DISH_ARC, Math.min(SHIP_DISH_ARC, want.yaw)); want.pitch=Math.max(-0.7, Math.min(1.3, want.pitch));
     shipAim.yaw+=Math.max(-rate, Math.min(rate, want.yaw-shipAim.yaw));
     shipAim.pitch+=Math.max(-rate, Math.min(rate, want.pitch-shipAim.pitch));
@@ -4009,7 +4007,7 @@ function updateOverlays(){
   if (target && started && !docked){
     const p=project(target.obj.pos);
     if (p.on){ el.reticle.classList.add('on'); el.reticle.classList.toggle('hot', laserOn); el.reticle.style.left=p.x+'px'; el.reticle.style.top=p.y+'px';
-      el.rLbl.textContent=target.type==='pirate'?`Raider · ${Math.max(0,Math.ceil(target.obj.hp))} hp`:`${rockName(target.obj)} · ${Math.ceil(100*target.obj.hp/target.obj.hpMax)}%`; }
+      el.rLbl.textContent=target.type==='pirate'?`Raider Â· ${Math.max(0,Math.ceil(target.obj.hp))} hp`:`${rockName(target.obj)} Â· ${Math.ceil(100*target.obj.hp/target.obj.hpMax)}%`; }
     else el.reticle.classList.remove('on');
   } else el.reticle.classList.remove('on');
   // depot marker (clamped to the screen edge with an arrow when off screen)
@@ -4023,8 +4021,8 @@ function updateOverlays(){
   else el.fieldMarker.classList.remove('on');
   // collector drones: a cyan waypoint on each, with what it is doing and how far away it is
   for (let i=0;i<droneMarkers.length;i++) droneMarkers[i].box.classList.remove('on');
-  if (started && !docked) collectors.forEach((c,i)=>{ const mk=droneMarker(i); placeMarker(mk.box, mk.arr, mk.lbl, c.pos, `DRONE ${i+1} · ${DRONE_WORDS[c.phase]||c.phase}${c.load>0.5?` · ${Math.round(c.load)} u`:''} · ${fmt(c.pos.distanceTo(ship.pos))}`); });
-  el.fieldState.textContent=inside?inside.name:'—';
+  if (started && !docked) collectors.forEach((c,i)=>{ const mk=droneMarker(i); placeMarker(mk.box, mk.arr, mk.lbl, c.pos, `DRONE ${i+1} Â· ${DRONE_WORDS[c.phase]||c.phase}${c.load>0.5?` Â· ${Math.round(c.load)} u`:''} Â· ${fmt(c.pos.distanceTo(ship.pos))}`); });
+  el.fieldState.textContent=inside?inside.name:'â€”';
   // radar-marked rocks: on-screen blips for every marked rock in view (no edge marker; you find ore by looking)
   const marked=[]; if (started && !docked) for (const a of asteroids){ if (!a.dead && a.markUntil>state.time){ a.dist=a.pos.distanceTo(ship.pos); marked.push(a); } }
   marked.sort((a,b)=>a.dist-b.dist);
@@ -4045,48 +4043,48 @@ function updateHud(dt){
   el.credits.textContent=fmt(state.credits);
   const gp=Math.min(1,state.credits/JUMP_COST); el.goalFill.style.width=(gp*100)+'%'; el.goalPct.textContent=state.jump?'installed':Math.floor(gp*100)+'%';
   const thrPct=Math.round(throttle*100); el.thrFill.style.width=(ship.braking?100:thrPct)+'%'; el.thrFill.className=ship.boosting?'boost':ship.braking?'retro':'';
-  el.thrText.textContent=disabled?'DISABLED':docked?'docked':parked?'parked':ship.braking?'RETRO':ship.boosting?`${thrPct}% · CRUISE`:`${thrPct}%`;
+  el.thrText.textContent=disabled?'DISABLED':docked?'docked':parked?'parked':ship.braking?'RETRO':ship.boosting?`${thrPct}% Â· CRUISE`:`${thrPct}%`;
   const tank=stat('tank').cap; el.fuelText.textContent=`${Math.ceil(state.fuel)} / ${tank}`; el.fuelFill.style.width=(state.fuel/tank*100)+'%'; el.fuelFill.className=state.fuel/tank<0.2?'low':'';
   const hp=stat('hull').hp, hf=state.hull/hp; el.hullText.textContent=`${Math.ceil(state.hull)} / ${hp}`; el.hullFill.style.width=(hf*100)+'%'; el.hullFill.className=hf<0.25?'low':hf<0.6?'mid':'';
-  const ct=cargoTotal(), cc=cargoCap(), full=holdFull(), us=usedSlots(), ns=cargoSlots(); el.cargoText.textContent=full?`${us} / ${ns} slots · FULL`:`${us} / ${ns} slots · ${Math.floor(ct)} u`; el.cargoFill.style.width=(ct/cc*100)+'%'; el.cargoFill.className=full?'full':'';
+  const ct=cargoTotal(), cc=cargoCap(), full=holdFull(), us=usedSlots(), ns=cargoSlots(); el.cargoText.textContent=full?`${us} / ${ns} slots Â· FULL`:`${us} / ${ns} slots Â· ${Math.floor(ct)} u`; el.cargoFill.style.width=(ct/cc*100)+'%'; el.cargoFill.className=full?'full':'';
   // a standing notice while the hold is full (and a one-off toast and chime the moment it fills), cleared when it empties or you dock
   el.fullNotice.hidden=!(full && started && !docked); el.cargoText.classList.toggle('full', full);
-  if (full && !wasFull && started && !docked){ toast('Cargo hold full · head back to the cargo ship to stow it', true); SFX.chime(); } wasFull=full;
+  if (full && !wasFull && started && !docked){ toast('Cargo hold full Â· head back to the cargo ship to stow it', true); SFX.chime(); } wasFull=full;
   el.chips.innerHTML=ORE_KEYS.filter(k=>state.cargo[k]>=1).map(k=>`<span class="chip"><i style="background:${ORES[k].color}"></i>${ORES[k].name} ${Math.floor(state.cargo[k])}</span>`).join('');
   el.center.classList.toggle('hot', laserOn);
   if (invOpen) renderInventory();
   el.spd.textContent=docked?(pilotingCarrier()?'HOLDING':'DOCKED'):parked?'PARKED':Math.round(ship.vel.length());
   { const big=pilotingCarrier(); el.dist.textContent=fmt(big?ship.pos.length():ship.pos.distanceTo(STATION.pos)); const lbl=$('distLbl').firstChild; const want=big?'COLONY ':'CARGO SHIP '; if (lbl.textContent!==want) lbl.textContent=want; }
   if (docked){
-    el.dbCargo.style.width=(ct/cc*100)+'%'; el.dbCargoT.textContent=`${us} / ${ns} slots · storage ${storeUsed()} / ${STORE_SLOTS}`;
-    el.dbFuel.style.width=(state.fuel/tank*100)+'%'; el.dbFuelT.textContent=(state.fuel>=tank-0.01?'tank full':(state.shipFuel<0.5?'cargo ship dry':`${fuelRate()} u/s from the cargo ship`))+` · supply ${Math.floor(state.shipFuel)}`;
-    el.dbHull.style.width=(hf*100)+'%'; el.dbHullT.textContent=state.hull>=hp-0.01?'hull sound':(state.credits<2?'no credits':`${repairRate()} pt/s · 2 cr/pt`);
+    el.dbCargo.style.width=(ct/cc*100)+'%'; el.dbCargoT.textContent=`${us} / ${ns} slots Â· storage ${storeUsed()} / ${STORE_SLOTS}`;
+    el.dbFuel.style.width=(state.fuel/tank*100)+'%'; el.dbFuelT.textContent=(state.fuel>=tank-0.01?'tank full':(state.shipFuel<0.5?'cargo ship dry':`${fuelRate()} u/s from the cargo ship`))+` Â· supply ${Math.floor(state.shipFuel)}`;
+    el.dbHull.style.width=(hf*100)+'%'; el.dbHullT.textContent=state.hull>=hp-0.01?'hull sound':(state.credits<2?'no credits':`${repairRate()} pt/s Â· 2 cr/pt`);
     if (!el.station.hidden && document.activeElement!==el.callsign){ panelT+=0.08; if (panelT>1){ panelT=0; renderPanel(); } }
   }
-  el.laserState.textContent=(autoMine?'AUTO · ':'')+(laserOn?`CUTTING · ${Math.round(heatFx.heat*100)}% heat`:firing?'FIRING':autoMine&&target&&target.auto?'aiming':heatFx.heat>0.01?`ready · ${Math.round(heatFx.heat*100)}% heat`:'ready'); el.laserState.style.color=laserOn?'var(--amber2)':''; el.radarState.textContent=pulseCd>0?`${pulseCd.toFixed(1)}s`:'READY';
+  el.laserState.textContent=(autoMine?'AUTO Â· ':'')+(laserOn?`CUTTING Â· ${Math.round(heatFx.heat*100)}% heat`:firing?'FIRING':autoMine&&target&&target.auto?'aiming':heatFx.heat>0.01?`ready Â· ${Math.round(heatFx.heat*100)}% heat`:'ready'); el.laserState.style.color=laserOn?'var(--amber2)':''; el.radarState.textContent=pulseCd>0?`${pulseCd.toFixed(1)}s`:'READY';
   if (target && !docked){
     const t=target.obj; el.target.classList.add('on');
     el.target.classList.toggle('pirate', target.type==='pirate');
-    if (target.type==='pirate'){ el.tName.textContent='Pirate raider'; el.tSub.textContent=`${Math.max(0,Math.ceil(t.hp))} / ${t.maxHp} hp · bounty ${fmt(t.bounty)} cr`; el.tWarn.textContent=t.state==='attack'?'Hostile · laser cuts it':''; el.tWarn.style.display=t.state==='attack'?'block':'none'; }
+    if (target.type==='pirate'){ el.tName.textContent='Pirate raider'; el.tSub.textContent=`${Math.max(0,Math.ceil(t.hp))} / ${t.maxHp} hp Â· bounty ${fmt(t.bounty)} cr`; el.tWarn.textContent=t.state==='attack'?'Hostile Â· laser cuts it':''; el.tWarn.style.display=t.state==='attack'?'block':'none'; }
     else {
-      el.tName.textContent=rockName(t); el.tSub.textContent=t.barren?'plain stone · scrap only':`${Math.round(t.max)} u ${ORES[t.ore].name} inside · hardness ${ORES[t.ore].hardness}`;
+      el.tName.textContent=rockName(t); el.tSub.textContent=t.barren?'plain stone Â· scrap only':`${Math.round(t.max)} u ${ORES[t.ore].name} inside Â· hardness ${ORES[t.ore].hardness}`;
       el.tHp.style.width=(100*Math.max(0,t.hp)/t.hpMax)+'%'; el.tHpT.textContent=`${Math.ceil(Math.max(0,t.hp))} / ${t.hpMax}`;
       const r=mineReason(target); el.tWarn.textContent=r||''; el.tWarn.style.display=r?'block':'none';
     }
   } else el.target.classList.remove('on');
   el.threatState.textContent=threat>0?`${threat} raider${threat>1?'s':''}`:'none'; el.threatState.style.color=threat>0?'var(--red)':'';
   const segs=[];
-  if (tow || disabled){ segs.push(tow?towStatus():'Hull breach · drifting'); segs.push('Mouse looks around'); }
+  if (tow || disabled){ segs.push(tow?towStatus():'Hull breach Â· drifting'); segs.push('Mouse looks around'); }
   else if (!docked){
-    if (cut) segs.push(cut.world?`Colony control has the ${CARGO_SHIP.toLowerCase()} · ${cut.bay.name}`:`Approach control has the ship · ${cut.bay.name}`);
-    else if (pilotingCarrier()) segs.push(nearColony()?`<kbd>E</kbd>Berth at ${zone.colony} · the market and services`:`Fly the ${CARGO_SHIP.toLowerCase()} to ${zone.colony} · within ${fmt(COLONY.near)} press <kbd>E</kbd> to berth`);
-    else if (nearStation()) segs.push(`<kbd>E</kbd>Auto-dock with the ${CARGO_SHIP.toLowerCase()} · or fly in through either hangar mouth`);
-    else if (state.fuel<=0.5 && !parked) segs.push('<kbd>T</kbd>Out of fuel · call a tow (15% of credits)');
-    if (target && target.type==='pirate'){ segs.push(autoMine?'Laser on the raider':'<kbd>LMB</kbd>Laser on · fire at raider'); }
-    else if (target){ segs.push(!autoMine?'<kbd>LMB</kbd>Laser on to mine':target.obj.barren?'Breaking rock · scrap only':`${laserOn?'Cutting':'Aiming at'} ${ORES[target.obj.ore].name}`); segs.push(parked?'<kbd>P</kbd>Release':'<kbd>P</kbd>Park at rock'); }
+    if (cut) segs.push(cut.world?`Colony control has the ${CARGO_SHIP.toLowerCase()} Â· ${cut.bay.name}`:`Approach control has the ship Â· ${cut.bay.name}`);
+    else if (pilotingCarrier()) segs.push(nearColony()?`<kbd>E</kbd>Berth at ${zone.colony} Â· the market and services`:`Fly the ${CARGO_SHIP.toLowerCase()} to ${zone.colony} Â· within ${fmt(COLONY.near)} press <kbd>E</kbd> to berth`);
+    else if (nearStation()) segs.push(`<kbd>E</kbd>Auto-dock with the ${CARGO_SHIP.toLowerCase()} Â· or fly in through either hangar mouth`);
+    else if (state.fuel<=0.5 && !parked) segs.push('<kbd>T</kbd>Out of fuel Â· call a tow (15% of credits)');
+    if (target && target.type==='pirate'){ segs.push(autoMine?'Laser on the raider':'<kbd>LMB</kbd>Laser on Â· fire at raider'); }
+    else if (target){ segs.push(!autoMine?'<kbd>LMB</kbd>Laser on to mine':target.obj.barren?'Breaking rock Â· scrap only':`${laserOn?'Cutting':'Aiming at'} ${ORES[target.obj.ore].name}`); segs.push(parked?'<kbd>P</kbd>Release':'<kbd>P</kbd>Park at rock'); }
     else if (parked) segs.push('<kbd>P</kbd>Release');
   }
-  const p=segs.join('<span class="sep">·</span>');
+  const p=segs.join('<span class="sep">Â·</span>');
   el.prompt.innerHTML=p; el.prompt.classList.toggle('on', !!p);
 }
 
@@ -4136,7 +4134,7 @@ function tutLaunch(){
   placeDepot(); const b=DEPOT.bays[0];
   docked=true; dockBay=b; ship.pos.copy(b.park); ship.q.copy(b.q); ship.vel.copy(STATION.vel); camQ.copy(ship.q);
   startDeparture();
-  el.cineCap.textContent=`Welcome aboard, ${state.custom.callsign} · launching from your ${CARGO_SHIP.toLowerCase()}`;
+  el.cineCap.textContent=`Welcome aboard, ${state.custom.callsign} Â· launching from your ${CARGO_SHIP.toLowerCase()}`;
 }
 function tutAdvance(){
   if (state.tut<0) return;
@@ -4144,14 +4142,14 @@ function tutAdvance(){
   if (s.final){ state.tut=-1; save(); toast('Tutorial complete'); SFX.chime(); tutRender(); return; }
   state.tut++; tutFlags.pulsed=false; save(); tutRender();
 }
-function tutSkip(){ state.tut=-1; save(); tutRender(); toast('Tutorial skipped · the controls list stays bottom-left'); }
+function tutSkip(){ state.tut=-1; save(); tutRender(); toast('Tutorial skipped Â· the controls list stays bottom-left'); }
 function tutRender(){
   const on=state.tut>=0 && started;
   tutEl.box.hidden=!on; if (!on){ for (const r of tutEl.rings) r.hidden=true; tutShown=-1; return; }
   if (tutShown===state.tut) return; tutShown=state.tut;
   const s=TUT[state.tut];
   tutEl.step.textContent=`Tutorial ${state.tut+1} / ${TUT.length}`; tutEl.title.textContent=s.title; tutEl.text.innerHTML=s.text;
-  tutEl.next.hidden=!!s.auto; tutEl.wait.textContent=s.auto ? `waiting · ${s.wait||''}` : '';
+  tutEl.next.hidden=!!s.auto; tutEl.wait.textContent=s.auto ? `waiting Â· ${s.wait||''}` : '';
   tutEl.next.innerHTML=s.final ? 'Finish &nbsp;<kbd>Enter</kbd>' : 'Next &nbsp;<kbd>Enter</kbd>';
 }
 function tutUpdate(){
@@ -4174,7 +4172,7 @@ window.addEventListener('keydown', e=>{ if (e.key!=='Enter' || state.tut<0 || !s
 
 if (load()) hasSave=true;
 buildShip();
-el.callsign.addEventListener('input', ()=>{ state.custom.callsign=el.callsign.value.trim()||'Unnamed'; el.dockedEyebrow.textContent=`Docked · ${state.custom.callsign}`; });
+el.callsign.addEventListener('input', ()=>{ state.custom.callsign=el.callsign.value.trim()||'Unnamed'; el.dockedEyebrow.textContent=`Docked Â· ${state.custom.callsign}`; });
 el.callsign.addEventListener('change', save);
 loadZone(zone);
 spawnAtDepot();   // every session starts in the hangar on Bay 1's pad, whatever the save says
