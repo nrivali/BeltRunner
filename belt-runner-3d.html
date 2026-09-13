@@ -53,7 +53,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);fon
 .chip{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;background:rgba(14,18,36,.85);border:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--text);}
 .chip i{width:7px;height:7px;display:inline-block;transform:rotate(45deg);}
 .hud-tr{top:18px;right:20px;width:270px;display:flex;flex-direction:column;align-items:flex-end;gap:8px;text-align:right;}
-.hud-tc{top:18px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;text-align:center;}   /* target info, top middle */
+.hud-tc{top:56px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;text-align:center;}   /* target info, top middle */
 .readout{display:flex;gap:16px;font-family:var(--mono);font-size:12px;color:var(--muted);}
 .readout b{color:var(--text);font-weight:500;}
 .target{background:rgba(14,18,36,.85);border:1px solid var(--line);padding:10px 12px;min-width:200px;display:none;}
@@ -150,12 +150,11 @@ kbd{font-family:var(--mono);font-size:11px;color:var(--text);background:#151A30;
 .reticle i:nth-child(4){right:0;bottom:0;border-left:none;border-top:none;}
 .reticle.hot i{border-color:var(--amber);}
 .reticle.lock i{border-width:3px;width:18px;height:18px;}   /* locked on: heavier, wider corners */
-.reticle .lbl{position:absolute;top:70px;left:50%;transform:translateX(-50%);white-space:nowrap;font-family:var(--mono);font-size:11px;color:var(--text);text-shadow:0 1px 3px #000;}
-/* hover readout: what the mouse is over and how far it is, beside the cursor; lock marker: the locked object's name and range, under it */
-.hoverLbl,.lockLbl{position:fixed;pointer-events:none;z-index:2;display:none;white-space:nowrap;font-family:var(--mono);font-size:11px;color:var(--text);text-shadow:0 1px 3px #000;}
-.hoverLbl.on,.lockLbl.on{display:block;}
+.reticle .lbl{display:none;position:absolute;top:70px;left:50%;transform:translateX(-50%);white-space:nowrap;font-family:var(--mono);font-size:11px;color:var(--text);text-shadow:0 1px 3px #000;}   /* hidden: the target panel at the top carries the details; the brackets alone mark the target */
+/* hover readout: what the mouse is over and how far it is, beside the cursor */
+.hoverLbl{position:fixed;pointer-events:none;z-index:2;display:none;white-space:nowrap;font-family:var(--mono);font-size:11px;color:var(--text);text-shadow:0 1px 3px #000;}
+.hoverLbl.on{display:block;}
 .hoverLbl{padding:2px 6px;background:rgba(14,18,36,.72);border:1px solid var(--line2);}
-.lockLbl{transform:translate(-50%,0);color:var(--amber);}
 .marker{position:fixed;pointer-events:none;z-index:2;transform:translate(-50%,-50%);display:none;text-align:center;}
 .marker.on{display:block;}
 .marker .dia{width:10px;height:10px;border:2px solid var(--amber);transform:rotate(45deg);margin:0 auto 6px;}
@@ -403,7 +402,7 @@ table.manifest td.dimmed{color:var(--dim);}
 <div class="version" id="version"></div>
 <div class="hud center" id="center"></div>
 <div class="reticle" id="reticle"><i></i><i></i><i></i><i></i><div class="lbl" id="rLbl"></div></div>
-<div class="hoverLbl" id="hoverLbl"></div><div class="lockLbl" id="lockLbl"></div>
+<div class="hoverLbl" id="hoverLbl"></div>
 <div class="marker" id="marker"><div class="arr" id="mArr"></div><div class="dia"></div><div class="lbl" id="mLbl">CARGO SHIP</div></div>
 <div class="marker field" id="fieldMarker"><div class="arr" id="fArr"></div><div class="dia"></div><div class="lbl" id="fieldLbl">FIELD</div></div>
 <div id="blips"></div>
@@ -720,7 +719,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.31';
+const GAME_VERSION = '0.9.32';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D Â· v' + GAME_VERSION;
 
@@ -2640,7 +2639,7 @@ const $=id=>document.getElementById(id);
 const BLIPS=36; { const c=$('blips'); for (let i=0;i<BLIPS;i++){ const d=document.createElement('div'); d.className='blip'; d.innerHTML='<i></i><span></span>'; c.appendChild(d); } }
 const el={credits:$('credits'),goalFill:$('goalFill'),goalPct:$('goalPct'),fuelText:$('fuelText'),fuelFill:$('fuelFill'),cargoText:$('cargoText'),cargoFill:$('cargoFill'),chips:$('chips'),
   spd:$('spd'),dist:$('dist'),inv:$('inv'),invBody:$('invBody'),invCap:$('invCap'),invFill:$('invFill'),invClose:$('invClose'),target:$('target'),tEyebrow:$('tEyebrow'),tName:$('tName'),tSub:$('tSub'),tWarn:$('tWarn'),tHp:$('tHp'),tHpT:$('tHpT'),prompt:$('prompt'),toasts:$('toasts'),
-  center:$('center'),reticle:$('reticle'),rLbl:$('rLbl'),hoverLbl:$('hoverLbl'),lockLbl:$('lockLbl'),marker:$('marker'),mArr:$('mArr'),mLbl:$('mLbl'),fullNotice:$('fullNotice'),
+  center:$('center'),reticle:$('reticle'),rLbl:$('rLbl'),hoverLbl:$('hoverLbl'),marker:$('marker'),mArr:$('mArr'),mLbl:$('mLbl'),fullNotice:$('fullNotice'),
   station:$('station'),pCredits:$('pCredits'),manifest:$('manifest'),upgrades:$('upgrades'),closeSvc:$('closeSvc'),reset:$('reset'),
   dockbox:$('dockbox'),dbTitle:$('dbTitle'),dbCargo:$('dbCargo'),dbCargoT:$('dbCargoT'),dbFuel:$('dbFuel'),dbFuelT:$('dbFuelT'),dbHull:$('dbHull'),dbHullT:$('dbHullT'),
   hullText:$('hullText'),hullFill:$('hullFill'),dmg:$('dmg'),thrText:$('thrText'),thrFill:$('thrFill'),
@@ -4033,11 +4032,7 @@ function updateOverlays(){
   if (hover){ el.hoverLbl.classList.add('on'); el.hoverLbl.style.left=Math.min(W-160, mouse.x+16)+'px'; el.hoverLbl.style.top=Math.min(H-30, mouse.y+16)+'px';
     el.hoverLbl.textContent=`${hoverName(hover)} Â· ${Math.round(hover.dist)} u${hover.dist<=stat('scanner').mine?' Â· in reach':''}`; }
   else el.hoverLbl.classList.remove('on');
-  // lock marker under the locked object: its range is always on show
-  if (lock && started && !docked && !(target && target.locked)){ const q=project(lock.pos);   // (the reticle label carries the range once the crosshair is on it)
-    if (q.on){ el.lockLbl.classList.add('on'); el.lockLbl.style.left=q.x+'px'; el.lockLbl.style.top=(q.y+44)+'px'; el.lockLbl.textContent=`LOCK Â· ${hoverName({type:lockType, obj:lock})} Â· ${Math.round(lockDist)} u`; }
-    else el.lockLbl.classList.remove('on'); }
-  else el.lockLbl.classList.remove('on');
+  // (no marker under the locked object: the target panel at the top carries its name and range)
   // target reticle
   if (target && started && !docked){
     const p=project(target.obj.pos);
