@@ -1,0 +1,8 @@
+{
+  "tool": "Built-in ImageGen",
+  "prompt": "Production game texture: a full-frame flat 2:1 equirectangular GLOBAL CLOUD OPACITY MAP for an Earth-like planet. Photorealistic satellite weather structure, grayscale only. Pure black means perfectly clear sky; white and soft pale gray mean clouds. Roughly 45 percent cloud coverage, lots of deep black empty areas between weather systems. Delicate wispy cirrus, long broken curved mid-latitude frontal bands, several realistic large spiral cyclone formations with clear central eyes, scattered tropical convection clusters, very fine filament detail. Continuous wrapping at the left and right image edges; natural polar convergence at top and bottom. No land, no ocean, no planet silhouette, no globe, no stars, no blue, no lighting, no shadows, no gradient background, no labels, no grid, no border. This is an unlit opacity map, not a finished planet image. Highest possible detail, ideally 3840x1920.",
+  "sourceDimensions": [
+    1774,
+    887
+  ]
+}

@@ -71,7 +71,8 @@ void main(){vec3 n=normalize(vDirection);float d=dot(n,uDir);float source=smooth
     bounce.intensity=z.id==='sable'?.085:.16;
     disk.material.uniforms.uColor.value.copy(sun.color);halo.material.uniforms.uColor.value.copy(sun.color);
     disk.scale.setScalar(skyRadius*profile.radius);halo.scale.setScalar(skyRadius*profile.radius*12);
-    planet.value.set(0,0,0,z.hub?0:z.planet.r*250);occlusionClock=1;
+    const centre=z.planet?.position||[0,0,0];
+    planet.value.set(...centre,z.planet?z.planet.r*250:0);occlusionClock=1;
     rebuildEnvironment();
   }
   function patchMaterial(m){

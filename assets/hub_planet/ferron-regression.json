@@ -1,0 +1,60 @@
+{
+  "passed": true,
+  "mode": "http",
+  "gameSHA256": "bc0e65cb04130e3b07d095e159836c8e0d47a67949ef42f7038bac1397539a78",
+  "assetSHA256": "973642345b3c79da84f818f3869750e6895ca83ea0568d6c1f6f1817e8a49792",
+  "setup": {
+    "version": "v0.9.55",
+    "asset": "ready",
+    "radius": 225000
+  },
+  "checks": [
+    {
+      "brightness": {
+        "day": 104.33333333333333,
+        "night": 0.3333333333333333,
+        "sunVisible": 0
+      }
+    },
+    {
+      "zone": "hub",
+      "planetCount": 1,
+      "active": 0,
+      "homeActive": 1,
+      "homeState": "ready",
+      "oldRemoved": true
+    },
+    {
+      "zone": "kessler",
+      "state": "ready",
+      "r": 225000,
+      "collider": 226350,
+      "normal": true,
+      "albedo": 4096,
+      "roughness": true,
+      "active": 1,
+      "oldRemoved": true,
+      "castShadow": false,
+      "textures": 29,
+      "geometry": "7c20767f-b767-45f2-b687-5036a9c17755"
+    },
+    {
+      "lifetime": {
+        "geoDisposed": 0,
+        "mapDisposed": 0,
+        "matDisposed": 1,
+        "active": 1,
+        "sameGeometry": true,
+        "radiusMax": 1.0025001831415747
+      }
+    },
+    {
+      "race": {
+        "removed": true,
+        "children": 0,
+        "active": 0
+      }
+    }
+  ],
+  "errors": []
+}

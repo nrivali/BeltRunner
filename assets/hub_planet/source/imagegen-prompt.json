@@ -1,0 +1,9 @@
+{
+  "tool": "Built-in ImageGen",
+  "prompt": "Use case: photorealistic-natural. Asset type: production PBR base-color texture for an Earth-like inhabited ocean planet in Belt Runner 3D. Generate a flat, full-frame 2:1 equirectangular world surface map, ideally 3840 by 1920 pixels at the highest available detail. This is a texture to wrap around a sphere, NOT a rendered globe, NOT a scene or concept board. Fictional but naturally Earth-like geography: about 70 percent deep cobalt and navy oceans, several richly detailed green temperate and tropical continents, pale turquoise shallow coastal shelves, subtle tan arid interiors, winding river estuaries, rugged mountain chains, small island arcs, and natural white polar ice. Complex credible coastlines at many scales. Restrained photographic satellite colors with warm green land and clean blue oceans, a welcoming inhabited homeworld rather than an alien wasteland. Use ocean along both left and right edges so the longitudinal join is seamless. North and south edges converge into continuous pale polar caps. Completely even neutral unlit base color; no cast shadows, no directional lighting, no terminator, no atmosphere, no clouds, no ocean glint, no stars, no black background, no perspective, no borders, no text, no grid or labels. Surface fills the entire rectangular image.",
+  "sourceDimensions": [
+    1774,
+    887
+  ],
+  "note": "ImageGen produced Earth-like geography resembling Earth; used as a game texture, not a geographically authoritative map."
+}

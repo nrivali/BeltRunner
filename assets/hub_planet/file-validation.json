@@ -1,0 +1,29 @@
+{
+  "passed": true,
+  "mode": "file",
+  "gameSHA256": "bc0e65cb04130e3b07d095e159836c8e0d47a67949ef42f7038bac1397539a78",
+  "setup": {
+    "version": "v0.9.55",
+    "zone": "hub",
+    "state": "ready",
+    "homeworld": true,
+    "radius": 320000,
+    "position": [
+      150000,
+      -430000,
+      -360000
+    ],
+    "oreRocks": 0,
+    "albedo": 4096,
+    "normal": true,
+    "cities": true,
+    "clouds": 4096,
+    "first": {
+      "sunVisible": 1,
+      "textures": 23,
+      "triangles": 410130
+    }
+  },
+  "checks": [],
+  "errors": []
+}

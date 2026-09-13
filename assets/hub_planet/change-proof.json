@@ -1,0 +1,23 @@
+{
+  "baseCommit": "91389fafb065ae4976018fecbc3bc57b0c5f7961",
+  "gameSHA256": "bc0e65cb04130e3b07d095e159836c8e0d47a67949ef42f7038bac1397539a78",
+  "dependencySHA256": {
+    "assets/hub_planet/homeworld.glb": "6d457fdaaff87ffc2e494aaf54ec80b425af6085c51dbeaebbcdd90802f83ef5",
+    "assets/hub_planet/homeworld.data.js": "ff537db225f33995b99b76dbbfe3ee25e9f4c20dd62eadcd6b5cc04b3ea099ec",
+    "assets/hub_planet/load-homeworld.js": "61752adc784f5ef8ea8d5988a83ca8fa10b33c0e22bc2e7378168e5499fdcaa6",
+    "assets/lighting/space-lighting.js": "48e104aaf9b107abb595a68f0a2c52f4ea8d7e852a1aab8ad177f08cae141e50"
+  },
+  "checks": {
+    "hub": [
+      "http",
+      "file",
+      "script",
+      "missing"
+    ],
+    "ferronRegression": true,
+    "interactivePreview": true,
+    "cloudToggle": true,
+    "nightView": true
+  },
+  "version": "0.9.55"
+}

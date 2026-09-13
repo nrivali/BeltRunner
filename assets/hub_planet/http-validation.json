@@ -1,0 +1,86 @@
+{
+  "passed": true,
+  "mode": "http",
+  "gameSHA256": "bc0e65cb04130e3b07d095e159836c8e0d47a67949ef42f7038bac1397539a78",
+  "setup": {
+    "version": "v0.9.55",
+    "zone": "hub",
+    "state": "ready",
+    "homeworld": true,
+    "radius": 320000,
+    "position": [
+      150000,
+      -430000,
+      -360000
+    ],
+    "oreRocks": 0,
+    "albedo": 4096,
+    "normal": true,
+    "cities": true,
+    "clouds": 4096,
+    "first": {
+      "sunVisible": 1,
+      "textures": 23,
+      "triangles": 410130
+    }
+  },
+  "checks": [
+    {
+      "view": "arrival",
+      "sunVisible": 1,
+      "textures": 23,
+      "triangles": 401952
+    },
+    {
+      "view": "day",
+      "sunVisible": 1,
+      "textures": 23,
+      "triangles": 529116
+    },
+    {
+      "view": "night",
+      "sunVisible": 0,
+      "textures": 30,
+      "triangles": 694460
+    },
+    {
+      "holdingCamera": true,
+      "planetScreen": [
+        -0.27992050725679457,
+        -0.4334396733412195,
+        0.999993665317391
+      ],
+      "colonyScreen": [
+        -0.10794940535992549,
+        0.47182952920446314,
+        0.9999524783983387
+      ]
+    },
+    {
+      "stationClearance": 158666.00987870933,
+      "trafficEnvelopeClear": true,
+      "cloudsAnimate": true,
+      "offsetEclipse": true,
+      "offsetCollider": true
+    },
+    {
+      "repeatedVisits": 3,
+      "textureCounts": [
+        30,
+        30,
+        30
+      ],
+      "sharedGeometry": true,
+      "sharedTextures": true,
+      "oldSaveSafe": true
+    },
+    {
+      "race": {
+        "removed": true,
+        "children": 0,
+        "active": 0
+      }
+    }
+  ],
+  "errors": []
+}

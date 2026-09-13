@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "mode": "missing",
+  "gameSHA256": "bc0e65cb04130e3b07d095e159836c8e0d47a67949ef42f7038bac1397539a78",
+  "setup": {
+    "version": "v0.9.55",
+    "zone": "hub",
+    "state": "fallback",
+    "homeworld": true,
+    "radius": 320000,
+    "position": [
+      150000,
+      -430000,
+      -360000
+    ],
+    "oreRocks": 0,
+    "normal": false,
+    "cities": false,
+    "first": {
+      "sunVisible": 1,
+      "textures": 18,
+      "triangles": 275858
+    }
+  },
+  "checks": [],
+  "errors": []
+}

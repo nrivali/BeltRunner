@@ -554,6 +554,7 @@ table.manifest td.dimmed{color:var(--dim);}
 <script src="assets/asteroids_v2/load-asteroids.js"></script>
 <script src="assets/lighting/space-lighting.js"></script>
 <script src="assets/planet_v2/load-planet.js"></script>
+<script src="assets/hub_planet/load-homeworld.js"></script>
 <script>
 (() => {
 'use strict';
@@ -616,9 +617,10 @@ const GRAVITY_SURFACE = 55;      // u/s² at the planet surface, falling off wit
 const CARGO_SHIP='Cargo ship';
 const ZONES = [
   {id:'hub', name:'The Hub', hub:true, colony:'Meridian Colony', accent:'#6BD69A', map:[50,57], danger:0,
-   tag:'Meridian Colony and three smaller stations in open space, no planet beneath them. No belts and no raiders: the only market that buys ore, and the busiest lanes in the sector.',
-   bg:0x080a14, fogColor:0x0a0e1c, fog:0.00003, sun:0xfff6e6, sunI:2.4, sunSize:9500, sunDir:[0.4,0.5,-0.75], hemi:0x3a4a7a, rock:0x4a5068, density:0, amountMult:1,
-   belts:[{},{},{}]},
+   tag:'Meridian Colony and three smaller stations above a blue ocean world. Green continents, white clouds, and familiar lights on the night side: a home to return to, with safe lanes and the sector’s ore market.',
+   bg:0x080a14, fogColor:0x0a0e1c, fog:0.00003, sun:0xfff6e6, sunI:2.4, sunSize:9500, sunDir:[-0.85,0.45,0.10], hemi:0x3a4a7a, rock:0x4a5068, density:0, amountMult:1,
+   belts:[{},{},{}],
+   planet:{name:'Meridian', homeworld:true, position:[150000,-430000,-360000], r:1280, ore:'iron', tint:0x3C86B5, max:0, tier:0}},
   {id:'kessler', name:'Kessler Belt', accent:'#F2A33A', map:[46,34], danger:0.5,
    tag:'The home belt. Picked over, safe, and never far from a refuel.',
    bg:0x070912, fogColor:0x070912, fog:0.000036, sun:0xfff1dc, sunI:2.6, sunSize:10500, sunDir:[0.55,0.42,-0.72], hemi:0x3a4a8a, rock:0x4a5068, density:5, amountMult:1,
@@ -705,7 +707,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.54';
+const GAME_VERSION = '0.9.55';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -1329,7 +1331,11 @@ function planetTexture(def){
   }, {wrap:THREE.RepeatWrapping});
 }
 function buildPlanet(def){
-  const p={name:def.name, pos:V3(0,0,0), r:def.r*PLANET_SCALE, ore:def.ore, tint:def.tint, max:def.max, amount:def.max, tier:def.tier, ring:!!def.ring, group:new THREE.Group()};
+  const p={name:def.name, pos:V3(...(def.position||[0,0,0])), homeworld:!!def.homeworld, r:def.r*PLANET_SCALE, ore:def.ore, tint:def.tint, max:def.max, amount:def.max, tier:def.tier, ring:!!def.ring, group:new THREE.Group()};
+  if(p.homeworld && window.BeltRunnerHomeworld){
+    p.group.position.copy(p.pos); p.group.rotation.z=.16; scene.add(p.group);
+    window.BeltRunnerHomeworld.attach(p,{renderer,sunDir}); return p;
+  }
   const g=new THREE.SphereGeometry(p.r, 160, 100), pos=g.attributes.position, tmp=V3();
   for (let i=0;i<pos.count;i++){
     tmp.set(pos.getX(i),pos.getY(i),pos.getZ(i)).divideScalar(p.r);
@@ -1365,7 +1371,8 @@ void main(){
 }
 function removePlanet(p){
   p.removed=true; scene.remove(p.group);
-  if(window.BeltRunnerPlanets) window.BeltRunnerPlanets.release(p);
+  if(p.homeworld && window.BeltRunnerHomeworld) window.BeltRunnerHomeworld.release(p);
+  else if(window.BeltRunnerPlanets) window.BeltRunnerPlanets.release(p);
   else p.group.traverse(o=>{ if(o.geometry)o.geometry.dispose(); if(o.material){o.material.map?.dispose();o.material.dispose();} });
 }
 
@@ -2118,8 +2125,9 @@ function loadZone(z){
   rockMat.color.setHex(z.rock); rockMatSmooth.color.setHex(z.rock); rockMatCave.color.setHex(z.rock);
   for (const k of ORE_KEYS) for (const m of Object.values(oreRockMats[k])) m.color.setHex(z.rock);
   if (!skyMesh) buildSky(); skyMesh.scale.setScalar(SKY_R*1.03); skyMesh.material.color.setScalar(z.id==='drift'?.13:.018);
-  // the Hub has the colony at the origin instead of a planet (no gravity, no terrain)
-  if (z.hub){ planets=[]; planetR=0; } else { planets=[buildPlanet(z.planet)]; planetR=planets[0].r; }
+  // Meridian sits below the colony lanes. The Hub keeps its station-centred flight
+  // coordinates and zero central gravity; the visible planet has its own collider.
+  planets=[buildPlanet(z.planet)]; planetR=z.hub?0:planets[0].r;
   WORLD_R=planetR+WORLD_EDGE_BASE*WORLD_SCALE; worldEdge.scale.setScalar(WORLD_R);
   // the cargo ship orbits the planet in the belts; at the Hub you fly it yourself, so it simply sits where the ship is
   // the carrier starts at a random point on its orbit each time a zone loads, so with the sun fixed per zone the belt is
@@ -2150,6 +2158,8 @@ function loadZone(z){
   }
   buildHazards(z); buildScenery(z); buildBeltCloud();
   el.zoneName.textContent=z.name; el.depotName.innerHTML=z.hub?`${CARGO_SHIP}<span style="display:block;font-size:12px;font-weight:400;letter-spacing:.08em;color:var(--dim);margin-top:2px">holding station off ${z.colony}</span>`:CARGO_SHIP; el.mLbl.textContent=z.hub?'COLONY':'CARGO SHIP';
+  // An older Hub save may occupy the new world: move the carrier to its safe hold.
+  if(z.hub && planets.some(p=>ship.pos.distanceTo(p.pos)<p.r*1.018+5000)){ ship.pos.copy(HOLD.park); ship.vel.set(0,0,0); ship.q.copy(HOLD.q); placeDepot(); }
   // a save from an older layout can sit inside the planet or the carrier hull: move it to the spawn pad
   const lp=depotLocal(ship.pos), H=DEPOT.half;
   if (!docked && !z.hub && (ship.pos.length()<planetR+400 || (Math.abs(lp.x)<H.x+40 && Math.abs(lp.y)<H.y+40 && Math.abs(lp.z)<H.z+40 && !bayCorridor(ship.pos)))) spawnAtDepot();
@@ -3721,7 +3731,7 @@ function update(dt){
     if (near) a.group.rotateOnAxis(a.axis, a.spin*dt);
   }
   if (frameNo%4===0) updateBeltCloud();
-  for (const p of planets){ p.amount=Math.min(p.max, p.amount+3*dt); p.group.rotation.y+=0.004*dt; }
+  for (const p of planets){ p.amount=Math.min(p.max, p.amount+3*dt); p.group.rotation.y+=0.004*dt; if(p.homeworld) window.BeltRunnerHomeworld?.update(p,dt); }
   collideRocks(); depotBumpRocks(); updateDepot(dt); updateDrops(dt); updateCollectors(dt);
   if (zone.hub){ updateTraffic(dt); if (started && !docked && !cut && !warping) startHoldApproach(); }   // at the Hub the cargo ship is always arriving or holding station off the colony
   for (const s of scenery){ s.ang-=(28/s.orbit)*dt; s.pos.set(Math.cos(s.ang)*s.orbit, s.y, Math.sin(s.ang)*s.orbit); const vis=(20000+s.r*400)*lodScale, near=s.pos.distanceToSquared(ship.pos)<vis*vis; if (near){ if (!s.inScene){ scene.add(s.group); s.inScene=true; } s.group.rotateOnAxis(s.axis, s.spin*dt); } else if (s.inScene){ scene.remove(s.group); s.inScene=false; } }
@@ -4000,8 +4010,14 @@ function updateVisuals(dt, t){
   } else if (docked && dockBay && dockBay.berth){
     // holding station: a slow walk round the carrier with the colony beyond it
     hangarT+=dt; const a=0.6+hangarT*0.05;
-    camPos.copy(ship.pos).add(V3(Math.cos(a)*11500, 2600+1400*Math.sin(a*0.7), Math.sin(a)*11500));
-    camLook.copy(ship.pos); cu=V3(0,1,0); cf=camLook.clone().sub(camPos).normalize(); camQ.copy(ship.q);
+    if(dockBay.hold){
+      // Keep Meridian and its colony beyond the carrier while it holds station.
+      camPos.copy(ship.pos).addScaledVector(HOLD_FWD,-15500).addScaledVector(HOLD_SIDE,7000+Math.sin(hangarT*.04)*3500).add(V3(0,7000,0));
+      camLook.copy(ship.pos).addScaledVector(HOLD_FWD,22000).add(V3(0,-11000,0));
+    }else{
+      camPos.copy(ship.pos).add(V3(Math.cos(a)*11500, 2600+1400*Math.sin(a*0.7), Math.sin(a)*11500)); camLook.copy(ship.pos);
+    }
+    cu=V3(0,1,0); cf=camLook.clone().sub(camPos).normalize(); camQ.copy(ship.q);
   } else if (cut){
     // cutscene: two fixed cameras in the carrier's frame. First a wide shot from out past the approach point,
     // then, once the ship is committed, a low camera at the bay mouth watching it slide in and settle on the pad.

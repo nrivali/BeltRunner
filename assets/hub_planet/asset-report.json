@@ -1,0 +1,36 @@
+{
+  "surface_source_size": [
+    1774,
+    887
+  ],
+  "cloud_source_size": [
+    1774,
+    887
+  ],
+  "surface_triangles": 65024,
+  "cloud_triangles": 36480,
+  "textures": {
+    "homeworld_albedo.jpg": [
+      4096,
+      2048
+    ],
+    "homeworld_normal.png": [
+      2048,
+      1024
+    ],
+    "homeworld_roughness.png": [
+      2048,
+      1024
+    ],
+    "homeworld_cities.png": [
+      2048,
+      1024
+    ],
+    "homeworld_clouds.png": [
+      4096,
+      2048
+    ]
+  },
+  "lighting": "Blender Cycles sun; unlit base-color textures, runtime night-side emission gate",
+  "collision_radius": 1.006
+}

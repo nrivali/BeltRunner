@@ -1,7 +1,8 @@
 /* Verify real scene rendering, all zones, asset fallbacks and shared-resource lifetime. */
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict'),crypto=require('node:crypto');
 const {chromium}=require('C:/Users/rival/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
-const root=path.resolve(__dirname,'..'),out=path.join(root,'assets/planet_v2'),mode=process.argv[2]||'http';
+const root=path.resolve(__dirname,'..'),assetRoot=path.join(root,'assets/planet_v2'),out=process.env.BELT_PLANET_TEST_OUT?path.resolve(process.env.BELT_PLANET_TEST_OUT):assetRoot,mode=process.argv[2]||'http';
+fs.mkdirSync(path.join(out,'previews'),{recursive:true});
 const hash=()=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'belt-runner-3d.html'))).digest('hex');
 const server=http.createServer((req,res)=>{
   const url=new URL(req.url,'http://localhost');
@@ -15,7 +16,7 @@ const server=http.createServer((req,res)=>{
   const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files/Google/Chrome/Application/chrome.exe',args:['--enable-webgl','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
   try{
     const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[],initialSHA=hash();
-    const assetSHA256=crypto.createHash('sha256').update(fs.readFileSync(path.join(out,'planet.glb'))).digest('hex');
+    const assetSHA256=crypto.createHash('sha256').update(fs.readFileSync(path.join(assetRoot,'planet.glb'))).digest('hex');
     page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'&&/Shader|WebGLProgram/.test(m.text()))errors.push(m.text());});
     await page.addInitScript(()=>{window.requestAnimationFrame=()=>0;let s=28761;Math.random=()=>{s=(1664525*s+1013904223)>>>0;return s/4294967296;};});
     if(mode==='script'||mode==='missing')await page.route('**/assets/planet_v2/planet.glb',r=>r.fulfill({status:404,body:'missing'}));
@@ -57,11 +58,11 @@ const server=http.createServer((req,res)=>{
       for(const id of activeZones){
         const result=await page.evaluate(async id=>{
           const b=BeltRunner,old=b.planets[0],z=b.ZONES.find(z=>z.id===id);b.loadZone(z);
-          if(z.hub)return {zone:id,planetCount:b.planets.length,active:BeltRunnerPlanets.active,oldRemoved:old.removed};
+          if(z.hub){await b.planets[0].assetReady;return {zone:id,planetCount:b.planets.length,active:BeltRunnerPlanets.active,homeActive:BeltRunnerHomeworld.active,homeState:b.planets[0].assetState,oldRemoved:old.removed};}
           await b.planets[0].assetReady;drawPlanet();const p=b.planets[0],s=p.group.getObjectByName('planet_surface');
           return {zone:id,state:p.assetState,r:p.r,collider:p.r*1.006,normal:!!s.material.normalMap,albedo:s.material.map.image.width,roughness:!!s.material.roughnessMap,active:BeltRunnerPlanets.active,oldRemoved:old?.removed,castShadow:s.castShadow,textures:b.renderer.info.memory.textures,geometry:s.geometry.uuid};
         },id);
-        if(id==='hub'){assert.equal(result.active,0);assert.equal(result.planetCount,0);}else{assert.equal(result.state,'ready');assert.equal(result.normal,true);assert.equal(result.albedo,4096);assert.equal(result.active,1);assert.equal(result.castShadow,false);}
+        if(id==='hub'){assert.equal(result.active,0);assert.equal(result.planetCount,1);assert.equal(result.homeActive,1);assert.equal(result.homeState,'ready');}else{assert.equal(result.state,'ready');assert.equal(result.normal,true);assert.equal(result.albedo,4096);assert.equal(result.active,1);assert.equal(result.castShadow,false);}
         checks.push(result);
         if(id!=='hub')await page.screenshot({path:path.join(out,'previews',id+'.png')});
       }
