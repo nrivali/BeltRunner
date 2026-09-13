@@ -715,7 +715,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.91';
+const GAME_VERSION = '0.9.92';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -3096,7 +3096,7 @@ function buyJump(){
 function cutsList(level){ const names=COMMON_KEYS.filter(k=>ORES[k].hardness<=level).map(k=>ORES[k].name); const ex=ACTIVE_KEYS.filter(k=>ORES[k].zone&&ORES[k].hardness<=level).length; return names.join(', ')+(ex?` + ${ex} zone exclusives`:''); }
 // the mining laser row says only what the next level buys: the cut-rate step and the ore it unlocks (hardness = next level)
 function laserRowDesc(i, maxed){
-  const L=UPGRADES.laser.levels; if (maxed) return `<b>${L[i].rate} dmg/s</b> · cuts every ore`;
+  const L=UPGRADES.laser.levels; if (maxed) return `<b>${L[i].rate} dmg/s</b> · Fully Upgraded`;
   const next=ACTIVE_KEYS.filter(k=>ORES[k].hardness===i+2).map(k=>ORES[k].name);
   return `${L[i].rate} dmg/s → <b>${L[i+1].rate} dmg/s</b> · ${next.length?`unlocks <b>${next.join(', ')}</b>`:'no new ore'}`;
 }
@@ -3208,7 +3208,7 @@ function renderPanel(){
   for (const k in UPGRADES){
     const u=UPGRADES[k], i=state.up[k], maxed=i>=u.costs.length;
     const pips=Array.from({length:u.levels.length},(_,j)=>j<=i?'■':'<span>■</span>').join('');
-    const desc=k==='laser'?laserRowDesc(i,maxed):maxed?`<b>${describe(k,i)}</b> · fully refitted`:`${describe(k,i)} → <b>${describe(k,i+1)}</b>`;
+    const desc=k==='laser'?laserRowDesc(i,maxed):maxed?`<b>${describe(k,i)}</b> · Fully Upgraded`:`${describe(k,i)} → <b>${describe(k,i+1)}</b>`;
     const btn=maxed?`<button class="btn" disabled>Max</button>`:`<button class="btn ${state.credits>=u.costs[i]?'primary':''}" data-up="${k}" ${state.credits<u.costs[i]?'disabled':''}>${fmt(u.costs[i])} cr</button>`;
     html+=`<div class="up"><div class="up-head"><span class="up-name">${u.name}</span><span class="pips">${pips}</span></div><div class="up-desc">${desc}</div>${btn}</div>`;
   }
@@ -3216,7 +3216,7 @@ function renderPanel(){
   for (const k in DEPOT_UPGRADES){
     const u=DEPOT_UPGRADES[k], i=state.depot[k], maxed=i>=u.costs.length;
     const pips=Array.from({length:u.costs.length},(_,j)=>j<i?'■':'<span>■</span>').join('');
-    const desc=maxed?`<b>${describeDepot(k,i)}</b> · fully upgraded`:`${describeDepot(k,i)} → <b>${describeDepot(k,i+1)}</b>`;
+    const desc=maxed?`<b>${describeDepot(k,i)}</b> · Fully Upgraded`:`${describeDepot(k,i)} → <b>${describeDepot(k,i+1)}</b>`;
     const btn=maxed?`<button class="btn" disabled>Max</button>`:`<button class="btn ${state.credits>=u.costs[i]?'primary':''}" data-dup="${k}" ${state.credits<u.costs[i]?'disabled':''}>${fmt(u.costs[i])} cr</button>`;
     html+=`<div class="up"><div class="up-head"><span class="up-name">${u.name}</span><span class="pips">${pips}</span></div><div class="up-desc">${desc}</div>${btn}</div>`;
   }
