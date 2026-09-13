@@ -493,7 +493,7 @@ table.manifest td.dimmed{color:var(--dim);}
     </div>
     <div class="bar inv-bar"><i id="invFill"></i></div>
     <div id="invBody"></div>
-    <div class="inv-foot"><span class="hint">Each slot holds one stack of up to 100 units of one ore. Drag stacks to rearrange or pour them together; drag one out of the panel and let go (or press ✕) to drop it into space. Dock with the cargo ship to stow stacks in its storage; sell at the Hub.</span><button id="invClose" class="btn">Close &nbsp;<kbd>Tab</kbd></button></div>
+    <div class="inv-foot"><span class="hint">Each slot holds one stack of up to 100 units of one ore, sorted most valuable first. Drag one stack onto another to pour them together; drag one out of the panel and let go (or press ✕) to drop it into space. Dock with the cargo ship to stow stacks in its storage; sell at the Hub.</span><button id="invClose" class="btn">Close &nbsp;<kbd>Tab</kbd></button></div>
   </div>
 </div>
 <div id="map" class="overlay" hidden>
@@ -713,7 +713,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.83';
+const GAME_VERSION = '0.9.84';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -763,7 +763,9 @@ const storeFree = () => Math.max(0, STORE_SLOTS-storeUsed());
 const storeRoom = k => (storeStacksOf(k)*STACK-(state.store[k]||0)) + storeFree()*STACK;
 const storeAnyRoom = () => storeFree()>0 || ORE_KEYS.some(k=>state.store[k]>0.5 && storeStacksOf(k)*STACK-state.store[k]>0.5);
 const storeTotal = () => ORE_KEYS.reduce((s,k)=>s+(state.store[k]||0),0);
-function storeStacks(){ const out=[]; for (const k of ORE_KEYS){ let t=state.store[k]||0; while (t>0.5){ const u=Math.min(STACK,t); out.push({k,u}); t-=u; } } return out; }
+// stacks everywhere are shown most valuable first: by what the stack would fetch, then by the ore's unit price, then by name
+const stackValueOrder=(a,b)=>(b.u*price(b.k)-a.u*price(a.k))||(price(b.k)-price(a.k))||(a.k<b.k?-1:a.k>b.k?1:0);
+function storeStacks(){ const out=[]; for (const k of ORE_KEYS){ let t=state.store[k]||0; while (t>0.5){ const u=Math.min(STACK,t); out.push({k,u}); t-=u; } } return out.sort(stackValueOrder); }
 // Every exclusive ore is an export at the Hub, the only market, so it always carries the premium there.
 const isExport = k => !!ORES[k].zone;
 const price = k => ORES[k].price * state.market[k] * (1+stat('refinery').bonus) * (isExport(k)?EXPORT_BONUS:1);
@@ -1612,7 +1614,8 @@ function spawnDebris(a, vel){
   const n=a.cls==='colossal'?16:a.cls==='giant'?11:a.cls==='large'?8:5;
   const hot=a.mat.clone(); hot.userData.uBody={value:1}; heatable(hot); hot.userData.users=n;
   for (let i=0;i<n;i++){
-    const r=a.r*rand(.1,.28), geo=rockAssets?.scrapGeometry(r,a.seed+7+i)||rockGeometry(r, 'lumpy', a.seed+7+i, 0), m=new THREE.Mesh(geo, hot);
+    // scrap is small (4-12% of the parent's radius, well under a real fragment's ~30%) so it never passes for a rock you could cut
+    const r=a.r*rand(.04,.12), geo=rockAssets?.scrapGeometry(r,a.seed+7+i)||rockGeometry(r, 'lumpy', a.seed+7+i, 0), m=new THREE.Mesh(geo, hot);
     const dir=V3(rand(-1,1),rand(-1,1),rand(-1,1)).normalize();
     m.position.copy(a.pos).addScaledVector(dir, a.r*rand(.2,.7)); m.rotation.set(Math.random()*6,Math.random()*6,Math.random()*6);
     scene.add(m);
@@ -3464,7 +3467,12 @@ function oreIcon(k){
 }
 // The slot layout is persistent: state.slotOrder holds what sits in each slot, so stacks stay where you dragged them.
 // syncSlots reconciles it with the ore totals in state.cargo, which everything else still reads and writes.
-function slotOrder(){ if (!state.slotOrder) state.slotOrder=[]; const S=state.slotOrder, n=cargoSlots(); while (S.length<n) S.push(null); return S; }
+function slotOrder(){
+  if (!state.slotOrder) state.slotOrder=[]; const S=state.slotOrder, n=cargoSlots(); while (S.length<n) S.push(null);
+  // keep the hold sorted most valuable first (empty slots last) every time it is read, so the grid and the drag indices agree
+  const stacks=S.filter(Boolean).sort(stackValueOrder); for (let i=0;i<S.length;i++) S[i]=stacks[i]||null;
+  return S;
+}
 function syncSlots(){
   const S=slotOrder(), n=cargoSlots();
   for (const k of ORE_KEYS){
