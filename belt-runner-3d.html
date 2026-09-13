@@ -488,7 +488,7 @@ table.manifest td.dimmed{color:var(--dim);}
     </div>
     <div class="bar inv-bar"><i id="invFill"></i></div>
     <div id="invBody"></div>
-    <div class="inv-foot"><span class="hint">Each slot holds one stack of up to 25 units of one ore. Drag stacks to rearrange or pour them together; drag one off the grid (or press ✕) to jettison it. Dock with the cargo ship to stow stacks in its storage; sell at the Hub.</span><button id="invClose" class="btn">Close &nbsp;<kbd>Tab</kbd></button></div>
+    <div class="inv-foot"><span class="hint">Each slot holds one stack of up to 100 units of one ore. Drag stacks to rearrange or pour them together; drag one off the grid (or press ✕) to jettison it. Dock with the cargo ship to stow stacks in its storage; sell at the Hub.</span><button id="invClose" class="btn">Close &nbsp;<kbd>Tab</kbd></button></div>
   </div>
 </div>
 <div id="map" class="overlay" hidden>
@@ -670,7 +670,7 @@ const PARTS_CAP=400, PARTS_PRICE=2;
 let zone = HOME_ZONE, planets = [];
 const UPGRADES = {
   laser:   {name:'Mining laser', levels:[{rate:3},{rate:5},{rate:8},{rate:12},{rate:18}], costs:[350,1400,5000,16000]},
-  cargo:   {name:'Cargo hold',   levels:[{slots:4},{slots:6},{slots:8},{slots:11},{slots:14},{slots:18}], costs:[200,700,2400,7500,20000]},   // slots of 25 units each
+  cargo:   {name:'Cargo hold',   levels:[{slots:4},{slots:6},{slots:8},{slots:11},{slots:14},{slots:18}], costs:[200,700,2400,7500,20000]},   // slots of STACK (100) units each
   engine:  {name:'Engines',      levels:[{thrust:164,max:250},{thrust:219,max:320},{thrust:281,max:400},{thrust:359,max:490},{thrust:461,max:610}], costs:[300,1100,3500,10000]},   // top speed 250 at level 1, and that is the ceiling (no cruise); thrust scaled with it so the time to reach it is unchanged
   tank:    {name:'Fuel tank',    levels:[{cap:100},{cap:160},{cap:250},{cap:400},{cap:600}], costs:[150,600,2000,6000]},
   scanner: {name:'Scanner',      levels:[{range:28000,mine:2500},{range:46000,mine:2500},{range:74000,mine:2500},{range:135000,mine:2500}], costs:[400,1800,6000]},   // laser reach is a flat 2500 at every scanner level
@@ -708,7 +708,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.66';
+const GAME_VERSION = '0.9.67';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -738,9 +738,9 @@ const depotPulse={on:false, t:0, r:0, cd:2}, depotLaser={rock:null, hit:null, re
 const keys={}, mouse={x:0,y:0,inside:false,down:false};
 
 const stat = k => UPGRADES[k].levels[state.up[k]];
-// The hold is a set of slots, each holding a stack of up to 25 units of one ore. An ore takes as many slots as it needs;
+// The hold is a set of slots, each holding a stack of up to STACK (100) units of one ore. An ore takes as many slots as it needs;
 // a part-filled stack tops up first, then empty slots. cargoCap stays the total in units for the gauges.
-const STACK=25;
+const STACK=100;   // units of one ore per slot (was 25)
 const cargoSlots = () => stat('cargo').slots;
 const cargoCap = () => cargoSlots()*STACK;
 const stacksOf = k => Math.ceil(state.cargo[k]/STACK-1e-6);
@@ -3415,7 +3415,7 @@ function updateHazards(dt, t){
 
 // ---------------------------------------------------------------- nav map / warp
 const exclusivesOf = z => ORE_KEYS.filter(k=>ORES[k].zone===z.id);
-// ---- inventory: the hold as a grid of slots, a stack of up to 25 units of one ore in each. I or Tab opens and closes
+// ---- inventory: the hold as a grid of slots, a stack of up to STACK (100) units of one ore in each. I or Tab opens and closes
 // it. Each stack has a discard button that jettisons it into space behind the ship; the ore drifts off and is ignored
 // by your own magnet for a minute so it does not come straight back (drones will still collect it).
 let invOpen=false, invSig='', dragI=-1;
