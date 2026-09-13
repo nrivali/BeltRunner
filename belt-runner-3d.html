@@ -714,7 +714,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.73';
+const GAME_VERSION = '0.9.74';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -3151,9 +3151,11 @@ function renderCargoSummary(){
   if (zone.hub){
     const fuelCost=Math.ceil((CARGO_FUEL_CAP-sf)*CARGO_FUEL_PRICE), partsCost=Math.ceil((PARTS_CAP-state.parts)*PARTS_PRICE);
     html+=`<div class="row-actions" style="margin-top:12px"><button class="btn ${fuelCost>0&&state.credits>=1?'primary':''}" data-refuel="1" ${fuelCost>0?'':'disabled'}>${fuelCost>0?`Refuel supply · ${fmt(fuelCost)} cr`:'Fuel supply full'}</button><button class="btn ${partsCost>0&&state.credits>=PARTS_PRICE?'primary':''}" data-parts="1" ${partsCost>0?'':'disabled'}>${partsCost>0?`Restock parts · ${fmt(partsCost)} cr`:'Parts store full'}</button></div>`
-        + `<p class="hint" style="margin:8px 0 0">Fuel is ${CARGO_FUEL_PRICE} cr a unit and parts are ${PARTS_PRICE} cr each; if credits run short you get what they cover. Nothing is bought unless you press the button.</p>`;
+        + ``;
   }
-  html+=`<p class="hint" style="margin:8px 0 0">Open the inventory (<kbd>Tab</kbd>) to move stacks between your hold and the cargo ship's storage. ${zone.hub?'The colony market below buys from both.':'Your tank fills from the fuel supply and hull damage is patched from the parts while you sit here; both restock at the Hub.'}</p>`;
+  // deposit everything in the hold into the storage (the same action as E in the hangar and Stow all in the inventory); no explanatory text here
+  const aboard=cargoTotal();
+  html+=`<div class="row-actions" style="margin-top:12px"><button class="btn ${aboard>0.5?'primary':''}" data-stow="1" ${aboard>0.5?'':'disabled'}>${aboard>0.5?`Deposit all · ${fmt(aboard)} u`:'Deposit all · hold empty'}</button></div>`;
   return html;
 }
 function renderMarket(){
@@ -3183,6 +3185,7 @@ function renderPanel(){
   el.manifest.querySelectorAll('[data-sellstore]').forEach(b=>b.addEventListener('click',()=>sellOre(ORE_KEYS, false, true)));
   el.manifest.querySelectorAll('[data-refuel]').forEach(b=>b.addEventListener('click',refuelCargoShip));
   el.manifest.querySelectorAll('[data-parts]').forEach(b=>b.addEventListener('click',buyParts));
+  el.manifest.querySelectorAll('[data-stow]').forEach(b=>b.addEventListener('click',stowAll));
   let html='';
   for (const k in UPGRADES){
     const u=UPGRADES[k], i=state.up[k], maxed=i>=u.costs.length;
