@@ -649,6 +649,8 @@ function warpCost(a,b){ return 0; }   // the jump drive runs off the cargo ship'
 // The cargo ship carries the fuel supply. Your ship fills its tank from it for free whenever it is docked; the cargo ship
 // itself buys fuel from the colony while it holds station at the Hub.
 const CARGO_FUEL_CAP=2500, CARGO_FUEL_PRICE=0.6, CARGO_FUEL_RATE=40;
+// Repair parts ride in the cargo ship too: one part mends one hull point while your ship is docked; the colony sells them.
+const PARTS_CAP=400, PARTS_PRICE=2;
 let zone = HOME_ZONE, planets = [];
 const UPGRADES = {
   laser:   {name:'Mining laser', levels:[{rate:3},{rate:5},{rate:8},{rate:12},{rate:18}], costs:[350,1400,5000,16000]},
@@ -690,7 +692,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.46';
+const GAME_VERSION = '0.9.47';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -698,7 +700,7 @@ document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAM
 const state = {
   credits:60, cargo:{}, store:{}, fuel:100, jump:false,   // cargo: the ship's hold; store: the cargo ship's storage, which travels with you
   up:{laser:0,cargo:0,engine:0,tank:0,scanner:0,refinery:0,hull:0}, hull:100,
-  depot:{radar:0, laser:0, collectors:0}, droneUnits:0, shipFuel:1200,   // cargo ship upgrades: level 0 = not installed; droneUnits: ore the collectors have stowed; shipFuel: the cargo ship's fuel supply
+  depot:{radar:0, laser:0, collectors:0}, droneUnits:0, shipFuel:1200, parts:120,   // cargo ship upgrades: level 0 = not installed; droneUnits: ore the collectors have stowed; shipFuel: the cargo ship's fuel supply
   market:{}, marketNext:{}, marketT:0, mined:0, minedBy:{}, earned:0, time:0,
 };
 ORE_KEYS.forEach(k => { state.cargo[k]=0; state.store[k]=0; state.market[k]=1; state.marketNext[k]=1; });
@@ -2572,7 +2574,7 @@ void main(){
 let resetting=false;
 function save(){
   if (resetting) return;
-  try { localStorage.setItem(SAVE_KEY, JSON.stringify({credits:state.credits,cargo:state.cargo,store:state.store,fuel:state.fuel,hull:state.hull,up:state.up,depot:state.depot,droneUnits:state.droneUnits,shipFuel:state.shipFuel,tut:state.tut,torchOn,hudSize,muted:SFX.muted,music:MUSIC.on,sfxVol:SFX.volume,musicVol:MUSIC.volume,quality,jump:state.jump,mined:state.mined,minedBy:state.minedBy,slotOrder:state.slotOrder,earned:state.earned,time:state.time,mouseAim,zone:zone.id,custom:state.custom,
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify({credits:state.credits,cargo:state.cargo,store:state.store,fuel:state.fuel,hull:state.hull,up:state.up,depot:state.depot,droneUnits:state.droneUnits,shipFuel:state.shipFuel,parts:state.parts,tut:state.tut,torchOn,hudSize,muted:SFX.muted,music:MUSIC.on,sfxVol:SFX.volume,musicVol:MUSIC.volume,quality,jump:state.jump,mined:state.mined,minedBy:state.minedBy,slotOrder:state.slotOrder,earned:state.earned,time:state.time,mouseAim,zone:zone.id,custom:state.custom,
     ship:{p:ship.pos.toArray(), q:ship.q.toArray()}})); } catch(e){}
 }
 function load(){
@@ -2593,6 +2595,7 @@ function load(){
     for (const k in state.depot) state.depot[k]=Math.min((s.depot&&s.depot[k])||0, DEPOT_UPGRADES[k].costs.length);
     if (s.droneUnits) state.droneUnits=s.droneUnits;
     if (typeof s.shipFuel==='number') state.shipFuel=Math.min(CARGO_FUEL_CAP, s.shipFuel);
+    if (typeof s.parts==='number') state.parts=Math.min(PARTS_CAP, s.parts);
     if (s.ship){ ship.pos.fromArray(s.ship.p); ship.q.fromArray(s.ship.q).normalize(); }
     zone=zoneById(s.zone);
     if (s.custom) state.custom=Object.assign(state.custom, s.custom);
@@ -2975,10 +2978,10 @@ function dockUpdate(dt){
   const tgt=b.hold ? b.park.clone().add(V3(Math.sin(state.time*0.21)*320, Math.sin(state.time*0.17)*240, Math.cos(state.time*0.13)*320)) : b.park;
   const k=1-Math.exp(-(b.hold?0.4:1.4)*dt); ship.pos.lerp(tgt, k); ship.q.slerp(b.q, k);
   // nothing sells or unloads on its own: cargo moves between the hold and the cargo ship's storage from the services panel
-  // at the Hub the cargo ship buys fuel from the colony for credits; your ship's tank fills from the cargo ship's supply for free
-  if (zone.hub && state.shipFuel<CARGO_FUEL_CAP){ const u=Math.min(CARGO_FUEL_RATE*dt, CARGO_FUEL_CAP-state.shipFuel, state.credits/CARGO_FUEL_PRICE); if (u>0){ state.shipFuel+=u; state.credits-=u*CARGO_FUEL_PRICE; fuelDryWarned=false; if (state.shipFuel>=CARGO_FUEL_CAP-0.01) toast('Cargo ship fuel supply full'); } }
-  const tank=stat('tank').cap; if (state.fuel<tank){ const u=Math.min(fuelRate()*dt, tank-state.fuel, state.shipFuel); if (u>0){ state.fuel+=u; state.shipFuel-=u; } else if (state.shipFuel<0.5 && !fuelDryWarned){ fuelDryWarned=true; toast('Cargo ship fuel supply is dry · resupply at the Hub', true); } }
-  const hp=stat('hull').hp; if (state.hull<hp){ const u=Math.min(repairRate()*dt, hp-state.hull, state.credits/2); if (u>0){ state.hull+=u; state.credits-=u*2; lowHullWarned=false; } }
+  // your ship's tank fills from the cargo ship's supply for free, and its hull is patched from the cargo ship's repair
+  // parts, one part per hull point; both are bought by hand at the Hub from the services panel
+  const tank=stat('tank').cap; if (state.fuel<tank){ const u=Math.min(fuelRate()*dt, tank-state.fuel, state.shipFuel); if (u>0){ state.fuel+=u; state.shipFuel-=u; } else if (state.shipFuel<0.5 && !fuelDryWarned){ fuelDryWarned=true; toast('Cargo ship fuel supply is dry · refuel at the Hub', true); } }
+  const hp=stat('hull').hp; if (state.hull<hp){ const u=Math.min(repairRate()*dt, hp-state.hull, state.parts); if (u>0){ state.hull+=u; state.parts-=u; lowHullWarned=false; } else if (state.parts<0.5 && !partsWarned){ partsWarned=true; toast('No repair parts left · restock at the Hub', true); } }
   // W departs, but only after it has been released once since docking (you usually fly in holding it)
   if (!key('w')) depWait=false; else if (!depWait) startDeparture();
 }
@@ -3048,15 +3051,39 @@ function sellOre(keys, fromHold, fromStore){
   state.credits+=cr; state.earned+=cr; toast(`Sold ${Math.round(units)} u · +${fmt(cr)} cr`); SFX.clip('cash', SFX.cash); invSig=''; renderPanel(); save();
 }
 // the services panel only summarises the cargo: moving stacks between the hold and the storage is done in the inventory (Tab)
-let fuelDryWarned=false;
-// the cargo ship's own state as two gauges in the style of the bottom HUD: storage slots and the fuel supply
+let fuelDryWarned=false, partsWarned=false;
+// buying at the colony: fuel for the cargo ship's supply and repair parts for its stores, as much as fits or as much as you can afford
+function refuelCargoShip(){
+  const want=CARGO_FUEL_CAP-state.shipFuel, u=Math.min(want, state.credits/CARGO_FUEL_PRICE);
+  if (want<0.5){ toast('Fuel supply is already full'); return; }
+  if (u<1){ toast('Not enough credits for fuel', true); return; }
+  state.shipFuel+=u; state.credits=Math.max(0, state.credits-u*CARGO_FUEL_PRICE); fuelDryWarned=false;
+  toast(`Refuelled ${Math.floor(u)} u · ${fmt(u*CARGO_FUEL_PRICE)} cr${u<want-0.5?' · out of credits before full':''}`); SFX.clip('cash', SFX.cash); renderPanel(); save();
+}
+function buyParts(){
+  const want=PARTS_CAP-state.parts, n=Math.min(want, Math.floor(state.credits/PARTS_PRICE));
+  if (want<0.5){ toast('Repair parts store is already full'); return; }
+  if (n<1){ toast('Not enough credits for repair parts', true); return; }
+  state.parts+=n; state.credits-=n*PARTS_PRICE; partsWarned=false;
+  toast(`Restocked ${n} repair parts · ${fmt(n*PARTS_PRICE)} cr${n<want-0.5?' · out of credits before full':''}`); SFX.clip('cash', SFX.cash); renderPanel(); save();
+}
+// the cargo ship's own state as gauges in the style of the bottom HUD: storage slots, the fuel supply and the repair parts,
+// with the colony's refuel and restock offers underneath while you are at the Hub
 function renderCargoSummary(){
-  const sf=state.shipFuel, su=storeUsed(), low=sf<CARGO_FUEL_CAP*0.2;
+  const sf=state.shipFuel, su=storeUsed(), lowFuel=sf<CARGO_FUEL_CAP*0.2, lowParts=state.parts<PARTS_CAP*0.2;
   const gauge=(label, text, pct, color, cls)=>`<div class="gauge"><div class="gauge-head"><span>${label}</span><span class="mono${cls?' '+cls:''}">${text}</span></div><div class="bar"><i style="width:${Math.max(0,Math.min(100,pct))}%;background:${color};color:${color}"></i></div></div>`;
-  return `<div style="display:flex;flex-direction:column;gap:12px;margin-bottom:4px">`
+  let html=`<div style="display:flex;flex-direction:column;gap:12px;margin-bottom:4px">`
        + gauge(`${CARGO_SHIP} storage`, su>=STORE_SLOTS?`${su} / ${STORE_SLOTS} slots · FULL`:`${su} / ${STORE_SLOTS} slots`, storeTotal()/(STORE_SLOTS*STACK)*100, su>=STORE_SLOTS?'var(--amber)':'#B8C0DA', su>=STORE_SLOTS?'full':'')
-       + gauge(`${CARGO_SHIP} fuel supply`, `${Math.floor(sf)} / ${CARGO_FUEL_CAP}${zone.hub?(sf<CARGO_FUEL_CAP-0.5?` · resupplying at ${CARGO_FUEL_PRICE} cr/u`:' · full'):''}`, sf/CARGO_FUEL_CAP*100, low?'var(--amber)':'var(--cyan)', low?'full':'')
-       + `</div><p class="hint" style="margin:8px 0 0">Open the inventory (<kbd>Tab</kbd>) to move stacks between your hold and the cargo ship's storage. ${zone.hub?'The colony market below buys from both.':'Nothing sells here: the storage rides with the cargo ship, and the Hub buys the lot.'}</p>`;
+       + gauge(`${CARGO_SHIP} fuel supply`, `${Math.floor(sf)} / ${CARGO_FUEL_CAP}`, sf/CARGO_FUEL_CAP*100, lowFuel?'var(--amber)':'var(--cyan)', lowFuel?'full':'')
+       + gauge('Repair parts', `${Math.floor(state.parts)} / ${PARTS_CAP}`, state.parts/PARTS_CAP*100, lowParts?'var(--amber)':'var(--green)', lowParts?'full':'')
+       + `</div>`;
+  if (zone.hub){
+    const fuelCost=Math.ceil((CARGO_FUEL_CAP-sf)*CARGO_FUEL_PRICE), partsCost=Math.ceil((PARTS_CAP-state.parts)*PARTS_PRICE);
+    html+=`<div class="row-actions" style="margin-top:12px"><button class="btn ${fuelCost>0&&state.credits>=1?'primary':''}" data-refuel="1" ${fuelCost>0?'':'disabled'}>${fuelCost>0?`Refuel supply · ${fmt(fuelCost)} cr`:'Fuel supply full'}</button><button class="btn ${partsCost>0&&state.credits>=PARTS_PRICE?'primary':''}" data-parts="1" ${partsCost>0?'':'disabled'}>${partsCost>0?`Restock parts · ${fmt(partsCost)} cr`:'Parts store full'}</button></div>`
+        + `<p class="hint" style="margin:8px 0 0">Fuel is ${CARGO_FUEL_PRICE} cr a unit and parts are ${PARTS_PRICE} cr each; if credits run short you get what they cover. Nothing is bought unless you press the button.</p>`;
+  }
+  html+=`<p class="hint" style="margin:8px 0 0">Open the inventory (<kbd>Tab</kbd>) to move stacks between your hold and the cargo ship's storage. ${zone.hub?'The colony market below buys from both.':'Your tank fills from the fuel supply and hull damage is patched from the parts while you sit here; both restock at the Hub.'}</p>`;
+  return html;
 }
 function renderMarket(){
   const z=zone; let rows='', total=0, any=false;
@@ -3083,6 +3110,8 @@ function renderPanel(){
   el.manifest.querySelectorAll('[data-sellall]').forEach(b=>b.addEventListener('click',()=>sellOre(ORE_KEYS, true, true)));
   el.manifest.querySelectorAll('[data-sellhold]').forEach(b=>b.addEventListener('click',()=>sellOre(ORE_KEYS, true, false)));
   el.manifest.querySelectorAll('[data-sellstore]').forEach(b=>b.addEventListener('click',()=>sellOre(ORE_KEYS, false, true)));
+  el.manifest.querySelectorAll('[data-refuel]').forEach(b=>b.addEventListener('click',refuelCargoShip));
+  el.manifest.querySelectorAll('[data-parts]').forEach(b=>b.addEventListener('click',buyParts));
   let html='';
   for (const k in UPGRADES){
     const u=UPGRADES[k], i=state.up[k], maxed=i>=u.costs.length;
@@ -4114,7 +4143,7 @@ const TUT=[
   {id:'return', title:'Back to the cargo ship', ring:['#marker'], wait:'dock with the cargo ship',
     text:'Copper aboard. Follow the CARGO SHIP marker home: the carrier with the hangar is yours, and it warps with you. Within 4,500 press <kbd>E</kbd> and approach control flies you into the hangar, or fly straight in through either hangar mouth yourself.', auto:()=>docked},
   {id:'hangar', title:'In the hangar', ring:['.hud-tl'],
-    text:'While you sit on the pad your tank fills from the cargo ship\'s fuel supply for free, and the hull repairs, charged to your credits as it goes. The cargo ship buys its own fuel from the colony at the Hub, so keep an eye on its supply. Nothing sells here: the cargo ship has 50 storage slots of its own, and the inventory moves stacks between your hold and that storage.'},
+    text:'While you sit on the pad your tank fills from the cargo ship\'s fuel supply and hull damage is patched from its store of repair parts, one part per hull point. Both run down, and both restock at the Hub for credits from the cargo ship panel, so keep an eye on their gauges. Nothing sells here: the cargo ship has 50 storage slots of its own, and the inventory moves stacks between your hold and that storage.'},
   {id:'services', title:'Storage and refits', ring:['#station .panel'],
     text:'The services panel is open beside you (<kbd>F</kbd> hides and shows it). To move ore aboard the cargo ship, open your inventory (<kbd>Tab</kbd>) while docked: its storage grid appears under your hold, and stacks drag or double-click across. Ore only sells at the Hub, a colony zone on the nav map (<kbd>N</kbd>); the cargo ship, storage and all, warps there with you. The refit list below is where the money goes.'},
   {id:'upgrades', title:'The refit list', ring:['#upgrades'],
