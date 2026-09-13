@@ -711,7 +711,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.114';
+const GAME_VERSION = '0.9.115';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -1016,9 +1016,10 @@ const SFX=(()=>{
   const CLIP_GAIN={warp_charge:.8, warp_jump:.9, dock:.7, stow:.6, cash:.6, colony_control:.9, approach_control:.9, warp_ready:.9,
     laser_on:.5, laser_off:.4, laser_bite:.45, rock_break:.7, radar_ping:.5, zap:.35, hit:.7, boom:.8, boom_big:1, chime:.5, pickup:.45, alarm:.6, click:.3,
     radio_on:.5, radio_off:.45,   // the squelch round every spoken line
+    hangar_1:.9, hangar_2:.9, hangar_3:.9, hangar_4:.9,   // the deck's welcome when you settle on a pad
     // Flight Ops: the tutorial's voice lines, one per step (see TUT)
     tut_launch:.95, tut_steer:.95, tut_hud:.95, tut_radar:.95, tut_lock:.95, tut_mine:.95, tut_inv:.95, tut_return:.95, tut_hangar:.95, tut_stow:.95, tut_refit:.95, tut_hub:.95, tut_depart:.95, tut_done:.95};
-  const isVoice=name=>name.endsWith('_control') || name==='warp_ready' || name.startsWith('tut_');
+  const isVoice=name=>name.endsWith('_control') || name==='warp_ready' || name.startsWith('tut_') || name.startsWith('hangar_');
   const LOOP_NAMES=['engine_idle','engine_thrust','engine_boost','retro','laser_beam','laser_cut','space_hum'];
   const BUF={}, loops={}; let voiceSrc=null, clipsLoaded=false;
   function loadClips(){
@@ -2969,6 +2970,9 @@ function enterHangar(b){
   document.body.classList.remove('in-cut');
   docked=true; dockBay=b; mining=false; laserOn=false; parked=null; lock=null; depWait=true; throttle=0; ship.vel.set(0,0,0);
   el.center.classList.remove('on'); SFX.clip('dock', SFX.dock);
+  // the deck welcomes you back over the radio, one of four lines, once the clamps have clunked (not on the very first
+  // dock of a session, and not during the tutorial, whose own line for this step would talk over it)
+  if (flownOut && state.tut<0) setTimeout(()=>{ if (docked) SFX.clip('hangar_'+(1+Math.floor(Math.random()*4))); }, 800);
   // the hangar view: HUD clears, the camera walks slowly round the ship on the pad, and the services panel opens beside it
   document.body.classList.add('in-hangar'); hangarT=0; renderPanel(); el.station.hidden=false; openInventory();   // the inventory opens on the left, with the cargo ship's storage under your hold
   if (tow && tow.phase==='haul'){
@@ -3087,7 +3091,8 @@ function cutUpdate(dt){
 }
 let exitPending=false;
 let hangarT=0;
-function leaveHangar(){ if (!docked) return; docked=false; dockBay=null; exitPending=true; ship.vel.copy(STATION.vel); el.station.hidden=true; if (invOpen) closeInventory(); el.center.classList.add('on'); document.body.classList.remove('in-hangar'); document.body.classList.remove('in-cut'); camQ.copy(ship.q); save(); }
+let flownOut=false;   // set once the ship has left the hangar under its own power: the deck only welcomes you back after a flight
+function leaveHangar(){ if (!docked) return; docked=false; dockBay=null; exitPending=true; flownOut=true; ship.vel.copy(STATION.vel); el.station.hidden=true; if (invOpen) closeInventory(); el.center.classList.add('on'); document.body.classList.remove('in-hangar'); document.body.classList.remove('in-cut'); camQ.copy(ship.q); save(); }
 function toggleServices(){ if (!docked) return; if (el.station.hidden){ renderPanel(); el.station.hidden=false; } else el.station.hidden=true; }
 const fuelRate=()=>8+state.up.tank*4, repairRate=()=>6;
 function dockUpdate(dt){

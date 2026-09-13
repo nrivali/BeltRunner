@@ -49,6 +49,11 @@ $clips=@(
   @{name='colony_control';   kind='voice'; text='Colony control to cargo ship. You are cleared to hold station off Meridian. Welcome to the Hub.'},
   @{name='approach_control'; kind='voice'; text='Approach control has your ship. Stand by for docking.'},
   @{name='warp_ready';       kind='voice'; text='Jump drive charged. All hands, brace for warp.'},
+  # --- hangar deck: one of these plays at random when the ship settles on a pad after a flight (not on the first launch or during the tutorial)
+  @{name='hangar_1'; kind='voice'; text='Contact. Clamps are on. Welcome back aboard, pilot.'},
+  @{name='hangar_2'; kind='voice'; text='Good approach. You are on the pad, and the deck crew is moving in.'},
+  @{name='hangar_3'; kind='voice'; text='Locked down. Fuel and repairs are flowing. Take a breather.'},
+  @{name='hangar_4'; kind='voice'; text='Nice and easy. The hangar has you. Stow your ore whenever you are ready.'},
   # --- tutorial: Flight Ops walks a new pilot through the first run (Sarah: mature, reassuring; a different voice from the controllers)
   @{name='tut_launch';   kind='voice'; voice=$VOICE_OPS; text='Welcome aboard, pilot. Flight Ops here. Approach control is taxiing you out of the hangar. Sit tight, and I will talk you through your first run.'},
   @{name='tut_steer';    kind='voice'; voice=$VOICE_OPS; text='You have the ship. The mouse steers. W and S work the throttle, A and D roll, and X cuts the throttle. Open her up and give me a turn.'},
