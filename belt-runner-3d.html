@@ -58,9 +58,6 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);fon
 .dmg.on{animation:dmgflash .6s ease-out forwards;}
 .dmg.wreck{opacity:1;background:radial-gradient(ellipse at center,rgba(255,200,160,.9) 0%,rgba(242,107,94,.85) 40%,#120406 100%);transition:opacity 1.2s ease-in .2s;}
 @keyframes dmgflash{0%{opacity:1}100%{opacity:0}}
-.chips{display:flex;flex-wrap:wrap;gap:6px;min-height:20px;}
-.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;background:rgba(14,18,36,.85);border:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--text);}
-.chip i{width:7px;height:7px;display:inline-block;transform:rotate(45deg);}
 .hud-tr{top:18px;right:20px;width:270px;display:flex;flex-direction:column;align-items:flex-end;gap:8px;text-align:right;}
 .hud-tc{top:56px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;text-align:center;}   /* target info, top middle */
 .readout{display:flex;gap:16px;font-family:var(--mono);font-size:12px;color:var(--muted);}
@@ -96,7 +93,6 @@ kbd{font-family:var(--mono);font-size:11px;color:var(--text);background:#151A30;
 .gauge .bar i,.goal .bar i,.t-hp .bar i{box-shadow:0 0 8px currentColor;}
 #fuelFill{color:var(--cyan);} #hullFill{color:var(--green);} #cargoFill{color:#B8C0DA;} #thrFill{color:var(--amber);} .goal .bar i{color:var(--amber);}
 .bar.thr{height:10px;background-image:none;}
-.chip{background:rgba(6,10,24,.7);border-color:var(--hud-faint);color:#dff7ff;}
 .hud-tr{width:300px;gap:10px;}
 .readouts{padding:10px 14px;display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
 .readout{gap:14px;font-size:11.5px;color:var(--hud-dim);letter-spacing:.06em;}
@@ -355,7 +351,6 @@ table.manifest td.dimmed{color:var(--dim);}
     <div class="gauge"><div class="gauge-head"><span>Thrust</span><span id="thrText" class="mono">0%</span></div><div class="bar thr"><i id="thrFill"></i></div></div>
     <div class="gauge"><div class="gauge-head"><span>Cargo</span><span id="cargoText" class="mono"></span></div><div class="bar"><i id="cargoFill"></i></div></div>
   </div>
-  <div class="chips" id="chips"></div>
 </div>
 
 <div class="hud hud-tr">
@@ -714,7 +709,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.43';
+const GAME_VERSION = '0.9.44';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -2628,7 +2623,7 @@ function resetSave(){ resetting=true; try{ localStorage.removeItem(SAVE_KEY); }c
 // ---------------------------------------------------------------- dom
 const $=id=>document.getElementById(id);
 const BLIPS=36; { const c=$('blips'); for (let i=0;i<BLIPS;i++){ const d=document.createElement('div'); d.className='blip'; d.innerHTML='<i></i><span></span>'; c.appendChild(d); } }
-const el={credits:$('credits'),goalFill:$('goalFill'),goalPct:$('goalPct'),fuelText:$('fuelText'),fuelFill:$('fuelFill'),cargoText:$('cargoText'),cargoFill:$('cargoFill'),chips:$('chips'),
+const el={credits:$('credits'),goalFill:$('goalFill'),goalPct:$('goalPct'),fuelText:$('fuelText'),fuelFill:$('fuelFill'),cargoText:$('cargoText'),cargoFill:$('cargoFill'),
   spd:$('spd'),spdBig:$('spdBig'),dist:$('dist'),inv:$('inv'),invBody:$('invBody'),invCap:$('invCap'),invFill:$('invFill'),invClose:$('invClose'),target:$('target'),tEyebrow:$('tEyebrow'),tName:$('tName'),tSize:$('tSize'),tRange:$('tRange'),tWarn:$('tWarn'),tHp:$('tHp'),tHpT:$('tHpT'),prompt:$('prompt'),toasts:$('toasts'),
   center:$('center'),reticle:$('reticle'),rLbl:$('rLbl'),hoverLbl:$('hoverLbl'),marker:$('marker'),mArr:$('mArr'),mLbl:$('mLbl'),fullNotice:$('fullNotice'),
   station:$('station'),pCredits:$('pCredits'),manifest:$('manifest'),upgrades:$('upgrades'),closeSvc:$('closeSvc'),reset:$('reset'),
@@ -4064,7 +4059,6 @@ function updateHud(dt){
   // a standing notice while the hold is full (and a one-off toast and chime the moment it fills), cleared when it empties or you dock
   el.fullNotice.hidden=!(full && started && !docked); el.cargoText.classList.toggle('full', full);
   if (full && !wasFull && started && !docked){ toast('Cargo hold full · head back to the cargo ship to stow it', true); SFX.chime(); } wasFull=full;
-  el.chips.innerHTML=ORE_KEYS.filter(k=>state.cargo[k]>=1).map(k=>`<span class="chip"><i style="background:${ORES[k].color}"></i>${ORES[k].name} ${Math.floor(state.cargo[k])}</span>`).join('');
   el.center.classList.toggle('hot', laserOn);
   if (invOpen) renderInventory();
   el.spd.textContent=docked?(pilotingCarrier()?'HOLDING':'DOCKED'):parked?'PARKED':Math.round(ship.vel.length());
