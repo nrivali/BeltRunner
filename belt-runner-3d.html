@@ -71,6 +71,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);fon
 .target .t-rows{display:flex;gap:16px;justify-content:center;margin-top:5px;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--hud-dim);white-space:nowrap;}
 .target .t-rows b{color:#dff7ff;font-weight:500;text-shadow:0 0 6px rgba(94,211,240,.45);}
 .hud-bl{bottom:18px;left:20px;display:flex;flex-direction:column;gap:6px;}
+.controls-hidden .hud-bl{display:none!important;}   /* C hides the flight controls list */
 .controls{font-size:12px;color:var(--muted);display:grid;grid-template-columns:auto auto;gap:4px 12px;align-items:center;}
 kbd{font-family:var(--mono);font-size:11px;color:var(--text);background:#151A30;border:1px solid var(--line2);border-bottom-width:2px;padding:1px 6px;display:inline-block;min-width:14px;text-align:center;}
 .prompt{left:50%;bottom:64px;transform:translateX(-50%);font-size:14px;   /* bottom is set each frame to clear the status pane below it */color:var(--text);background:rgba(14,18,36,.85);border:1px solid var(--line);padding:8px 14px;display:none;white-space:nowrap;}
@@ -376,6 +377,7 @@ table.manifest td.dimmed{color:var(--dim);}
     <span><kbd>Tab</kbd> <kbd>I</kbd></span><span>Inventory · slots of 25 · jettison stacks</span>
     <span><kbd>N</kbd></span><span>Nav map · warp (docked in the cargo ship)</span>
     <span><kbd>K</kbd></span><span>Sound on · off</span>
+    <span><kbd>C</kbd></span><span>Hide · show this list</span>
   </div>
 </div>
 
@@ -472,6 +474,7 @@ table.manifest td.dimmed{color:var(--dim);}
       <span>Docking</span><span>Fly slowly into either mouth of the cargo ship's through-hangar, or press <kbd>E</kbd> within 4,500 of it and approach control flies you in. You taxi to the pad at the far end and park nose-out, so you leave straight ahead. Fuel and repairs flow while you sit on the pad, and the services panel moves ore between your hold and the cargo ship's 50-slot storage. The cargo ship warps with you; ore only sells at the Hub.</span>
       <span><kbd>N</kbd></span><span>Open the nav map. The cargo ship makes the jump between zones, so dock in its hangar first; you ride along and arrive in Dock 1.</span>
       <span><kbd>K</kbd></span><span>Sound on or off</span>
+      <span><kbd>C</kbd></span><span>Hide or show the flight controls list in the bottom-left corner. Remembered between sessions.</span>
       <span><kbd>Esc</kbd></span><span>Pause · opens this menu with Settings and Controls</span>
     </div>
     <button class="btn menu-back">Back</button>
@@ -708,7 +711,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.69';
+const GAME_VERSION = '0.9.70';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -2614,7 +2617,7 @@ void main(){
 let resetting=false;
 function save(){
   if (resetting) return;
-  try { localStorage.setItem(SAVE_KEY, JSON.stringify({credits:state.credits,cargo:state.cargo,store:state.store,fuel:state.fuel,hull:state.hull,up:state.up,depot:state.depot,droneUnits:state.droneUnits,shipFuel:state.shipFuel,parts:state.parts,tut:state.tut,hudSize,muted:SFX.muted,music:MUSIC.on,sfxVol:SFX.volume,musicVol:MUSIC.volume,quality,jump:state.jump,mined:state.mined,minedBy:state.minedBy,slotOrder:state.slotOrder,earned:state.earned,time:state.time,mouseAim,zone:zone.id,custom:state.custom,
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify({credits:state.credits,cargo:state.cargo,store:state.store,fuel:state.fuel,hull:state.hull,up:state.up,depot:state.depot,droneUnits:state.droneUnits,shipFuel:state.shipFuel,parts:state.parts,tut:state.tut,controlsHidden,hudSize,muted:SFX.muted,music:MUSIC.on,sfxVol:SFX.volume,musicVol:MUSIC.volume,quality,jump:state.jump,mined:state.mined,minedBy:state.minedBy,slotOrder:state.slotOrder,earned:state.earned,time:state.time,mouseAim,zone:zone.id,custom:state.custom,
     ship:{p:ship.pos.toArray(), q:ship.q.toArray()}})); } catch(e){}
 }
 function load(){
@@ -2623,6 +2626,7 @@ function load(){
     state.credits=s.credits; state.fuel=s.fuel; state.jump=!!s.jump; state.mined=s.mined||0; state.minedBy=s.minedBy||{}; state.slotOrder=Array.isArray(s.slotOrder)?s.slotOrder:[]; state.earned=s.earned||0; state.time=s.time||0;
     if (typeof s.hull==='number') state.hull=s.hull;
     if (typeof s.hudSize==='number'){ hudSize=s.hudSize; applyHudSize(); }
+    if (typeof s.controlsHidden==='boolean'){ controlsHidden=s.controlsHidden; document.body.classList.toggle('controls-hidden', controlsHidden); }
     state.tut=typeof s.tut==='number' ? s.tut : -1;   // saves from before the tutorial existed skip it
     if (typeof s.muted==='boolean') SFX.setMuted(s.muted);
     if (typeof s.music==='boolean') MUSIC.setOn(s.music);
@@ -2670,6 +2674,7 @@ window.addEventListener('keydown', e => {
   if (k==='t' && !e.repeat) callTow();
   if (k==='n' && !e.repeat) toggleMap();
   if (k==='k' && !e.repeat) toggleSound();
+  if (k==='c' && !e.repeat) toggleControls();
   if (k==='q' && !e.repeat && !docked) toggleLock();
   if (k==='r' && !e.repeat) radarPulse();
   if ((k==='i' || e.key==='Tab') && !e.repeat) toggleInventory();
@@ -2697,6 +2702,8 @@ window.addEventListener('wheel', e => {
 document.addEventListener('mouseleave', () => { mouse.inside=false; });
 // ---- start menu
 function toggleSound(){ SFX.init(); SFX.setMuted(!SFX.muted); toast(SFX.muted?'Sound off':'Sound on'); save(); syncSettings(); }
+let controlsHidden=false;   // C: hide or show the flight controls list bottom-left (saved)
+function toggleControls(){ controlsHidden=!controlsHidden; document.body.classList.toggle('controls-hidden', controlsHidden); toast(controlsHidden?'Flight controls hidden · C shows them again':'Flight controls shown'); save(); }
 function toggleMusic(){ SFX.init(); MUSIC.setOn(!MUSIC.on); toast(MUSIC.on?'Music on':'Music off'); save(); syncSettings(); }
 function cycleQuality(){ const keys=Object.keys(QUALITY); quality=keys[(keys.indexOf(quality)+1)%keys.length]; applyQuality(); toast(`Quality: ${QUALITY[quality].label}${(quality==='low')!==(savedQuality==='low')?' · anti-aliasing changes on next load':''}`); save(); syncSettings(); }
 // HUD size: a slider from 70% to 160%; the fixed HUD panes scale about the corner they hang from, the boresight and markers stay as they are
