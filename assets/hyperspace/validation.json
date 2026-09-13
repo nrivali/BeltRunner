@@ -1,0 +1,94 @@
+{
+  "passed": true,
+  "gameSHA256": "bfb530ecc8c674d35818d4622317c352621d5241226c98ebdd52c7a8b5572195",
+  "fxSHA256": "a4433cc2beba1b7551388bd0720f000a3e8cbd2fa984a5a9ca75b3705a66471e",
+  "timelineSamples": 2417,
+  "gpu": "ANGLE (NVIDIA, NVIDIA GeForce RTX 5070 Ti (0x00002C05) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "zone": "kessler",
+  "engines": 3,
+  "checks": [
+    "Belt to Hub",
+    "Space skip during charge",
+    "Space skip during launch",
+    "Space skip during transit",
+    "Space skip during arrival",
+    "Hub to belt",
+    "Same-zone and undocked guards",
+    "Cargo and upgrades preserved",
+    "Quality limits and reusable buffers",
+    "Reduced motion shader controls",
+    "Dock departure and straight-through approach"
+  ],
+  "captures": [
+    {
+      "label": "charge",
+      "time": 1.2499999999999996,
+      "phase": "depart",
+      "stretch": 1,
+      "offset": 0,
+      "fov": 51.61309814453125,
+      "coverage": 0,
+      "engineGain": 3.343749999999999
+    },
+    {
+      "label": "launch",
+      "time": 1.73,
+      "phase": "depart",
+      "stretch": 2.980270246367892,
+      "offset": 2652.071330589842,
+      "fov": 54.63871604938271,
+      "coverage": 0,
+      "engineGain": 4.5777777777777775
+    },
+    {
+      "label": "jump",
+      "time": 1.94,
+      "phase": "depart",
+      "stretch": 3.8,
+      "offset": 47445.15775034287,
+      "fov": 66.29916049382716,
+      "coverage": 0.5448182550965798,
+      "engineGain": 5.51111111111111
+    },
+    {
+      "label": "tunnel",
+      "time": 3.2,
+      "phase": "transit",
+      "stretch": 1,
+      "offset": 0,
+      "fov": 69,
+      "coverage": 1,
+      "engineGain": 4,
+      "visibleStarPixels": 159603
+    },
+    {
+      "label": "arrival",
+      "time": 4.69,
+      "phase": "arrive",
+      "stretch": 1.4269814274916293,
+      "offset": -4186.119807945458,
+      "fov": 68.48990613955782,
+      "coverage": 0.1121238425925909,
+      "engineGain": 3.5043478260869554
+    },
+    {
+      "label": "settled",
+      "time": 5.35,
+      "phase": "arrive",
+      "stretch": 1,
+      "offset": 0,
+      "fov": 63.180570395331635,
+      "coverage": 0,
+      "engineGain": 1.7826086956521747
+    }
+  ],
+  "fx": {
+    "active": false,
+    "phase": "idle",
+    "drawCalls": 2,
+    "stars": 640,
+    "reducedMotion": false
+  },
+  "finalZone": "Kessler Belt",
+  "errors": []
+}

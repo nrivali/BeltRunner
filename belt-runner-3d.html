@@ -208,15 +208,6 @@ table.manifest tr.held td{color:var(--dim);}
 .ore .rar{font-family:var(--display);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);grid-column:1;}
 .ore .pr{font-family:var(--mono);font-size:12px;color:var(--muted);grid-row:1/3;grid-column:2;text-align:right;}
 .hint{font-size:12px;color:var(--dim);max-width:60ch;}
-.warp{position:fixed;inset:0;z-index:8;display:none;align-items:center;justify-content:center;background:#04060e;overflow:hidden;}
-.warp.on{display:flex;}
-.warp .streaks{position:absolute;inset:-50%;background:repeating-conic-gradient(from 0deg,transparent 0deg 5deg,rgba(94,211,240,.16) 5deg 5.6deg);animation:warpspin 1.9s linear forwards;}
-.warp .core{position:absolute;left:50%;top:50%;width:40vmax;height:40vmax;margin:-20vmax 0 0 -20vmax;border-radius:50%;background:radial-gradient(circle,rgba(94,211,240,.55),rgba(94,211,240,0) 60%);animation:warppulse 1.9s ease-in forwards;}
-.warp .wtext{position:relative;text-align:center;}
-.warp .wname{font-family:var(--display);font-weight:700;font-size:38px;letter-spacing:.12em;text-transform:uppercase;color:var(--text);}
-.warp .wsub{font-family:var(--mono);font-size:13px;color:var(--cyan);margin-top:6px;}
-@keyframes warpspin{from{transform:rotate(0) scale(1);opacity:0}30%{opacity:1}to{transform:rotate(40deg) scale(1.7);opacity:0}}
-@keyframes warppulse{from{transform:scale(.2);opacity:0}50%{opacity:1}to{transform:scale(3);opacity:0}}
 @media (max-width:760px){.map-body{grid-template-columns:1fr;}.chart{border-right:none;border-bottom:1px solid var(--line);}}
 .overlay{position:fixed;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;background:rgba(4,6,14,.62);padding:24px;box-sizing:border-box;cursor:default;}
 .panel{background:var(--panel);border:1px solid var(--line2);width:min(960px,100%);max-height:100%;display:flex;flex-direction:column;box-sizing:border-box;
@@ -517,11 +508,6 @@ table.manifest td.dimmed{color:var(--dim);}
   </div>
 </div>
 
-<div id="warp" class="warp">
-  <div class="streaks"></div><div class="core"></div>
-  <div class="wtext"><div class="eyebrow">Warp</div><div class="wname" id="wName"></div><div class="wsub" id="wSub"></div></div>
-</div>
-
 <script src="vendor/three-r158/three.min.js"></script>
 <script src="vendor/three-r158/GLTFLoader.js"></script>
 <script>
@@ -562,6 +548,7 @@ table.manifest td.dimmed{color:var(--dim);}
 <script src="assets/asteroids_v2/collision-grid.js"></script>
 <script src="assets/asteroids_v2/load-asteroids.js"></script>
 <script src="assets/lighting/space-lighting.js"></script>
+<script src="assets/hyperspace/hyperspace.js"></script>
 <script src="assets/planet_v2/load-planet.js"></script>
 <script src="assets/hub_planet/load-homeworld.js"></script>
 <script src="assets/colony_garden/load-colony.js"></script>
@@ -706,7 +693,6 @@ function placeDepot(){
   const S=STATION;
   if (pilotingCarrier()){ S.pos.copy(ship.pos); S.q.copy(ship.q).multiply(CARRIER_Q); }
   else { S.pos.set(Math.cos(S.ang)*S.orbit, 0, Math.sin(S.ang)*S.orbit); S.q.setFromAxisAngle(V3(0,1,0), Math.PI/2-S.ang); }
-  if (S.warpOff) S.pos.addScaledVector(V3(1,0,0).applyQuaternion(S.q), S.warpOff);   // the warp cutscene runs the carrier out along its nose, and in again on arrival
   S.qInv.copy(S.q).invert();
   station.position.copy(S.pos); station.quaternion.copy(S.q);
   for (const b of DEPOT.bays){ b.park.copy(b.parkL).applyQuaternion(S.q).add(S.pos); b.opening.copy(b.openingL).applyQuaternion(S.q).add(S.pos); b.q.copy(S.q).multiply(b.qL); }
@@ -717,7 +703,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.102';
+const GAME_VERSION = '0.9.103';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -2683,7 +2669,7 @@ const el={credits:$('credits'),goalFill:$('goalFill'),goalPct:$('goalPct'),fuelT
   menuMain:$('menuMain'),menuSettings:$('menuSettings'),menuControls:$('menuControls'),mContinue:$('mContinue'),mNew:$('mNew'),mSaveInfo:$('mSaveInfo'),mNewInfo:$('mNewInfo'),mControls:$('mControls'),mSettings:$('mSettings'),sSound:$('sSound'),sMusic:$('sMusic'),sQuality:$('sQuality'),sHud:$('sHud'),sHudT:$('sHudT'),sReset:$('sReset'),
   zoneName:$('zoneName'),depotName:$('depotName'),laserState:$('laserState'),laserRange:$('laserRange'),radarState:$('radarState'),
   cine:$('cine'),cineCap:$('cineCap'),depart:$('depart'),fieldMarker:$('fieldMarker'),fArr:$('fArr'),fieldLbl:$('fieldLbl'),fieldState:$('fieldState'),threatState:$('threatState'),
-  dockedEyebrow:$('dockedEyebrow'),blips:[...document.querySelectorAll('.blip')],map:$('map'),chart:$('chart'),zinfo:$('zinfo'),mFuel:$('mFuel'),mapClose:$('mapClose'),warp:$('warp'),wName:$('wName'),wSub:$('wSub')};
+  dockedEyebrow:$('dockedEyebrow'),blips:[...document.querySelectorAll('.blip')],map:$('map'),chart:$('chart'),zinfo:$('zinfo'),mFuel:$('mFuel'),mapClose:$('mapClose')};
 function toast(msg,bad){ const d=document.createElement('div'); d.className='toast'+(bad?' bad':''); d.textContent=msg; el.toasts.appendChild(d); setTimeout(()=>d.remove(),3300); }
 
 // ---------------------------------------------------------------- input
@@ -2733,7 +2719,7 @@ function toggleControls(){ controlsHidden=!controlsHidden; document.body.classLi
 // normal), and a warp jumps to the arrival and finishes that too
 function skipCutscene(){
   if (cut){ cut.t=cut.dur; if (cut.mode==='dock' && !cut.world){ cut.phase='settle'; cut.pt=99; } toast('Skipped'); }   // a hangar dock jumps straight to the final settle
-  else if (warpCut){ warpCut.skip=true; warpCut.t=Math.max(warpCut.t, warpCut.phase==='depart'?5.0:4.4); toast('Skipped'); }
+  else if (warpCut){ warpCut.skip=true; toast('Skipped'); }
 }
 function toggleMusic(){ SFX.init(); MUSIC.setOn(!MUSIC.on); toast(MUSIC.on?'Music on':'Music off'); save(); syncSettings(); }
 function cycleQuality(){ const keys=Object.keys(QUALITY); quality=keys[(keys.indexOf(quality)+1)%keys.length]; applyQuality(); toast(`Quality: ${QUALITY[quality].label}${(quality==='low')!==(savedQuality==='low')?' · anti-aliasing changes on next load':''}`); save(); syncSettings(); }
@@ -3628,43 +3614,43 @@ function renderMap(){
     <button class="btn ${can?'primary':''}" id="warpBtn" ${can?'':'disabled'}>${z===cur?'You are here':!docked?'Dock with the cargo ship to warp':`Warp · ${zoneLy(cur,z)} ly`}</button>`;
   const wb=$('warpBtn'); if (wb && can) wb.addEventListener('click',()=>warpTo(z));
 }
-// The warp is a cutscene of the cargo ship itself, with you docked aboard. A fixed camera off its flank watches the drives
-// charge and the carrier run out along its nose and streak away; the zone loads under the flash; then in the new zone a
-// camera ahead of its station watches it come in fast and brake to a stop, and you are back in Dock 1 (or, at the Hub,
-// straight into the arrival flight). Only the carrier jumps, so you have to be aboard it to warp.
+// A held exterior shot, a sudden jump, then hyperspace and a snap back to real space.
+// Motion/stretch affect the rendered carrier only; docking anchors and orbital velocity remain physical.
 let warpCut=null;
+const hyperspace=createBeltRunnerHyperspace({scene,renderer});
 const stationEngines=station.children.filter(o=>o.isSprite && o.position.x<-3500);
+function warpFrame(W){
+  W.origin.copy(STATION.pos); W.rotation.copy(STATION.q);
+  W.nose.set(1,0,0).applyQuaternion(W.rotation); W.side.set(0,0,1).applyQuaternion(W.rotation); W.up.set(0,1,0).applyQuaternion(W.rotation);
+}
 function warpTo(z){
   if (warping || z===zone) return;
   if (!docked){ toast('Dock with the cargo ship before warping · it makes the jump', true); return; }
-  const ly=zoneLy(zone,z); closeMap(); warping=true; el.center.classList.remove('on');
+  closeMap(); warping=true; el.center.classList.remove('on');
   el.station.hidden=true; document.body.classList.remove('in-hangar'); document.body.classList.add('in-cut'); if (invOpen) closeInventory();
-  el.wName.textContent=z.name; el.wSub.textContent=`${ly} light-years`;
-  const nose=depotDir(V3(1,0,0)), side=depotDir(V3(0,0,1));
-  warpCut={phase:'depart', t:0, z, nose, camPos:STATION.pos.clone().addScaledVector(side, 9500).addScaledVector(nose, -2500).add(V3(0,3800,0)), flashed:false};
-  el.cineCap.textContent=`Warp · ${z.name} · Space skips`; el.cine.classList.add('on'); SFX.chime(); SFX.clip('warp_charge');
+  warpCut={phase:'depart',t:0,z,loaded:false,pose:BeltRunnerHyperspace.sample(0),origin:V3(),rotation:new THREE.Quaternion(),nose:V3(),side:V3(),up:V3(),scale:station.scale.clone(),
+    engines:stationEngines.map(s=>({sprite:s,scale:s.scale.clone(),opacity:s.material.opacity}))};
+  warpFrame(warpCut);
+  el.cineCap.textContent=`Jump · ${z.name} · ${zoneLy(zone,z)} ly · Space skips`; el.cine.classList.add('on'); SFX.chime(); SFX.clip('warp_charge');
 }
 function warpCutUpdate(dt){
-  const W=warpCut; W.t+=dt;
-  const glow=g=>{ for (const s of stationEngines){ s.material.opacity=Math.min(1, .8*g); s.scale.setScalar(600*g); } };
-  if (W.phase==='depart'){
-    const charge=Math.min(1, W.t/2.6); glow(1+2.2*charge); shake=Math.max(shake, .3*charge);
-    STATION.warpOff = W.t>2.6 ? 90000*Math.pow((W.t-2.6)/2.4, 3) : 0;
-    if (!W.voiced && W.t>0.4){ W.voiced=true; SFX.clip('warp_ready'); }
-    if (!W.flashed && W.t>4.5){ W.flashed=true; el.warp.classList.remove('on'); void el.warp.offsetWidth; el.warp.classList.add('on'); SFX.clip('warp_jump', SFX.warp); }
-    if (W.t>=5.0){
-      // the jump: the new zone loads under the flash and the carrier is placed at its station there
-      STATION.warpOff=0; loadZone(W.z); spawnAtDepot(); camQ.copy(ship.q); mapSel=null;
-      if (W.z.hub){ glow(1); warpCut=null; warping=false; docked=false; dockBay=null; document.body.classList.remove('in-cut'); toast(`Arrived · ${W.z.name}`); startHoldApproach(); save(); setTimeout(()=>el.warp.classList.remove('on'), 900); return; }
-      dockBay=DEPOT.bays[0];
-      const nose=depotDir(V3(1,0,0)), side=depotDir(V3(0,0,1));
-      W.phase='arrive'; W.t=W.skip?4.4:0; W.nose=nose; W.camPos=STATION.pos.clone().addScaledVector(side, 11000).addScaledVector(nose, 6500).add(V3(0,4200,0));
-      STATION.warpOff=-90000; placeDepot(); ship.pos.copy(DEPOT.bays[0].park); ship.q.copy(DEPOT.bays[0].q);
-    }
-  } else {
-    const k=Math.min(1, W.t/4.4); STATION.warpOff=-90000*Math.pow(1-k, 3); glow(1+2.2*(1-k)); shake=Math.max(shake, .25*(1-k));
-    if (!W.cleared && W.t>0.9){ W.cleared=true; el.warp.classList.remove('on'); }   // the flash lifts with the carrier already streaking in
-    if (k>=1){ STATION.warpOff=0; glow(1); warpCut=null; warping=false; document.body.classList.remove('in-cut'); el.cine.classList.remove('on'); toast(`Arrived · ${W.z.name}`); enterHangar(DEPOT.bays[0]); save(); }
+  const W=warpCut; W.t+=dt; W.pose=BeltRunnerHyperspace.sample(W.t); W.phase=W.pose.phase;
+  if (!W.skip && !W.voiced && W.t>=.4){ W.voiced=true; SFX.clip('warp_ready'); }
+  if (!W.skip && !W.jumped && W.t>=BeltRunnerHyperspace.timing.charge){ W.jumped=true; SFX.clip('warp_jump', SFX.warp); }
+  if (!W.loaded && (W.skip || W.t>=BeltRunnerHyperspace.transitAt)){
+    // The tunnel is opaque here, so replacing the zone never exposes a loading pop.
+    station.scale.copy(W.scale); loadZone(W.z); spawnAtDepot(); camQ.copy(ship.q); mapSel=null; W.loaded=true;
+    dockBay=W.z.hub?null:DEPOT.bays[0];
+  }
+  warpFrame(W);
+  if (W.skip || W.pose.done){
+    station.scale.copy(W.scale); placeDepot();
+    for (const e of W.engines){ e.sprite.scale.copy(e.scale); e.sprite.material.opacity=e.opacity; }
+    hyperspace.reset(); shake=0; warpCut=null; warping=false;
+    document.body.classList.remove('in-cut'); el.cine.classList.remove('on');
+    if (W.z.hub){ docked=false; dockBay=null; toast(`Arrived · ${W.z.name}`); startHoldApproach(); }
+    else { const b=DEPOT.bays[0]; ship.pos.copy(b.park); ship.q.copy(b.q); enterHangar(b); }
+    save();
   }
 }
 el.mapClose.addEventListener('click', closeMap);
@@ -3771,6 +3757,7 @@ function rotateLocal(axis, angle){ tmpQ.setFromAxisAngle(axis, angle); ship.q.mu
 const AX=V3(1,0,0), AY=V3(0,1,0), AZ=V3(0,0,1);
 let autosaveT=0, fullToastT=0, wasFull=false;
 function update(dt){
+  if (warpCut) station.scale.copy(warpCut.scale);   // clear the render stretch before world-space gameplay updates
   state.time+=dt;
   state.marketT-=dt;
   if (state.marketT<=0){ state.marketT=90; for (const k of ORE_KEYS) state.marketNext[k]=rand(0.8,1.25); }
@@ -3986,7 +3973,7 @@ function updateVisuals(dt, t){
   for (const m of padMats) m.emissiveIntensity=docked?0.35+0.2*Math.sin(t*6):0.15;
 
   // ship mesh + banking (at the Hub the carrier is the ship, so the small ship stays out of sight)
-  shipGroup.visible=!pilotingCarrier();
+  shipGroup.visible=!pilotingCarrier() && !warping;
   shipGroup.position.copy(ship.pos);
   // the flashlight rides the nose and points straight ahead; it goes dark whenever the small ship is out of sight
   torch.visible=torchOn && shipGroup.visible && started && !docked;
@@ -4012,9 +3999,9 @@ function updateVisuals(dt, t){
     }
   }
   // radar pulse visuals
-  dPulseSphere.visible=dPulseRing.visible=depotPulse.on;
+  dPulseSphere.visible=dPulseRing.visible=depotPulse.on && !warping;
   if (depotPulse.on){ const f=1-Math.min(1,depotPulse.t/(PULSE_TIME*2.2)); dPulseSphere.position.copy(STATION.pos); dPulseSphere.scale.setScalar(Math.max(1,depotPulse.r)); dPulseSphere.material.opacity=.04*f; dPulseRing.position.copy(STATION.pos); dPulseRing.scale.setScalar(Math.max(1,depotPulse.r)); dPulseRing.material.opacity=.5*f; }
-  depotBeam.visible=depotBeamSheath.visible=depotBeamGlow.visible=depotLaser.firing;
+  depotBeam.visible=depotBeamSheath.visible=depotBeamGlow.visible=depotLaser.firing && !warping;
   if (depotLaser.firing){
     const from=turretMuzzleWorld(depotLaser.yaw, depotLaser.pitch), to=depotLaser.hit, dir=to.clone().sub(from), len=dir.length(); dir.normalize();
     const flick=1+Math.sin(t*23)*0.12;
@@ -4083,8 +4070,13 @@ function updateVisuals(dt, t){
   // free look (only non-zero while the ship is disabled or under tow) turns the camera relative to the hull
   const lookQ=new THREE.Quaternion().setFromAxisAngle(AY, lookYaw).multiply(new THREE.Quaternion().setFromAxisAngle(AX, -lookPitch));
   if (warpCut){
-    // the warp: a fixed camera off the carrier's flank watches it charge and run out, then one ahead of its new station watches it come in and stop
-    camPos.copy(warpCut.camPos); camLook.copy(STATION.pos).addScaledVector(warpCut.nose, 1500); cu=V3(0,1,0); cf=camLook.clone().sub(camPos).normalize(); camQ.copy(ship.q);
+    const W=warpCut, p=W.pose, arriving=W.loaded;
+    const stretch=hyperspace.reducedMotion?1:p.stretch;
+    station.position.copy(W.origin).addScaledVector(W.nose,p.offset+(stretch-1)*3550); station.quaternion.copy(W.rotation);
+    station.scale.copy(W.scale); station.scale.x*=stretch;   // stretch forward from the engines, never back toward the camera
+    for (const e of W.engines){ e.sprite.scale.copy(e.scale).multiplyScalar(p.engineGain); e.sprite.material.opacity=Math.min(1,e.opacity*p.engineGain); }
+    camPos.copy(W.origin).addScaledVector(W.nose,arriving?12500:-12000).addScaledVector(W.side,arriving?7200:6900).addScaledVector(W.up,arriving?3600:3200);
+    camLook.copy(W.origin).addScaledVector(W.nose,arriving?600:2400); cu=W.up; cf=camLook.clone().sub(camPos).normalize(); camQ.copy(ship.q);
   } else if (cut && cut.world){
     // berthing at the colony: first a chase camera riding behind and above the carrier as it flies the approach, then a fixed
     // camera at the terminal watching it taxi in and settle (departure: the terminal camera, then the chase)
@@ -4130,7 +4122,9 @@ function updateVisuals(dt, t){
   }
   if (shake>0){ shake=Math.max(0, shake-dt*1.8); const s=shake*shake*6; camPos.add(V3(rand(-s,s),rand(-s,s),rand(-s,s))); }
   camera.position.copy(camPos); camera.up.copy(cu); camera.lookAt(camLook);
-  if (camera.fov!==62){ camera.fov=62; camera.updateProjectionMatrix(); }
+  const fov=warpCut && !hyperspace.reducedMotion?warpCut.pose.fov:62;
+  if (camera.fov!==fov){ camera.fov=fov; camera.updateProjectionMatrix(); }
+  if (warpCut) hyperspace.update({pose:warpCut.pose,time:warpCut.t,camera,nose:warpCut.nose,quality});
 }
 
 // screen projection helpers
@@ -4356,7 +4350,7 @@ if (state.hull<=0){ if (pilotingCarrier()) state.hull=1; else requestTow('breach
 renderMenu();
 try { if (sessionStorage.getItem(AUTOSTART)){ sessionStorage.removeItem(AUTOSTART); startGame(); } } catch(e){}
 // dev hook: open the page with ?debug to reach the live objects from the console
-if (location.search.includes('debug')) window.BeltRunner={ship, state, camPos, keys, get asteroids(){ return asteroids; }, get planets(){ return planets; }, get fields(){ return fields; }, get flags(){ return {docked, exitPending, depWait, started, parked:!!parked, bay:dockBay&&dockBay.name, disabled, tow:tow&&{phase:tow.phase, leg:tow.leg, pos:tow.pos.toArray().map(Math.round)}}; }, radarPulse, buildShip, requestTow, get tow(){ return tow; }, get pirates(){ return pirates; }, get mines(){ return mines; }, get derelicts(){ return derelicts; }, get scenery(){ return scenery; }, get beltCloud(){ return beltCloud; }, renderer, scene, camera, update, updateVisuals, heatFx, SPARKS, drops, debris, breakRock, depotLaser, collectors, rockInside, addBurn, get target(){ return target; }, STATION, DEPOT, depotLocal, SFX, MUSIC, startApproach, startDeparture, get cut(){ return cut; }, get colony(){ return colony; }, get traffic(){ return traffic; }, get padSlots(){ return padSlots; }, get zone(){ return zone; }, ZONES, warpTo, loadZone, renderPanel, stowAll, takeAll, sellOre, enterHangar};
+if (location.search.includes('debug')) window.BeltRunner={ship, state, camPos, keys, get asteroids(){ return asteroids; }, get planets(){ return planets; }, get fields(){ return fields; }, get warpCut(){ return warpCut; }, get flags(){ return {docked, warping, exitPending, depWait, started, parked:!!parked, bay:dockBay&&dockBay.name, disabled, tow:tow&&{phase:tow.phase, leg:tow.leg, pos:tow.pos.toArray().map(Math.round)}}; }, radarPulse, buildShip, requestTow, get tow(){ return tow; }, get pirates(){ return pirates; }, get mines(){ return mines; }, get derelicts(){ return derelicts; }, get scenery(){ return scenery; }, get beltCloud(){ return beltCloud; }, renderer, scene, camera, update, updateVisuals, heatFx, SPARKS, drops, debris, breakRock, depotLaser, collectors, rockInside, addBurn, get target(){ return target; }, STATION, DEPOT, depotLocal, SFX, MUSIC, startApproach, startDeparture, get cut(){ return cut; }, get colony(){ return colony; }, get traffic(){ return traffic; }, get padSlots(){ return padSlots; }, get zone(){ return zone; }, ZONES, warpTo, loadZone, renderPanel, stowAll, takeAll, sellOre, enterHangar};
 camQ.copy(ship.q); camPos.copy(ship.pos).addScaledVector(shipForward(),-88*SHIP_SCALE).addScaledVector(shipUp(),30*SHIP_SCALE);
 target=findTarget();
 if(window.loadBeltRunnerPlayerShip)window.loadBeltRunnerPlayerShip({renderer,install:installPlayerModel,status:playerAsset});
@@ -4366,7 +4360,7 @@ if(rockAssets)rockAssets.load({renderer,scene,heatable,asteroids:()=>asteroids,s
 if (window.loadBeltRunnerCarrier) window.loadBeltRunnerCarrier({station, renderer, glowTexture:texSoft, install:installCarrierModel, status:carrierAsset});
 else { carrierAsset.state='fallback'; carrierAsset.error='Carrier asset script unavailable'; }
 if(window.BeltRunner){
-  Object.assign(window.BeltRunner,{rockCollisionGrid,collideRocks,nearRocks,lighting,rockAssets,makeAsteroid,findTarget,noisyCollide,radiusAlong,SHIP_R,shipPrev,damageRock,removeAsteroid,shipGroup,playerAsset,shipAim,shipDishAnglesTo,shipDishFocusWorld,startGame,setLaserAim:p=>{laserAim=p;}, carrierAsset, station, stationEngines, TURRET_PIVOT, forceFields, stationPointLights, droneDock, depotDish, turretAnglesTo, turretMuzzleWorld, updateDepot, depotBeam, DROP_PAD});
+  Object.assign(window.BeltRunner,{rockCollisionGrid,collideRocks,nearRocks,lighting,rockAssets,makeAsteroid,findTarget,noisyCollide,radiusAlong,SHIP_R,shipPrev,damageRock,removeAsteroid,shipGroup,playerAsset,shipAim,shipDishAnglesTo,shipDishFocusWorld,startGame,setLaserAim:p=>{laserAim=p;}, carrierAsset, station, stationEngines, hyperspace, TURRET_PIVOT, forceFields, stationPointLights, droneDock, depotDish, turretAnglesTo, turretMuzzleWorld, updateDepot, depotBeam, DROP_PAD});
   Object.defineProperties(window.BeltRunner,{playerModel:{get:()=>playerModel},shipDish:{get:()=>shipDish},exhausts:{get:()=>exhausts},navLights:{get:()=>navLights}});
 }
 requestAnimationFrame(frame);
