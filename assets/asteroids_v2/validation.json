@@ -1,0 +1,54 @@
+{
+  "passed": true,
+  "structural": [
+    {
+      "lod": 0,
+      "bytes": 27680336,
+      "models": 28,
+      "materials": 18,
+      "textures": 6
+    },
+    {
+      "lod": 1,
+      "bytes": 16928892,
+      "models": 28,
+      "materials": 18,
+      "textures": 6
+    },
+    {
+      "lod": 2,
+      "bytes": 12858104,
+      "models": 28,
+      "materials": 18,
+      "textures": 6
+    }
+  ],
+  "runtime": [
+    {
+      "lod": 0,
+      "models": 28,
+      "meshes": 56,
+      "materials": 18,
+      "archClear": true,
+      "caveDepth": 3.3294282821654293
+    },
+    {
+      "lod": 1,
+      "models": 28,
+      "meshes": 56,
+      "materials": 18,
+      "archClear": true,
+      "caveDepth": 3.3185796218611743
+    },
+    {
+      "lod": 2,
+      "models": 28,
+      "meshes": 56,
+      "materials": 18,
+      "archClear": true,
+      "caveDepth": 3.3095904341406555
+    }
+  ],
+  "shaderErrors": [],
+  "date": "2026-09-13T02:16:43.695Z"
+}

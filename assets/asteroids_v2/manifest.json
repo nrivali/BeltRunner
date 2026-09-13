@@ -1,0 +1,74 @@
+{
+  "formatVersion": 1,
+  "source": "asteroids.blend",
+  "files": [
+    {
+      "lod": 0,
+      "file": "asteroids_lod0.glb",
+      "bytes": 27680336,
+      "models": 28,
+      "materials": 18,
+      "images": 6
+    },
+    {
+      "lod": 1,
+      "file": "asteroids_lod1.glb",
+      "bytes": 16928892,
+      "models": 28,
+      "materials": 18,
+      "images": 6
+    },
+    {
+      "lod": 2,
+      "file": "asteroids_lod2.glb",
+      "bytes": 12858104,
+      "models": 28,
+      "materials": 18,
+      "images": 6
+    }
+  ],
+  "shapeFamilies": [
+    "lumpy",
+    "chunk",
+    "potato",
+    "shard",
+    "pancake",
+    "cratered",
+    "cluster",
+    "slab",
+    "spindle",
+    "bean",
+    "boulder",
+    "jagged",
+    "wedge",
+    "hollow"
+  ],
+  "variants": [
+    "A",
+    "B"
+  ],
+  "materialVariants": [
+    "iron",
+    "copper",
+    "gold",
+    "platinum",
+    "crystal",
+    "cobalt",
+    "beryl",
+    "sulfur",
+    "emberite",
+    "he3",
+    "glacite",
+    "nebulite",
+    "voidpearl",
+    "iridium",
+    "rhodium",
+    "obsidian",
+    "darkmatter",
+    "barren"
+  ],
+  "nodeName": "<shape>_<A|B>_LOD<0|1|2>",
+  "gameCoordinates": "X right, Y up, Z forward; nominal base radius 1",
+  "collisions": "These visual meshes do not replace the live game collision profiles. Integration must reconcile hollow/arch traversal with mesh collision.",
+  "lighting": "No emission or baked lighting; PBR albedo, tangent normal and roughness/metallic textures."
+}

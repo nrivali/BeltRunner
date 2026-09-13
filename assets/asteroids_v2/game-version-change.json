@@ -1,0 +1,7 @@
+{
+  "baseCommit": "61279e0",
+  "beforeSHA256": "FEAEC77728C44F59070999C834CF3F3359A6B08EFAC5B2408F164C96AE66DB87",
+  "afterSHA256": "DEAA6D9EF23C2E67E3D8E53033E88EB0124A9E56672824C604BB52750AEFFF71",
+  "backup": "C:/Users/rival/Documents/BeltRunner/backups/belt-runner-3d.before-asteroid-assets.2026-09-12T21-21-24-443.html",
+  "change": "GAME_VERSION 0.9.17 to 0.9.18 only; no asset integration"
+}

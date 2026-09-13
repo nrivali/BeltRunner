@@ -1,0 +1,13 @@
+{
+  "tool": "Built-in ImageGen",
+  "sources": [
+    {
+      "id": "regolith",
+      "prompt": "Use case: photorealistic-natural. Asset type: seamless physically based 3D asteroid material, base-color texture only, square 2048x2048. Generate a perfectly flat orthographic macro surface scan of ancient dark charcoal carbonaceous asteroid stone. Dense fractured granular basalt, broken angular mineral grains, fine pits, weathered shallow cracks and layered dusty regolith. Dry natural sharp irregular geology, slightly warm graphite-grey with very subtle desaturated brown variation. An even mixture of medium and small detail across the ENTIRE image, stone fills all edges, tileable opposite borders. Mid-dark albedo with readable grain, not crushed black. Diffuse neutral flat shadowless illumination. No recognizable rock object or silhouette, no environment, no labels, no border, no text, no metal, no crystals, no bright veins, no colored light, no highlights, no baked shadows, no directional lighting, no height-map legend. A production texture that will receive lighting and metallic ore seams separately in Blender."
+    },
+    {
+      "id": "ore",
+      "prompt": "Use case: photorealistic-natural. Asset type: seamless neutral native-metal fracture material base-color texture for a physically based Blender asteroid asset, square 2048x2048. Flat orthographic macro texture covering the full image edge to edge: a rough freshly exposed silver-grey metallic mineral surface with broad angular cleavage planes, interlocking geological facets, fine fractured microstructure, fine mineral striations and occasional narrow hairline fissures. This is solid massive native metal embedded in rock, NOT a cluster of crystals, NOT cut gemstones, NOT brushed industrial steel. Neutral grey and muted silver diffuse albedo only, restrained variation, moderate brightness, designed to be color-tinted silver, copper, gold, teal or violet and lit realistically later. Tileable opposite borders, uniform scale throughout. Flat even shadowless lighting, no specular hotspots or directional shadows baked into image. No objects, no border, no text, no UI, no cubes, no protruding nuggets, no black gaps, no neon, no emission."
+    }
+  ]
+}
