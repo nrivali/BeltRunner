@@ -76,7 +76,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);fon
 .hud-bl{bottom:18px;left:20px;display:flex;flex-direction:column;gap:6px;}
 .controls{font-size:12px;color:var(--muted);display:grid;grid-template-columns:auto auto;gap:4px 12px;align-items:center;}
 kbd{font-family:var(--mono);font-size:11px;color:var(--text);background:#151A30;border:1px solid var(--line2);border-bottom-width:2px;padding:1px 6px;display:inline-block;min-width:14px;text-align:center;}
-.prompt{left:50%;bottom:64px;transform:translateX(-50%);font-size:14px;color:var(--text);background:rgba(14,18,36,.85);border:1px solid var(--line);padding:8px 14px;display:none;white-space:nowrap;}
+.prompt{left:50%;bottom:64px;transform:translateX(-50%);font-size:14px;   /* bottom is set each frame to clear the status pane below it */color:var(--text);background:rgba(14,18,36,.85);border:1px solid var(--line);padding:8px 14px;display:none;white-space:nowrap;}
 .prompt.on{display:block;}
 .prompt kbd{margin-right:6px;}
 .toasts{left:50%;top:22px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;}
@@ -727,7 +727,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.40';
+const GAME_VERSION = '0.9.41';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -4122,6 +4122,10 @@ function updateHud(dt){
   if (started && !docked && !pilotingCarrier()){ if (lock) segs.push('<kbd>Q</kbd>Release lock'); else if (hover) segs.push(`<kbd>Q</kbd>Lock on ${hoverName(hover)}`); }
   const p=segs.join('<span class="sep">·</span>');
   el.prompt.innerHTML=p; el.prompt.classList.toggle('on', !!p);
+  // the hint bar sits just above the bottom-centre status pane, between it and the ship, whatever the HUD scale; the
+  // cargo-full notice stacks above the hint bar so the two never overlap
+  { const pane=document.querySelector('.hud-tl'), r=pane&&pane.getBoundingClientRect(), base=r && r.height>2 ? Math.round(window.innerHeight-r.top+14) : 64;
+    el.prompt.style.bottom=base+'px'; el.fullNotice.style.bottom=(base+(p?el.prompt.getBoundingClientRect().height+10:0))+'px'; }
 }
 
 // ---------------------------------------------------------------- loop
