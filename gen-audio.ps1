@@ -75,7 +75,10 @@ foreach ($c in $clips){
       $body=@{prompt=$c.text; music_length_ms=$c.ms} | ConvertTo-Json
       Invoke-WebRequest -Uri 'https://api.elevenlabs.io/v1/music' -Method Post -Headers @{'xi-api-key'=$key; 'Content-Type'='application/json'} -Body $body -OutFile $file -TimeoutSec 600 | Out-Null
     } else {
-      $body=@{text=$c.text; model_id='eleven_multilingual_v2'; voice_settings=@{stability=0.5; similarity_boost=0.75}} | ConvertTo-Json -Depth 4
+      # Delivery: slowed to 0.85x, a little less stability so the phrasing breathes, and a short pause after each sentence
+      # (a <break> tag, which the multilingual v2 model honours) so the lines read like a person on a radio, not a ticker.
+      $spoken=[regex]::Replace($c.text, '([.!?])\s+(?=\S)', '$1 <break time="0.5s" /> ')
+      $body=@{text=$spoken; model_id='eleven_multilingual_v2'; voice_settings=@{stability=0.42; similarity_boost=0.8; style=0.1; use_speaker_boost=$true; speed=0.85}} | ConvertTo-Json -Depth 4
       $vid=if ($c.voice) { $c.voice } else { $VOICE_CONTROL }
       Invoke-WebRequest -Uri ("https://api.elevenlabs.io/v1/text-to-speech/$vid"+'?output_format=mp3_44100_96') -Method Post -Headers @{'xi-api-key'=$key; 'Content-Type'='application/json'; 'Accept'='audio/mpeg'} -Body $body -OutFile $file | Out-Null
     }
