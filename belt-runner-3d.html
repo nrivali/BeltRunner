@@ -349,7 +349,7 @@ table.manifest td.dimmed{color:var(--dim);}
 <div class="hud hud-tr">
   <div class="pane readouts">
     <div class="readout"><span>ZONE <b id="zoneName"></b></span><span>SPD <b id="spd">0</b></span><span id="distLbl">CARGO SHIP <b id="dist">0</b></span><span>FIELD <b id="fieldState">—</b></span></div>
-    <div class="readout"><span>LASER <b id="laserState">off</b></span><span>RANGE <b id="laserRange">2,500 m</b></span><span>RADAR <b id="radarState">READY</b></span><span>THREAT <b id="threatState">none</b></span></div>
+    <div class="readout"><span>LASER <b id="laserState">off</b></span><span>RANGE <b id="laserRange">5,000 m</b></span><span>RADAR <b id="radarState">READY</b></span><span>THREAT <b id="threatState">none</b></span></div>
   </div>
 </div>
 
@@ -397,7 +397,7 @@ table.manifest td.dimmed{color:var(--dim);}
 <div class="cine" id="cine"><div class="bar top"></div><div class="bar bot"></div><div class="cap" id="cineCap"></div></div>
 <div class="hud prompt" id="prompt"></div>
 <div class="hud toasts" id="toasts"></div>
-<div class="hud notice" id="fullNotice" hidden><b>CARGO HOLD FULL</b><span>Return to the cargo ship to stow it · press <kbd>E</kbd> within 4,500 to auto-dock</span></div>
+<div class="hud notice" id="fullNotice" hidden><b>CARGO HOLD FULL</b><span>Return to the cargo ship to stow it · press <kbd>E</kbd> within 9,000 to auto-dock</span></div>
 <div id="tut" class="tut" hidden>
   <div class="tut-head"><span class="eyebrow" id="tutStep">Tutorial</span><button class="link" id="tutSkip">Skip tutorial</button></div>
   <div class="tut-title" id="tutTitle"></div>
@@ -472,9 +472,9 @@ table.manifest td.dimmed{color:var(--dim);}
       <span><kbd>A</kbd> <kbd>D</kbd> <kbd>↑</kbd> <kbd>↓</kbd></span><span>Roll left and right · pitch up and down on keys.</span>
       <span><kbd>R</kbd></span><span>Radar pulse · marks every rock in scanner range</span>
       <span><kbd>LMB</kbd></span><span>Hold to fire the mining laser (Space or L too). While you hold it, the dish under the nose swings onto whatever the crosshair is on and cuts it until it breaks. It never picks targets by itself: keep the nose on the rock.</span>
-      <span><kbd>Q</kbd></span><span>Hover the mouse over a rock, a raider or the cargo ship (the label names it), then press Q to lock the crosshair on it. The ship steers itself to keep it in the crosshair (you keep the throttle and roll) until it breaks up or goes beyond 100,000 m. Hover a different target and press Q to switch directly to it. Press Q over the current target or empty space to release the lock. A locked object always shows its range, and its details sit top centre.</span>
+      <span><kbd>Q</kbd></span><span>Hover the mouse over a rock, a raider or the cargo ship (the label names it), then press Q to lock the crosshair on it. The ship steers itself to keep it in the crosshair (you keep the throttle and roll) until it breaks up or goes beyond 200,000 m. Hover a different target and press Q to switch directly to it. Press Q over the current target or empty space to release the lock. A locked object always shows its range, and its details sit top centre.</span>
       <span><kbd>F</kbd></span><span>Flashlight: a spot beam from the nose, on or off. While docked F opens the cargo ship services instead.</span>
-      <span>Docking</span><span>Fly slowly into either mouth of the cargo ship's through-hangar, or press <kbd>E</kbd> within 4,500 of it and approach control flies you in. Once docked, <kbd>E</kbd> deposits all your ore into the cargo ship's storage. You taxi to the pad at the far end and park nose-out, so you leave straight ahead. Fuel and repairs flow while you sit on the pad, and the services panel moves ore between your hold and the cargo ship's 50-slot storage. The cargo ship warps with you; ore only sells at the Hub.</span>
+      <span>Docking</span><span>Fly slowly into either mouth of the cargo ship's through-hangar, or press <kbd>E</kbd> within 9,000 of it and approach control flies you in. Once docked, <kbd>E</kbd> deposits all your ore into the cargo ship's storage. You taxi to the pad at the far end and park nose-out, so you leave straight ahead. Fuel and repairs flow while you sit on the pad, and the services panel moves ore between your hold and the cargo ship's 50-slot storage. The cargo ship warps with you; ore only sells at the Hub.</span>
       <span><kbd>N</kbd></span><span>Open the nav map. The cargo ship makes the jump between zones, so dock in its hangar first; you ride along and arrive in Dock 1.</span>
       <span><kbd>K</kbd></span><span>Sound on or off</span>
       <span><kbd>C</kbd></span><span>Hide or show the flight controls list in the bottom-left corner. Remembered between sessions.</span>
@@ -715,7 +715,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.93';
+const GAME_VERSION = '0.9.94';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -740,7 +740,7 @@ const DEPOT_UPGRADES={
   laser:{name:'Cargo ship mining laser', levels:[null,{range:12000,rate:2},{range:20000,rate:4},{range:32000,rate:7}], costs:[5000,14000,40000]},
   collectors:{name:'Collector drones', levels:[null,{ships:1,cap:120,speed:260,range:20000},{ships:2,cap:180,speed:300,range:35000},{ships:3,cap:260,speed:340,range:60000}], costs:[8000,20000,45000]},
 };
-function describeDepot(k,i){ const L=DEPOT_UPGRADES[k].levels[i]; if (!L) return 'not installed'; return k==='radar' ? `pulse every ${L.period}s · ${fmt(L.range)} range` : k==='laser' ? `${fmt(L.range)} reach · ${L.rate} dmg/s` :`${L.ships} drone${L.ships>1?'s':''} · ${L.cap} hold · ${fmt(L.range)} range`; }
+function describeDepot(k,i){ const L=DEPOT_UPGRADES[k].levels[i]; if (!L) return 'not installed'; return k==='radar' ? `pulse every ${L.period}s · ${fm(L.range)} range` : k==='laser' ? `${fm(L.range)} reach · ${L.rate} dmg/s` :`${L.ships} drone${L.ships>1?'s':''} · ${L.cap} hold · ${fm(L.range)} range`; }
 const depotPulse={on:false, t:0, r:0, cd:2}, depotLaser={rock:null, hit:null, retarget:0, since:0, toastT:0, yaw:0, pitch:0.15, firing:false};
 const keys={}, mouse={x:0,y:0,inside:false,down:false};
 
@@ -773,6 +773,9 @@ const isExport = k => !!ORES[k].zone;
 const price = k => ORES[k].price * state.market[k] * (isExport(k)?EXPORT_BONUS:1);   // (no refinery bonus any more)
 const rand = (a,b) => a + Math.random()*(b-a);
 const fmt = n => Math.floor(n).toLocaleString('en-US');
+// the in-game metre: METRE metres per world unit for everything the player reads (distances, ranges, speeds); the world,
+// the physics and every threshold stay in world units. fm() formats a world-unit length in metres.
+const METRE = 2, fm = n => fmt(n*METRE);
 const fmtTime = s => { s=Math.floor(s); const m=Math.floor(s/60), h=Math.floor(m/60); return h? `${h}h ${m%60}m` : `${m}m ${s%60}s`; };
 const shipForward = () => V3(0,0,1).applyQuaternion(ship.q);
 const shipUp = () => V3(0,1,0).applyQuaternion(ship.q);
@@ -3008,7 +3011,7 @@ function startBerthApproach(){ startHoldApproach(); }
 function startApproach(){
   if (!started || docked || cut || tow || disabled || warping || mapOpen) return;
   if (pilotingCarrier()){ startBerthApproach(); return; }
-  if (!nearStation()){ toast('Too far from the cargo ship for an approach · close to 4,500', true); return; }
+  if (!nearStation()){ toast('Too far from the cargo ship for an approach · close to 9,000', true); return; }
   const b=nearestBay().bay, L0=depotLocal(ship.pos), side=b.side;
   const app=b.openingL.clone().add(V3(0,0,side*1400)), mouth=b.openingL.clone(), inner=V3(b.cx,-110,0), pad=b.parkL.clone();   // straight through to the far pad
   const pts=[L0]; if (L0.distanceTo(app)>900) pts.push(app); pts.push(mouth, inner, pad);
@@ -3104,10 +3107,10 @@ function describe(k,i){
   switch(k){
     case 'laser': return `${L.rate} dmg/s`;
     case 'cargo': return `${L.slots} slots`;
-    case 'engine': return `${L.thrust} thrust · ${L.max} top speed`;
+    case 'engine': return `${Math.round(L.thrust*METRE)} thrust · ${Math.round(L.max*METRE)} top speed`;
     case 'tank': return `${L.cap} fuel`;
-    case 'scanner': return `${fmt(L.range)} m scan`;
-    case 'range': return `${fmt(L.reach)} m laser reach`;
+    case 'scanner': return `${fm(L.range)} m scan`;
+    case 'range': return `${fm(L.reach)} m laser reach`;
     case 'hull': return `${L.hp} hull points`;
   }
 }
@@ -4128,21 +4131,21 @@ function updateOverlays(){
   if (target && started && !docked){
     const p=project(target.obj.pos);
     if (p.on){ el.reticle.classList.add('on'); el.reticle.classList.toggle('hot', laserOn); el.reticle.classList.toggle('lock', !!target.locked); el.reticle.style.left=p.x+'px'; el.reticle.style.top=p.y+'px';
-      el.rLbl.textContent=(target.locked?'LOCK · ':'')+(target.type==='pirate'?`Raider · ${Math.max(0,Math.ceil(target.obj.hp))} hp`:`${rockName(target.obj)} · ${Math.ceil(100*target.obj.hp/target.obj.hpMax)}%`)+(target.locked?` · ${fmt(target.dist)} m`:''); }   // range only for the locked object; hover the mouse for anything else
+      el.rLbl.textContent=(target.locked?'LOCK · ':'')+(target.type==='pirate'?`Raider · ${Math.max(0,Math.ceil(target.obj.hp))} hp`:`${rockName(target.obj)} · ${Math.ceil(100*target.obj.hp/target.obj.hpMax)}%`)+(target.locked?` · ${fm(target.dist)} m`:''); }   // range only for the locked object; hover the mouse for anything else
     else el.reticle.classList.remove('on');
   } else el.reticle.classList.remove('on');
   // depot marker (clamped to the screen edge with an arrow when off screen)
-  if (started && !docked && pilotingCarrier()) placeMarker(el.marker, el.mArr, el.mLbl, V3(0,0,0), `${zone.colony.toUpperCase()} ${fmt(ship.pos.length())}`);
-  else if (started && !docked){ const nb=nearestBay(); placeMarker(el.marker, el.mArr, el.mLbl, nb.bay.opening, `${nb.dist<4500?nb.bay.name.toUpperCase():'CARGO SHIP'} ${fmt(nb.dist)}`); }
+  if (started && !docked && pilotingCarrier()) placeMarker(el.marker, el.mArr, el.mLbl, V3(0,0,0), `${zone.colony.toUpperCase()} ${fm(ship.pos.length())}`);
+  else if (started && !docked){ const nb=nearestBay(); placeMarker(el.marker, el.mArr, el.mLbl, nb.bay.opening, `${nb.dist<4500?nb.bay.name.toUpperCase():'CARGO SHIP'} ${fm(nb.dist)}`); }
   else el.marker.classList.remove('on');
   // nearest charted field (hidden while you are inside one)
   let nf=null, nfd=Infinity, inside=null;
   if (started && !docked) for (const f of fields){ const d=f.center.distanceTo(ship.pos); if (d<f.radius) inside=f; const e=d-f.radius; if (e<nfd){ nfd=e; nf=f; } }
-  if (nf && !inside) placeMarker(el.fieldMarker, el.fArr, el.fieldLbl, nf.center, `${nf.pocket?'RICH POCKET':'FIELD'} ${nf.name} ${fmt(nfd)}`);
+  if (nf && !inside) placeMarker(el.fieldMarker, el.fArr, el.fieldLbl, nf.center, `${nf.pocket?'RICH POCKET':'FIELD'} ${nf.name} ${fm(nfd)}`);
   else el.fieldMarker.classList.remove('on');
   // collector drones: a cyan waypoint on each, with what it is doing and how far away it is
   for (let i=0;i<droneMarkers.length;i++) droneMarkers[i].box.classList.remove('on');
-  if (started && !docked) collectors.forEach((c,i)=>{ const mk=droneMarker(i); placeMarker(mk.box, mk.arr, mk.lbl, c.pos, `DRONE ${i+1} · ${DRONE_WORDS[c.phase]||c.phase}${c.load>0.5?` · ${Math.round(c.load)}`:''} · ${fmt(c.pos.distanceTo(ship.pos))}`); });
+  if (started && !docked) collectors.forEach((c,i)=>{ const mk=droneMarker(i); placeMarker(mk.box, mk.arr, mk.lbl, c.pos, `DRONE ${i+1} · ${DRONE_WORDS[c.phase]||c.phase}${c.load>0.5?` · ${Math.round(c.load)}`:''} · ${fm(c.pos.distanceTo(ship.pos))}`); });
   el.fieldState.textContent=inside?inside.name:'—';
   // radar-marked rocks: a blip on every marked rock in view, and for the ones out of view a waypoint pinned to the screen
   // edge with an arrow pointing the way, so a scan tells you where to turn as well as what is ahead
@@ -4159,7 +4162,7 @@ function updateOverlays(){
       b.classList.add('off'); i.style.transform=`rotate(${ang*180/Math.PI+90}deg)`; i.style.borderColor='transparent'; i.style.borderBottomColor=col;
     } else { b.classList.remove('off'); i.style.transform=''; i.style.borderColor=col; }
     b.style.left=x+'px'; b.style.top=y+'px'; b.style.opacity=Math.min(1,(a.markUntil-state.time)/6);
-    b.lastChild.textContent=bi<=4?`${ORES[a.ore].name} ${fmt(a.dist)} m`:'';
+    b.lastChild.textContent=bi<=4?`${ORES[a.ore].name} ${fm(a.dist)} m`:'';
   }
   for (;bi<BLIPS;bi++) el.blips[bi].classList.remove('on');
 }
@@ -4181,20 +4184,20 @@ function updateHud(dt){
   if (full && !wasFull && started && !docked){ toast('Cargo hold full · head back to the cargo ship to stow it', true); SFX.chime(); } wasFull=full;
   el.center.classList.toggle('hot', laserOn);
   if (invOpen) renderInventory();
-  el.spd.textContent=docked?(pilotingCarrier()?'HOLDING':'DOCKED'):parked?'PARKED':Math.round(ship.vel.length());
-  el.spdBig.textContent=docked?(pilotingCarrier()?'HOLD':'DOCK'):fmt(ship.vel.length());   // the bottom gauge: the same reading, in m/s
-  { const big=pilotingCarrier(); el.dist.textContent=fmt(big?ship.pos.length():ship.pos.distanceTo(STATION.pos)); const lbl=$('distLbl').firstChild; const want=big?'COLONY ':'CARGO SHIP '; if (lbl.textContent!==want) lbl.textContent=want; }
+  el.spd.textContent=docked?(pilotingCarrier()?'HOLDING':'DOCKED'):parked?'PARKED':Math.round(ship.vel.length()*METRE);
+  el.spdBig.textContent=docked?(pilotingCarrier()?'HOLD':'DOCK'):fm(ship.vel.length());   // the bottom gauge: the same reading, in m/s
+  { const big=pilotingCarrier(); el.dist.textContent=fm(big?ship.pos.length():ship.pos.distanceTo(STATION.pos)); const lbl=$('distLbl').firstChild; const want=big?'COLONY ':'CARGO SHIP '; if (lbl.textContent!==want) lbl.textContent=want; }
   if (docked){
     if (!el.station.hidden){ panelT+=0.08; if (panelT>1){ panelT=0; renderPanel(); } }
   }
-  { const reach=stat('range').reach; el.laserRange.textContent=lock?`${fmt(lockDist)} / ${fmt(reach)} m`:`${fmt(reach)} m`; }   // range in metres: the locked object's distance against the beam's reach, else just the reach
+  { const reach=stat('range').reach; el.laserRange.textContent=lock?`${fm(lockDist)} / ${fm(reach)} m`:`${fm(reach)} m`; }   // range in metres: the locked object's distance against the beam's reach, else just the reach
   el.laserState.textContent=(laserOn?'CUTTING':firing?'FIRING':'ready');   // (heat is only a visual now, so it is not reported) el.laserState.style.color=laserOn?'var(--amber2)':''; el.radarState.textContent=pulseCd>0?`${pulseCd.toFixed(1)}s`:'READY';
   const T=lock?{type:lockType, obj:lock, dist:lockDist, locked:true}:target;   // the panel (top centre) follows the lock when there is one, else the crosshair target
   if (T && !docked){
     const t=T.obj, reach=stat('range').reach; el.target.classList.add('on');
     el.target.classList.toggle('pirate', T.type==='pirate');
     el.tEyebrow.textContent=T.locked?'Locked target':'Target';
-    el.tRange.textContent=`${fmt(T.dist)} m`+(T.dist<=reach?'':' · beyond reach');
+    el.tRange.textContent=`${fm(T.dist)} m`+(T.dist<=reach?'':' · beyond reach');
     $('tHpRow').style.display=T.type==='station'?'none':'';   // the carrier has no health bar
     if (T.type==='station'){ el.tName.textContent=CARGO_SHIP; el.tSize.textContent='Carrier'; el.tWarn.textContent=''; el.tWarn.style.display='none'; }
     else if (T.type==='pirate'){
@@ -4213,7 +4216,7 @@ function updateHud(dt){
   if (tow || disabled){ segs.push(tow?towStatus():'Hull breach · drifting'); segs.push('Mouse looks around'); }
   else if (!docked){
     if (cut){ segs.push(cut.world?`Colony control has the ${CARGO_SHIP.toLowerCase()} · ${cut.bay.name}`:`Approach control has the ship · ${cut.bay.name}`); segs.push('<kbd>Space</kbd>Skip'); }
-    else if (pilotingCarrier()) segs.push(nearColony()?`<kbd>E</kbd>Berth at ${zone.colony} · the market and services`:`Fly the ${CARGO_SHIP.toLowerCase()} to ${zone.colony} · within ${fmt(COLONY.near)} press <kbd>E</kbd> to berth`);
+    else if (pilotingCarrier()) segs.push(nearColony()?`<kbd>E</kbd>Berth at ${zone.colony} · the market and services`:`Fly the ${CARGO_SHIP.toLowerCase()} to ${zone.colony} · within ${fm(COLONY.near)} press <kbd>E</kbd> to berth`);
     else if (nearStation()) segs.push(`<kbd>E</kbd>Auto-dock with the ${CARGO_SHIP.toLowerCase()} · or fly in through either hangar mouth`);
     else if (state.fuel<=0.5 && !parked) segs.push('<kbd>T</kbd>Out of fuel · call a tow (15% of credits)');
     if (target && target.type==='pirate'){ segs.push(trigger?'Laser on the raider':'<kbd>LMB</kbd>Hold to fire at raider'); }
@@ -4262,7 +4265,7 @@ const TUT=[
   {id:'mine', title:'Mine some copper', ring:['#target'], wait:'collect copper',
     text:'Find a copper rock (orange veins) and get within laser reach. Hold the mining laser (left mouse, <kbd>Space</kbd> or <kbd>L</kbd>): the dish under the nose swings onto the rock and cuts while you hold, until it breaks, and the health bar top-right shows how it is going. The ore comes loose as glowing pickups; fly near and they are pulled aboard.', auto:()=>state.cargo.copper>=1},
   {id:'return', title:'Back to the cargo ship', ring:['#marker'], wait:'dock with the cargo ship',
-    text:'Copper aboard. Follow the CARGO SHIP marker home: the carrier with the hangar is yours, and it warps with you. Within 4,500 press <kbd>E</kbd> and approach control flies you into the hangar, or fly straight in through either hangar mouth yourself.', auto:()=>docked},
+    text:'Copper aboard. Follow the CARGO SHIP marker home: the carrier with the hangar is yours, and it warps with you. Within 9,000 press <kbd>E</kbd> and approach control flies you into the hangar, or fly straight in through either hangar mouth yourself.', auto:()=>docked},
   {id:'hangar', title:'In the hangar', ring:['.hud-tl'],
     text:'While you sit on the pad your tank fills from the cargo ship\'s fuel supply and hull damage is patched from its store of repair parts, one part per hull point. Both run down, and both restock at the Hub for credits from the cargo ship panel, so keep an eye on their gauges. Nothing sells here: the cargo ship has 50 storage slots of its own, and the inventory moves stacks between your hold and that storage.'},
   {id:'services', title:'Storage and refits', ring:['#station .panel'],
