@@ -702,7 +702,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.15';
+const GAME_VERSION = '0.9.16';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D Â· v' + GAME_VERSION;
 
@@ -768,12 +768,13 @@ const shipRight = () => V3(-1,0,0).applyQuaternion(ship.q);
 // Generative soundtrack, all synthesised. Most of the time it is a slow ambient bed: a detuned pad drifting through four
 // chords under a sub drone, with echoing sparkle notes and the odd distant swell. Every few minutes a groove fades in for a
 // minute or so â€” kick, hats, snare, a bouncing bassline and a square-wave arp on the same chords â€” then dissolves back.
-// Recorded audio comes from sfx/<name>.mp3 when the page is served over http. Opened straight from disk (file://) the
+// Recorded audio comes from sfx/<name>.mp3 (or .wav for the locally rendered ambience) when the page is served over http. Opened straight from disk (file://) the
 // browser refuses fetch, so the same bytes come from sfx/sfx.data.js, a base64 pack built by build-sfx-data.ps1, which
 // is also the fallback if a fetch fails for any other reason. Both paths hand back an ArrayBuffer for decodeAudioData.
 const AUDIO_PACK=(()=>{ let p=null; return ()=>{ if (!p) p=new Promise((res,rej)=>{ const s=document.createElement('script'); s.src='sfx/sfx.data.js'; s.onload=()=>{ s.remove(); res(window.BeltRunnerSfxData||{}); }; s.onerror=()=>{ s.remove(); rej(new Error('sfx pack unavailable')); }; document.head.append(s); }); return p; }; })();
+const CLIP_EXT={space_ambience:'wav'};   // every clip is an mp3 except the locally rendered ambience
 async function fetchAudio(name){
-  if (location.protocol!=='file:'){ try { const r=await fetch('sfx/'+name+'.mp3'); if (r.ok) return await r.arrayBuffer(); } catch(e){} }
+  if (location.protocol!=='file:'){ try { const r=await fetch('sfx/'+name+'.'+(CLIP_EXT[name]||'mp3')); if (r.ok) return await r.arrayBuffer(); } catch(e){} }
   const pack=await AUDIO_PACK(), b64=pack[name]; if (!b64) throw new Error('no clip '+name);
   return Uint8Array.from(atob(b64), c=>c.charCodeAt(0)).buffer;
 }
@@ -919,11 +920,11 @@ const MUSIC_PROC=(()=>{
     set onGroove(fn){ onGroove=fn; }, set onTrack(fn){ onTrack=fn; },
     get state(){ return ctx?ctx.state:'none'; }, get step(){ return step; }, cue(){ modeUntil=0; } };   // cue(): bring the next section on at the next bar (debug)
 })();
-// The soundtrack: no songs and no synth pads. A subtle recorded space ambience (ElevenLabs, sfx/space_ambience.mp3) loops
-// very quietly under everything, drifting a few semitones up or down by pitch every half minute or so, and every couple
-// of minutes a short recorded beat phrase fades in over it and out again. The first bed in BEDS that loads is used, so
-// until space_ambience.mp3 has been generated (gen-audio.ps1 -Only space_ambience, then build-sfx-data.ps1) the
-// recorded space hum stands in for it.
+// The soundtrack: no songs and no synth pads. A subtle space ambience (sfx/space_ambience.wav, rendered locally by
+// gen-ambience.ps1: soft filtered wind, a faint beating sub drone, slow shimmering swells) loops very quietly under
+// everything, drifting a few semitones up or down by pitch every half minute or so, and every couple of minutes a short
+// recorded beat phrase fades in over it and out again. The first bed in BEDS that loads is used, so if the ambience
+// file is missing the recorded space hum stands in for it.
 const MUSIC=(()=>{
   const BEDS=['space_ambience','space_hum'], BEATS=['beat_1','beat_2','beat_3','beat_4'], BED_GAIN=.3;   // .3: barely there under the sound effects
   const STEPS=[0,-2,2,-3,3,-5];   // semitone offsets the bed drifts between: small steps so the texture stays subtle
