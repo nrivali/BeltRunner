@@ -494,7 +494,7 @@ table.manifest td.dimmed{color:var(--dim);}
     </div>
     <div class="bar inv-bar"><i id="invFill"></i></div>
     <div id="invBody"></div>
-    <div class="inv-foot"><span class="hint">Each slot holds one stack of up to 100 units of one ore. Drag stacks to rearrange or pour them together; drag one off the grid (or press ✕) to jettison it. Dock with the cargo ship to stow stacks in its storage; sell at the Hub.</span><button id="invClose" class="btn">Close &nbsp;<kbd>Tab</kbd></button></div>
+    <div class="inv-foot"><span class="hint">Each slot holds one stack of up to 100 units of one ore. Drag stacks to rearrange or pour them together; drag one out of the panel and let go (or press ✕) to drop it into space. Dock with the cargo ship to stow stacks in its storage; sell at the Hub.</span><button id="invClose" class="btn">Close &nbsp;<kbd>Tab</kbd></button></div>
   </div>
 </div>
 <div id="map" class="overlay" hidden>
@@ -714,7 +714,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.79';
+const GAME_VERSION = '0.9.80';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -3525,6 +3525,10 @@ function wireInventoryDrag(){
     const inHold=!!e.target.closest('#invHold'), inStore=!!e.target.closest('#invStore');
     if (si>=0){ if (inHold){ const x=storeStacks()[si]; if (x) takeStack(x.k, x.u); } return; }   // storage stacks only ever come back to the hold
     if (inStore) stowStack(i); else if (inHold){ const j=invSlotAt(e); if (j>=0) moveSlot(i, j); } else jettisonSlot(i); });
+  // the overlay ignores the pointer outside its card, so a stack let go over the game view never reaches the handlers above:
+  // catch it at the document and drop it into space (a drop inside the panel has already cleared dragI, so this stays quiet)
+  document.addEventListener('dragover', e=>{ if (dragI>=0 && !(e.target.closest && e.target.closest('#inv'))){ e.preventDefault(); e.dataTransfer.dropEffect='move'; } });
+  document.addEventListener('drop', e=>{ if (dragI<0 || (e.target.closest && e.target.closest('#inv'))) return; e.preventDefault(); const i=dragI; dragI=-1; dragS=-1; jettisonSlot(i); });
 }
 function openInventory(){ if (!started) return; invOpen=true; invSig=''; renderInventory(); el.inv.hidden=false; }
 function closeInventory(){ invOpen=false; el.inv.hidden=true; }
