@@ -269,11 +269,10 @@ table.manifest td.dimmed{color:var(--dim);}
 /* cargo transfer in the services panel: the ship's hold and the cargo ship's storage as two compact grids; click a stack to move it across */
 .xfer-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:14px 0 8px;} .xfer-head:first-child{margin-top:0;}
 .xfer-head .eyebrow{margin:0;} .xfer-head .mono{font-size:13.5px;color:var(--dim);} .xfer-head .link{padding:0;font-size:13.5px;}
-.inv-grid.small{grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px;}
-.inv-grid.small .slot{min-height:68px;padding:6px 8px 5px;cursor:pointer;gap:2px;} .inv-grid.small .slot:hover{border-color:var(--amber);background:rgba(242,163,58,.12);}
-.inv-grid.small .slot b{font-size:12px;padding-right:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .inv-grid.small .slot .n{font-size:13px;} .inv-grid.small .slot .ico{width:30px;height:30px;right:4px;bottom:4px;}
-.inv-grid.small .slot.empty{min-height:68px;font-size:10.5px;cursor:default;} .inv-grid.small .slot.empty:hover{border-color:var(--line2);background:var(--panel2);}
-#inv .inv-grid.small .slot[draggable]{cursor:grab;} #inv .inv-grid.small .slot.over{border-color:var(--amber);background:rgba(242,163,58,.12);opacity:1;}
+/* the cargo ship's storage grid: the same slot size and type as the hold; only its click-to-take hover and drag cursors differ */
+#invStore .slot{cursor:pointer;} #invStore .slot:hover{border-color:var(--amber);background:rgba(242,163,58,.12);}
+#invStore .slot.empty{cursor:default;} #invStore .slot.empty:hover{border-color:var(--line2);background:var(--panel2);}
+#invStore .slot[draggable]{cursor:grab;} #invStore .slot.over{border-color:var(--amber);background:rgba(242,163,58,.12);opacity:1;}
 .delta{font-size:11px;margin-left:4px;}
 .delta.up{color:var(--green);} .delta.down{color:var(--red);}
 .empty{color:var(--dim);font-size:13px;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
@@ -714,7 +713,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.82';
+const GAME_VERSION = '0.9.83';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -3509,7 +3508,7 @@ function renderInventory(){
   if (aboard){
     const scell=(s,i)=>{ if (!s) return `<div class="slot empty" data-s="${i}"><span>empty</span></div>`; const o=ORES[s.k]; return `<div class="slot" draggable="true" data-s="${i}" style="--c:${o.color}" title="Drag to your hold (or double-click) to take it back aboard"><img class="ico" src="${oreIcon(s.k)}" alt="" draggable="false"><b>${o.name}</b><span class="n">${Math.floor(s.u)} / ${STACK}</span></div>`; };
     const cells=[]; for (let i=0;i<STORE_SLOTS;i++) cells.push(scell(st[i],i));
-    html+=`<div class="xfer-head" style="margin-top:18px"><span class="eyebrow">${CARGO_SHIP} storage</span><span class="mono">${su} / ${STORE_SLOTS} slots · ${Math.floor(storeTotal())} u</span><span><button class="link" data-takeall="1">▲ Take all</button></span></div><div class="inv-grid small" id="invStore">${cells.join('')}</div><p class="hint" style="margin:8px 0 0">Drag stacks between the two grids, or double-click one, to move it. The storage rides with the cargo ship and sells at the Hub.</p>`;
+    html+=`<div class="xfer-head" style="margin-top:18px"><span class="eyebrow">${CARGO_SHIP} storage</span><span class="mono">${su} / ${STORE_SLOTS} slots · ${Math.floor(storeTotal())} u</span><span><button class="link" data-takeall="1">▲ Take all</button></span></div><div class="inv-grid" id="invStore">${cells.join('')}</div><p class="hint" style="margin:8px 0 0">Drag stacks between the two grids, or double-click one, to move it. The storage rides with the cargo ship and sells at the Hub.</p>`;
   } else html+=`<div class="inv-total" style="border-top:none;padding-top:4px"><span>${CARGO_SHIP} storage</span><b style="color:var(--text)">${su} / ${STORE_SLOTS} slots · ${Math.floor(storeTotal())} u · dock to transfer</b></div>`;
   el.invBody.innerHTML=html;
   el.invBody.querySelectorAll('[data-jet]').forEach(b=>b.addEventListener('click', e=>{ e.stopPropagation(); jettisonSlot(+b.dataset.jet); }));
