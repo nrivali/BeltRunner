@@ -372,7 +372,7 @@ table.manifest td.dimmed{color:var(--dim);}
     <span><kbd>A</kbd> <kbd>D</kbd></span><span>Roll left · right</span>
     <span><kbd>↑</kbd> <kbd>↓</kbd></span><span>Pitch</span>
     <span><kbd>LMB</kbd></span><span>Hold to fire the mining laser (<kbd>Space</kbd> or <kbd>L</kbd> too). It cuts only what the crosshair is on: aim the nose at a rock</span>
-    <span><kbd>Q</kbd></span><span>Lock the crosshair on whatever the mouse is over: the ship steers itself to keep it centred · press again to release</span>
+    <span><kbd>Q</kbd></span><span>Lock the crosshair on whatever the mouse is over · hover another target and press Q to switch · otherwise press Q to release</span>
     <span><kbd>R</kbd></span><span>Radar pulse</span>
     <span><kbd>F</kbd></span><span>Flashlight on · off in flight · cargo ship services when docked (store ore, refit, sell at the Hub)</span>
     <span><kbd>Tab</kbd> <kbd>I</kbd></span><span>Inventory · slots of 25 · jettison stacks</span>
@@ -471,7 +471,7 @@ table.manifest td.dimmed{color:var(--dim);}
       <span><kbd>A</kbd> <kbd>D</kbd> <kbd>↑</kbd> <kbd>↓</kbd></span><span>Roll left and right · pitch up and down on keys.</span>
       <span><kbd>R</kbd></span><span>Radar pulse · marks every rock in scanner range</span>
       <span><kbd>LMB</kbd></span><span>Hold to fire the mining laser (Space or L too). While you hold it, the dish under the nose swings onto whatever the crosshair is on and cuts it until it breaks. It never picks targets by itself: keep the nose on the rock.</span>
-      <span><kbd>Q</kbd></span><span>Hover the mouse over a rock, a raider or the cargo ship (the label names it), then press Q to lock the crosshair on it. The ship steers itself to keep it in the crosshair (you keep the throttle and roll) until you press Q again, or it breaks up or goes beyond 100,000 m. A locked object always shows its range, and its details sit top centre.</span>
+      <span><kbd>Q</kbd></span><span>Hover the mouse over a rock, a raider or the cargo ship (the label names it), then press Q to lock the crosshair on it. The ship steers itself to keep it in the crosshair (you keep the throttle and roll) until it breaks up or goes beyond 100,000 m. Hover a different target and press Q to switch directly to it. Press Q over the current target or empty space to release the lock. A locked object always shows its range, and its details sit top centre.</span>
       <span><kbd>F</kbd></span><span>Flashlight: a spot beam from the nose, on or off. While docked F opens the cargo ship services instead.</span>
       <span>Docking</span><span>Fly slowly into either mouth of the cargo ship's through-hangar, or press <kbd>E</kbd> within 4,500 of it and approach control flies you in. Once docked, <kbd>E</kbd> deposits all your ore into the cargo ship's storage. You taxi to the pad at the far end and park nose-out, so you leave straight ahead. Fuel and repairs flow while you sit on the pad, and the services panel moves ore between your hold and the cargo ship's 50-slot storage. The cargo ship warps with you; ore only sells at the Hub.</span>
       <span><kbd>N</kbd></span><span>Open the nav map. The cargo ship makes the jump between zones, so dock in its hangar first; you ride along and arrive in Dock 1.</span>
@@ -714,7 +714,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.76';
+const GAME_VERSION = '0.9.77';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -2195,13 +2195,14 @@ let exhausts=[], navLights=[], laserMuzzle=new THREE.Object3D();   // the game i
 // the ship's dish mount, under the nose: dish forward (+x of the turret → +z of the ship), yaw ring up against the hull
 const SHIP_DISH_POS=V3(0,-4.5,7), SHIP_DISH_ARC=Math.PI/2, shipDishQ=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(V3(0,0,1), V3(0,-1,0), V3(1,0,0))), shipDishQInv=shipDishQ.clone().invert();
 let shipDish=null, shipDishMount=null; const shipAim={yaw:0, pitch:0, aimed:false};
-let lock=null;   // Q: the rock the crosshair is locked on; the ship steers itself to keep the crosshair on it until Q again, or it breaks or falls far out of range
+let lock=null;   // Q: lock the hovered target, switch to a different hovered target, or release the current lock
 let hover=null, lockType='rock', lockDist=0;   // hover: what the mouse is over this frame ({type, obj, dist}); lockType/lockDist describe the lock
 const LOCK_RANGE=100000;   // a lock holds out to this distance (well beyond laser reach: it is for navigating to things too)
 const hoverName=h=>h.type==='pirate'?'Raider':h.type==='station'?CARGO_SHIP:rockName(h.obj);
 function toggleLock(){
-  if (lock){ lock=null; toast('Lock released'); }
-  else if (hover){ lock=hover.obj; lockType=hover.type; lockDist=hover.dist; toast(`Locked on ${hoverName(hover)}`); }
+  hover=hoverPick();   // use the current cursor position even if it moved since the last frame
+  if (hover && hover.obj!==lock){ lock=hover.obj; lockType=hover.type; lockDist=hover.dist; toast(`Locked on ${hoverName(hover)}`); }
+  else if (lock){ lock=null; toast('Lock released'); }
   else toast('Nothing under the mouse to lock on', true);
 }
 // what the mouse is over: every rock and raider is projected to the screen and the nearest one whose disc (with a 10 px
@@ -4191,7 +4192,10 @@ function updateHud(dt){
     if (target && target.type==='pirate'){ segs.push(trigger?'Laser on the raider':'<kbd>LMB</kbd>Hold to fire at raider'); }
     else if (target){ segs.push(!trigger?'<kbd>LMB</kbd>Hold to mine':target.obj.barren?'Breaking rock · scrap only':`${laserOn?'Cutting':'Aiming at'} ${ORES[target.obj.ore].name}`); }
   }
-  if (started && !docked && !pilotingCarrier()){ if (lock) segs.push('<kbd>Q</kbd>Release lock'); else if (hover) segs.push(`<kbd>Q</kbd>Lock on ${hoverName(hover)}`); }
+  if (started && !docked && !pilotingCarrier()){
+    if (hover && hover.obj!==lock) segs.push(`<kbd>Q</kbd>${lock?'Switch lock to':'Lock on'} ${hoverName(hover)}`);
+    else if (lock) segs.push('<kbd>Q</kbd>Release lock');
+  }
   if (started && docked && !pilotingCarrier() && cargoTotal()>0.5) segs.push(`<kbd>E</kbd>Deposit all ore into the ${CARGO_SHIP.toLowerCase()}`);
   const p=segs.join('<span class="sep">·</span>');
   el.prompt.innerHTML=p; el.prompt.classList.toggle('on', !!p);
