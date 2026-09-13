@@ -717,7 +717,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.98';
+const GAME_VERSION = '0.9.99';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -725,7 +725,7 @@ document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAM
 const state = {
   credits:60, cargo:{}, store:{}, fuel:100, jump:false,   // cargo: the ship's hold; store: the cargo ship's storage, which travels with you
   up:{laser:0,cargo:0,engine:0,tank:0,scanner:0,range:0,hull:0}, hull:100,
-  depot:{radar:0, laser:0, collectors:0}, droneUnits:0, shipFuel:1200, parts:120,   // cargo ship upgrades: level 0 = not installed; droneUnits: ore the collectors have stowed; shipFuel: the cargo ship's fuel supply
+  depot:{laser:0, collectors:0}, droneUnits:0, shipFuel:1200, parts:120,   // cargo ship upgrades: level 0 = not installed; droneUnits: ore the collectors have stowed; shipFuel: the cargo ship's fuel supply
   market:{}, marketNext:{}, marketT:0, mined:0, minedBy:{}, earned:0, time:0,
 };
 ORE_KEYS.forEach(k => { state.cargo[k]=0; state.store[k]=0; state.market[k]=1; state.marketNext[k]=1; });
@@ -738,11 +738,10 @@ const PULSE_TIME=2.6, PULSE_CD=5, MARK_TIME=30;
 // from the carrier and marks rocks for you; the dish breaks rocks near the carrier and leaves their ore adrift for anyone
 // to pick up; collector drones fly out from the hangar, gather loose ore and stow it in the cargo ship's storage.
 const DEPOT_UPGRADES={
-  radar:{name:'Cargo ship radar', levels:[null,{range:25000,period:10},{range:45000,period:8},{range:80000,period:6}], costs:[3000,9000,25000]},
   laser:{name:'Cargo ship mining laser', levels:[null,{range:12000,rate:2},{range:20000,rate:4},{range:32000,rate:7}], costs:[5000,14000,40000]},
   collectors:{name:'Collector drones', levels:[null,{ships:1,cap:120,speed:260,range:20000},{ships:2,cap:180,speed:300,range:35000},{ships:3,cap:260,speed:340,range:60000}], costs:[8000,20000,45000]},
 };
-function describeDepot(k,i){ const L=DEPOT_UPGRADES[k].levels[i]; if (!L) return 'not installed'; return k==='radar' ? `pulse every ${L.period}s · ${fm(L.range)} range` : k==='laser' ? `${fm(L.range)} reach · ${L.rate} dmg/s` :`${L.ships} drone${L.ships>1?'s':''} · ${L.cap} hold · ${fm(L.range)} range`; }
+function describeDepot(k,i){ const L=DEPOT_UPGRADES[k].levels[i]; if (!L) return 'not installed'; return k==='laser' ? `${fm(L.range)} reach · ${L.rate} dmg/s` :`${L.ships} drone${L.ships>1?'s':''} · ${L.cap} hold · ${fm(L.range)} range`; }
 const depotPulse={on:false, t:0, r:0, cd:2}, depotLaser={rock:null, hit:null, retarget:0, since:0, toastT:0, yaw:0, pitch:0.15, firing:false};
 const keys={}, mouse={x:0,y:0,inside:false,down:false,rdown:false};   // down: left button (laser trigger); rdown: right button (free look)
 
@@ -2849,18 +2848,10 @@ function depotBumpRocks(){
     a.pos.copy(depotWorld(lp)); setAdrift(a); a.vel.copy(STATION.vel).addScaledVector(depotDir(n), 40);
   }
 }
-// Depot upgrades at work: a repeating radar pulse from the carrier, and a laser that cuts nodes near the carrier and sells them.
+// Depot upgrades at work: a laser that cuts rocks near the carrier and leaves the ore adrift. (The carrier radar upgrade is
+// gone; its pulse visuals stay wired to depotPulse but it never fires.)
 function updateDepot(dt){
-  const R=DEPOT_UPGRADES.radar.levels[state.depot.radar], T=PULSE_TIME*2.2;
-  if (R){
-    depotPulse.cd-=dt;
-    if (!depotPulse.on && depotPulse.cd<=0){ depotPulse.on=true; depotPulse.t=0; }
-    if (depotPulse.on){
-      depotPulse.t+=dt; depotPulse.r=R.range*Math.min(1, depotPulse.t/T);
-      for (const a of asteroids){ if (a.dead || a.amount<=0.05) continue; const d=a.pos.distanceTo(STATION.pos); if (d<=depotPulse.r && d<=R.range) a.markUntil=state.time+MARK_TIME; }
-      if (depotPulse.t>=T+0.4){ depotPulse.on=false; depotPulse.cd=R.period; }
-    }
-  } else depotPulse.on=false;
+  depotPulse.on=false;
   const L=DEPOT_UPGRADES.laser.levels[state.depot.laser], dl=depotLaser;
   const slew=(cur, want)=>cur+Math.max(-TURRET_SLEW*dt, Math.min(TURRET_SLEW*dt, want-cur));
   const slewYaw=(cur, want)=>wrapAngle(cur+Math.max(-TURRET_SLEW*dt, Math.min(TURRET_SLEW*dt, wrapAngle(want-cur))));   // the shorter way round
