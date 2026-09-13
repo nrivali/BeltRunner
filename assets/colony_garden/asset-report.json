@@ -1,0 +1,103 @@
+{
+  "model_units_per_game_unit": 0.001,
+  "outer_radius": 52,
+  "inner_radius": 30,
+  "garden_bays": 40,
+  "trees": 504,
+  "meshes": [
+    {
+      "name": "Habitat_Rings_Ivory_ceramic_alloy",
+      "triangles": 62912
+    },
+    {
+      "name": "Habitat_Rings_Titanium_structure",
+      "triangles": 41912
+    },
+    {
+      "name": "Habitat_Rings_Graphite_recesses",
+      "triangles": 14976
+    },
+    {
+      "name": "Habitat_Rings_Habitat_windows",
+      "triangles": 14976
+    },
+    {
+      "name": "Habitat_Rings_Garden_floor_ImageGen",
+      "triangles": 960
+    },
+    {
+      "name": "Habitat_Rings_Conservatory_glass",
+      "triangles": 12400
+    },
+    {
+      "name": "Habitat_Rings_Champagne_trim",
+      "triangles": 960
+    },
+    {
+      "name": "Habitat_Rings_Wayfinding_cyan",
+      "triangles": 672
+    },
+    {
+      "name": "Habitat_Rings_Tree_trunks",
+      "triangles": 8064
+    },
+    {
+      "name": "Habitat_Rings_Foliage_lime",
+      "triangles": 14560
+    },
+    {
+      "name": "Habitat_Rings_Foliage_emerald",
+      "triangles": 31808
+    },
+    {
+      "name": "Habitat_Rings_Paths_and_plazas",
+      "triangles": 4640
+    },
+    {
+      "name": "Habitat_Rings_Navigation_red",
+      "triangles": 896
+    },
+    {
+      "name": "Civic_Core_Ivory_ceramic_alloy",
+      "triangles": 6828
+    },
+    {
+      "name": "Civic_Core_Titanium_structure",
+      "triangles": 11128
+    },
+    {
+      "name": "Civic_Core_Graphite_recesses",
+      "triangles": 2304
+    },
+    {
+      "name": "Civic_Core_Habitat_windows",
+      "triangles": 2640
+    },
+    {
+      "name": "Civic_Core_Champagne_trim",
+      "triangles": 7432
+    },
+    {
+      "name": "Civic_Core_Wayfinding_cyan",
+      "triangles": 1488
+    },
+    {
+      "name": "Civic_Core_Solar_cells",
+      "triangles": 48
+    },
+    {
+      "name": "Comms_Dish_Titanium_structure",
+      "triangles": 1756
+    },
+    {
+      "name": "Comms_Dish_Ivory_ceramic_alloy",
+      "triangles": 960
+    },
+    {
+      "name": "Comms_Dish_Wayfinding_cyan",
+      "triangles": 144
+    }
+  ],
+  "triangles": 244464,
+  "draw_calls": 23
+}

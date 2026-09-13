@@ -1,0 +1,28 @@
+{
+  "base": "0fc9695b013cdf5bb3e336cbfa928d9e15485e7a",
+  "beforeSHA256": "6b190fd7cf4cb9024e7e57da66cdfe1e870ef296c9b5861b3387bb5fc7d2d924",
+  "afterSHA256": "83b4f1cc4b336a692df58f5c46d9ea009b6bc840f53784faf14da6914d70a862",
+  "backup": "C:\\Users\\rival\\Documents\\BeltRunner\\backups\\garden-colony-2026-09-13T09-20-28-222Z.html",
+  "changes": [
+    {
+      "before": "const GAME_VERSION = '0.9.56';",
+      "after": "const GAME_VERSION = '0.9.57';"
+    },
+    {
+      "before": "<script src=\"assets/hub_planet/load-homeworld.js\"></script>",
+      "after": "<script src=\"assets/hub_planet/load-homeworld.js\"></script>\r\n<script src=\"assets/colony_garden/load-colony.js\"></script>"
+    },
+    {
+      "before": "  return {group:g, ring, beacons:beaconGroups, dish, pos:g.position, site, name:site.name, scale:site.scale, rot:site.rot, r:Ro*site.scale, main:!!site.main};",
+      "after": "  const c={group:g, ring, beacons:beaconGroups, dish, pos:g.position, site, name:site.name, scale:site.scale, rot:site.rot, r:Ro*site.scale, main:!!site.main};\r\n  if(window.BeltRunnerGardenColony)window.BeltRunnerGardenColony.attach(c,{renderer}).then(()=>{if(colony===c)colony_dish=c.dish;});\r\n  return c;"
+    },
+    {
+      "before": "  for (const c of colonies){ scene.remove(c.group); c.group.traverse(o=>{ if (o.geometry) o.geometry.dispose(); }); }",
+      "after": "  for (const c of colonies){ window.BeltRunnerGardenColony?.release(c); scene.remove(c.group); c.group.traverse(o=>{ if (o.geometry && !o.userData.gardenShared) o.geometry.dispose(); }); }"
+    },
+    {
+      "before": "    c.ring.rotation.y+=0.01*dt*(c.main?1:1.6); c.dish.rotation.y=t*0.08+c.rot;",
+      "after": "    c.ring.rotation.y+=0.01*dt*(c.main?1:1.6); c.dish.rotation.y=t*0.08+c.rot; window.BeltRunnerGardenColony?.update(c,t);"
+    }
+  ]
+}

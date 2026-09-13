@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><base href="../../"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Meridian / Garden Habitat</title>
+<style>
+*{box-sizing:border-box}body{margin:0;overflow:hidden;background:#03090d;color:#e9e9de;font:14px system-ui,sans-serif}canvas{display:block;touch-action:none;cursor:grab}canvas:active{cursor:grabbing}header{position:absolute;top:5%;left:4%;pointer-events:none}small{font-size:10px;letter-spacing:.25em;color:#abc7a6}h1{font-size:clamp(30px,4vw,54px);font-weight:450;letter-spacing:-.04em;margin:10px 0}p{color:#aab8b6;font-size:12px;line-height:1.8}footer{position:absolute;bottom:4%;left:4%;right:4%;display:flex;justify-content:space-between;align-items:end;gap:12px;font-size:12px;color:#97aaa4}button,a{display:inline-block;padding:10px 16px;border-radius:24px;background:#101e22cc;border:1px solid #455952;color:#e9e9de;margin:3px;cursor:pointer;text-decoration:none}button:hover{background:#2a403a}#status{color:#d4bc8d}@media(max-width:700px){footer{flex-direction:column;align-items:start}header{top:3%}h1{font-size:28px}}
+</style></head><body>
+<style>header{padding:14px 22px 12px;background:linear-gradient(115deg,rgba(2,9,12,.82),rgba(2,9,12,.25));border-left:1px solid #779284;text-shadow:0 2px 8px #000}header p:last-child{margin-bottom:0}</style>
+<header><small>BELT RUNNER 3D / MERIDIAN COLONY</small><h1>Garden Habitat.</h1><p>Forty conservatories. One place to call home.</p><p id="status">Approaching Meridian…</p></header>
+<footer><span>Drag to orbit · Scroll to approach</span><div><button id="overview">Overview</button><button id="gardens">Garden detail</button><button id="berths">Docking terminal</button><button id="rotate">Pause rotation</button><a href="belt-runner-3d.html">Open game ↗</a></div></footer>
+<script src="vendor/three-r158/three.min.js"></script><script src="vendor/three-r158/GLTFLoader.js"></script><script src="assets/lighting/space-lighting.js"></script><script src="assets/hub_planet/load-homeworld.js"></script><script src="assets/colony_garden/load-colony.js"></script>
+<script>
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x010204);scene.fog=new THREE.FogExp2(0x010204,0);
+const renderer=new THREE.WebGLRenderer({antialias:true,logarithmicDepthBuffer:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);document.body.prepend(renderer.domElement);
+const camera=new THREE.PerspectiveCamera(42,innerWidth/innerHeight,10,2e8),sunDir=new THREE.Vector3(-.85,.45,.10).normalize();
+const lighting=createBeltRunnerLighting({renderer,scene,sunDir,skyRadius:5e6}),zone={id:'hub',sunDir:sunDir.toArray(),fog:0,planet:{r:1280,position:[150000,-430000,-360000]}};lighting.setZone(zone);
+const group=new THREE.Group(),placeholderRing=new THREE.Group();group.add(placeholderRing);scene.add(group);
+const c={group,ring:placeholderRing,beacons:[],dish:new THREE.Group()},station=new THREE.Group();station.position.set(1e7,0,0);scene.add(station);
+const p={name:'Meridian',r:320000,pos:new THREE.Vector3(...zone.planet.position),group:new THREE.Group()};p.group.position.copy(p.pos);scene.add(p.group);
+let azimuth=-.55,elevation=.55,distance=180000,target=new THREE.Vector3(0,0,0),drag=false,x=0,y=0,spin=true,last=performance.now();
+Promise.all([BeltRunnerGardenColony.attach(c,{renderer}),BeltRunnerHomeworld.attach(p,{renderer,sunDir})]).then(()=>document.getElementById('status').textContent=c.assetState==='ready'?'Meridian Colony · inhabited orbital home':'Colony model unavailable');
+const canvas=renderer.domElement;canvas.onpointerdown=e=>{drag=true;x=e.clientX;y=e.clientY;canvas.setPointerCapture(e.pointerId);};canvas.onpointerup=()=>drag=false;canvas.onpointercancel=()=>drag=false;canvas.onpointermove=e=>{if(!drag)return;azimuth-=(e.clientX-x)*.005;elevation=Math.max(-1.4,Math.min(1.4,elevation+(e.clientY-y)*.005));x=e.clientX;y=e.clientY;};canvas.onwheel=e=>{e.preventDefault();distance=Math.max(1500,Math.min(400000,distance*Math.exp(e.deltaY*.001)));};
+function view(name){
+  if(name==='overview'){target.set(0,0,0);azimuth=-.55;elevation=.55;distance=180000;}
+  if(name==='gardens'){spin=false;document.getElementById('rotate').textContent='Resume rotation';c.ring.rotation.y=0;target.set(-20500,1000,47500);azimuth=-.45;elevation=.48;distance=23000;}
+  if(name==='berths'){target.set(0,12000,4200);azimuth=-.6;elevation=.28;distance=24000;}
+}
+for(const name of ['overview','gardens','berths'])document.getElementById(name).onclick=()=>view(name);
+document.getElementById('rotate').onclick=()=>{spin=!spin;document.getElementById('rotate').textContent=spin?'Pause rotation':'Resume rotation';};
+function draw(dt){
+  if(spin)c.ring.rotation.y+=dt*.01;c.dish.rotation.y+=dt*.08;BeltRunnerHomeworld.update(p,dt);
+  camera.position.set(Math.sin(azimuth)*Math.cos(elevation),Math.sin(elevation),Math.cos(azimuth)*Math.cos(elevation)).multiplyScalar(distance).add(target);camera.lookAt(target);
+  lighting.update({camera,station,quality:'balanced',dt});renderer.render(scene,camera);
+}
+function frame(now){requestAnimationFrame(frame);const dt=Math.min(.05,(now-last)/1000);last=now;draw(dt);}requestAnimationFrame(frame);
+onresize=()=>{renderer.setSize(innerWidth,innerHeight);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();};
+if(location.search.includes('debug'))window.GardenPreview={c,p,scene,camera,renderer,lighting,view,draw,setSpin:v=>spin=v};
+</script></body></html>

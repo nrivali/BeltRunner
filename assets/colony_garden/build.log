@@ -1,0 +1,63 @@
+C:\Users\rival\Documents\BeltRunner\assets\colony_garden\build_colony.py:21: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m=bpy.data.materials.new(name);m.use_nodes=True;n=m.node_tree.nodes;bs=n.get('Principled BSDF')
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+INFO Draco is available, use library at C:\Program Files\Blender Foundation\Blender 5.2\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_draco_bridge.dll
+INFO MeshOptimizer is available, use library at C:\Program Files\Blender Foundation\Blender 5.2\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_meshopt_bridge.dll
+04:31:18 | INFO: Starting glTF 2.0 export
+04:31:18 | INFO: Extracting primitive: Civic_Core_Champagne_trim
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Civic_Core_Graphite_recesses
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Civic_Core_Habitat_windows
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Civic_Core_Ivory_ceramic_alloy
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Civic_Core_Solar_cells
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Civic_Core_Titanium_structure
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Civic_Core_Wayfinding_cyan
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Comms_Dish_Ivory_ceramic_alloy
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Comms_Dish_Titanium_structure
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Comms_Dish_Wayfinding_cyan
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Habitat_Rings_Champagne_trim
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Habitat_Rings_Conservatory_glass
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Habitat_Rings_Foliage_emerald
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Habitat_Rings_Foliage_lime
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Habitat_Rings_Garden_floor_ImageGen
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Habitat_Rings_Graphite_recesses
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Habitat_Rings_Habitat_windows
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Habitat_Rings_Ivory_ceramic_alloy
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Habitat_Rings_Navigation_red
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Habitat_Rings_Paths_and_plazas
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Habitat_Rings_Titanium_structure
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Habitat_Rings_Tree_trunks
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Extracting primitive: Habitat_Rings_Wayfinding_cyan
+04:31:18 | INFO: Primitives created: 1
+04:31:18 | INFO: Finished glTF 2.0 export in 0.35808634757995605 s
+C:\Users\rival\Documents\BeltRunner\assets\colony_garden\build_colony.py:276: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  world=bpy.data.worlds.new('Orbital reflected light');world.use_nodes=True;world.node_tree.nodes['Background'].inputs[0].default_value=(.10,.14,.18,1);world.node_tree.nodes['Background'].inputs[1].default_value=.22;scene.world=world
+00:11.610  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\colony_garden\previews\blender-garden-habitat.png'
+
+Info: Saved as "garden-habitat.blend"
+{"triangles": 244464, "draw_calls": 23, "glb_bytes": 25111120}
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+Blender quit

@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "mode": "missing",
+  "gameSHA256": "83b4f1cc4b336a692df58f5c46d9ea009b6bc840f53784faf14da6914d70a862",
+  "assetSHA256": "30c90ed231da4191680729f72860d13bc8625bb91a18b678d239ee8b4ddd74f6",
+  "loaderSHA256": "203352540682e98e0622d7e5176ba8df1bc67129eba22b3f9b93371c3fef6de2",
+  "setup": {
+    "version": "v0.9.57",
+    "state": "fallback",
+    "apiState": "fallback",
+    "active": 1,
+    "modelMeshes": 34,
+    "textured": 9,
+    "normalMapped": 0,
+    "glass": 0,
+    "render": {
+      "triangles": 318026,
+      "calls": 549,
+      "textures": 23
+    },
+    "traffic": 72,
+    "pads": 22,
+    "planet": "Meridian"
+  },
+  "checks": [],
+  "errors": []
+}

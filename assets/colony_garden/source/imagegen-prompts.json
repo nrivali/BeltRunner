@@ -1,0 +1,17 @@
+{
+  "mode": "Built-in ImageGen",
+  "prompts": [
+    {
+      "key": "hull",
+      "prompt": "Use case: photorealistic-natural. Asset type: seamless square PBR BASE COLOR texture for the ivory ceramic-metal hull of a welcoming orbital garden habitat. Pure orthographic straight-on material scan, fills the entire square. Warm pale ivory alloy panels, broad rectangular architectural plates in a carefully organized varied grid, very fine graphite panel joints, a few inset maintenance hatches and small fasteners, subtle brushed finish and delicate localized gray grime at panel seams. Large clean ivory areas, restrained pale champagne trim. Flat diffuse neutral illumination, no shadows, no highlights, no vignette, no ambient occlusion baked in, no perspective. Completely seamless repeat on both axes. No text, no numbers, no logos, no labels, no spacecraft scene, no windows. Crisp fine surface detail, professional game texture."
+    },
+    {
+      "key": "garden",
+      "prompt": "Use case: photorealistic-natural. Asset type: square seamless garden ground BASE COLOR texture for the inside of an orbital conservatory. Strict vertical orthographic aerial view, no perspective. An elegant dense green botanical park floor with rich varied moss-green and spring-green lawn, small beds of low shrubs and tiny muted flowers, curving pale cream footpaths weaving through the lawns, and occasional small pale circular plaza paving. Ground-level vegetation only, no trees, no tall plants, no roofs, no buildings, no glass, no people. Fine natural organic detail, calm cultivated public gardens. Even diffuse shadowless albedo illumination, no shadows, no highlights or sunlight gradients. Seamless repeating on both axes, fills the whole image. No labels, text, borders or collage."
+    },
+    {
+      "key": "foliage",
+      "prompt": "Use case: photorealistic-natural. Asset type: square seamless PBR base-color texture for leafy tree crowns in a realistic orbital botanical garden. Dense overlapping tiny broadleaf tree leaves, viewed straight down at a living green canopy, varied emerald, olive and fresh spring greens, fine twig hints deep between leaves. Leaf shapes remain small relative to the full texture; abundant fine natural leaf-vein detail. Fill the complete square with foliage, seamless repeating in both directions. Soft perfectly even diffuse illumination, shadowless albedo scan, no sun highlights, no strong baked shadows, no perspective, no sky gaps, no branches extending outside, no grass, no flowers, no paths, no soil, no objects, no border, no labels or text."
+    }
+  ]
+}
