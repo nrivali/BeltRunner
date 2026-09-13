@@ -55,6 +55,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);fon
 .cine.on .bar{height:11vh;}
 .cine .cap{position:absolute;left:0;right:0;bottom:3.6vh;text-align:center;font-family:var(--display);font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--amber2);opacity:0;transition:opacity .6s .3s;}
 .cine.on .cap{opacity:1;}
+.cine-fade{position:fixed;inset:0;z-index:6;background:#02030a;opacity:0;pointer-events:none;}
 .dmg.on{animation:dmgflash .6s ease-out forwards;}
 .dmg.wreck{opacity:1;background:radial-gradient(ellipse at center,rgba(255,200,160,.9) 0%,rgba(242,107,94,.85) 40%,#120406 100%);transition:opacity 1.2s ease-in .2s;}
 @keyframes dmgflash{0%{opacity:1}100%{opacity:0}}
@@ -387,6 +388,7 @@ table.manifest td.dimmed{color:var(--dim);}
 <div id="blips"></div>
 <div class="dmg" id="dmg"></div>
 <div class="cine" id="cine"><div class="bar top"></div><div class="bar bot"></div><div class="cap" id="cineCap"></div></div>
+<div class="cine-fade" id="cineFade" aria-hidden="true"></div>
 <div class="hud prompt" id="prompt"></div>
 <div class="hud toasts" id="toasts"></div>
 <div class="hud notice" id="fullNotice" hidden><b>CARGO HOLD FULL</b><span>Return to the cargo ship to stow it · press <kbd>E</kbd> within 2,250 to auto-dock</span></div>
@@ -549,6 +551,7 @@ table.manifest td.dimmed{color:var(--dim);}
 <script src="assets/asteroids_v2/load-asteroids.js"></script>
 <script src="assets/lighting/space-lighting.js"></script>
 <script src="assets/hyperspace/hyperspace.js"></script>
+<script src="assets/cinematics/camera-shots.js"></script>
 <script src="assets/planet_v2/load-planet.js"></script>
 <script src="assets/hub_planet/load-homeworld.js"></script>
 <script src="assets/colony_garden/load-colony.js"></script>
@@ -707,7 +710,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.105';
+const GAME_VERSION = '0.9.106';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -2672,7 +2675,7 @@ const el={credits:$('credits'),goalFill:$('goalFill'),goalPct:$('goalPct'),fuelT
   win:$('win'),wTime:$('wTime'),wMined:$('wMined'),wEarned:$('wEarned'),keepFlying:$('keepFlying'),intro:$('intro'),
   menuMain:$('menuMain'),menuSettings:$('menuSettings'),menuControls:$('menuControls'),mContinue:$('mContinue'),mNew:$('mNew'),mSaveInfo:$('mSaveInfo'),mNewInfo:$('mNewInfo'),mControls:$('mControls'),mSettings:$('mSettings'),sSound:$('sSound'),sMusic:$('sMusic'),sQuality:$('sQuality'),sHud:$('sHud'),sHudT:$('sHudT'),sReset:$('sReset'),
   zoneName:$('zoneName'),depotName:$('depotName'),laserState:$('laserState'),laserRange:$('laserRange'),radarState:$('radarState'),
-  cine:$('cine'),cineCap:$('cineCap'),depart:$('depart'),fieldMarker:$('fieldMarker'),fArr:$('fArr'),fieldLbl:$('fieldLbl'),fieldState:$('fieldState'),threatState:$('threatState'),
+  cine:$('cine'),cineCap:$('cineCap'),cineFade:$('cineFade'),depart:$('depart'),fieldMarker:$('fieldMarker'),fArr:$('fArr'),fieldLbl:$('fieldLbl'),fieldState:$('fieldState'),threatState:$('threatState'),
   dockedEyebrow:$('dockedEyebrow'),blips:[...document.querySelectorAll('.blip')],map:$('map'),chart:$('chart'),zinfo:$('zinfo'),mFuel:$('mFuel'),mapClose:$('mapClose')};
 function toast(msg,bad){ const d=document.createElement('div'); d.className='toast'+(bad?' bad':''); d.textContent=msg; el.toasts.appendChild(d); setTimeout(()=>d.remove(),3300); }
 
@@ -2949,6 +2952,7 @@ function bumpRock(a, dir, speed){
   const cap=speed+40; if (a.vel.length()>cap) a.vel.setLength(cap);   // a shove over several frames never launches the rock faster than the ship hit it
 }
 function enterHangar(b){
+  document.body.classList.remove('in-cut');
   docked=true; dockBay=b; mining=false; laserOn=false; parked=null; lock=null; depWait=true; throttle=0; ship.vel.set(0,0,0);
   el.center.classList.remove('on'); SFX.clip('dock', SFX.dock);
   // the hangar view: HUD clears, the camera walks slowly round the ship on the pad, and the services panel opens beside it
@@ -2982,14 +2986,16 @@ function holdAtColony(){ if (docked || cut) return; ship.pos.copy(HOLD.park); sh
 // the outer ring and eases onto station nose-toward the hub, the camera riding behind it and then watching from the side.
 const HOLD_FWD=V3(0,0,1).applyQuaternion(HOLD.q), HOLD_SIDE=V3(1,0,0).applyQuaternion(HOLD.q);
 function holdApproachStart(){ return HOLD.park.clone().addScaledVector(HOLD_FWD,-170000).addScaledVector(HOLD_SIDE, 70000).add(V3(0,26000,0)); }
-function startHoldApproach(){
+function startHoldApproach(inheritCamera=false){
   if (docked || cut) return;
   document.body.classList.add('in-cut');
   const p=HOLD.park, f=HOLD_FWD, r=HOLD_SIDE;
   const pts=[ship.pos.clone(), p.clone().addScaledVector(f,-95000).addScaledVector(r,32000).add(V3(0,11000,0)), p.clone().addScaledVector(f,-34000).addScaledVector(r,4000).add(V3(0,1500,0)), p.clone()];
   if (ship.pos.distanceTo(pts[1])<20000) pts.splice(1,1);
   const curve=new THREE.CatmullRomCurve3(pts, false, 'centripetal'), len=curve.getLength();
-  cut={mode:'dock', bay:HOLD, world:true, curve, t:0, dur:Math.max(14, Math.min(28, len/6500)), len};
+  const cameraStart=inheritCamera?cameraShots.capture(camera.position,camLook,camera.up,ship.pos):{
+    position:depotDir(V3(12500,3600,7200)),target:depotDir(V3(600,0,0)),up:depotDir(V3(0,1,0))};
+  cut={mode:'dock', bay:HOLD, world:true, curve, t:0, dur:Math.max(14, Math.min(28, len/6500)), len, cameraStart};
   if (parked) releasePark(); throttle=0;
   el.cineCap.textContent=`Arrival · ${zone.colony} · Space skips`; el.cine.classList.add('on'); el.center.classList.remove('on'); SFX.chime();
 }
@@ -3005,7 +3011,9 @@ function startApproach(){
   const app=entry.openingL.clone().add(V3(0,0,side*1400)), mouth=entry.openingL.clone(), deck=V3(entry.cx,-40,0), hoverL=b.parkL.clone().add(V3(0,90,0));
   const pts=[L0]; if (L0.distanceTo(app)>900) pts.push(app); pts.push(mouth, deck, hoverL);
   const curve=new THREE.CatmullRomCurve3(pts, false, 'centripetal'); const len=curve.getLength();
-  cut={mode:'dock', bay:b, curve, t:0, dur:Math.max(6, Math.min(13, len/360)), len, phase:'fly', pt:0, hoverL};
+  cut={mode:'dock', bay:b, curve, t:0, dur:Math.max(6, Math.min(13, len/360)), len, phase:'fly', pt:0, hoverL,
+    cameraStart:cameraShots.capture(camera.position,camLook,camera.up,ship.pos,STATION.q)};
+  document.body.classList.add('in-cut');
   if (parked) releasePark(); mining=false; laserOn=false; throttle=0;
   el.cineCap.textContent=`Approach · ${b.name} · ${CARGO_SHIP} · Space skips`; el.cine.classList.add('on'); el.center.classList.remove('on');
   SFX.chime(); SFX.clip('approach_control'); toast(`Approach control has the ship · ${b.name}`);
@@ -3022,7 +3030,9 @@ function startDeparture(){
   leaveHangar();
   const pts=[b.parkL.clone(), V3(0,-112,out*620), V3(0,-40,out*1000), V3(0,60,out*2500)];
   const curve=new THREE.CatmullRomCurve3(pts, false, 'centripetal');
-  cut={mode:'depart', bay:b, curve, t:0, dur:5.2, len:curve.getLength()};
+  cut={mode:'depart', bay:b, curve, t:0, dur:5.2, len:curve.getLength(),
+    cameraStart:cameraShots.capture(camera.position,camLook,camera.up,ship.pos,STATION.q)};
+  document.body.classList.add('in-cut');
   el.cineCap.textContent=`Departure · ${b.name} · ${CARGO_SHIP} · Space skips`; el.cine.classList.add('on'); el.center.classList.remove('on');
   SFX.chime(); toast('Departing · approach control has the ship');
 }
@@ -3055,7 +3065,7 @@ function cutUpdate(dt){
     ship.q.slerp(levelHeading(depotDir(tan)), 1-Math.exp(-5*dt));
   }
   if (k>=1){
-    cut=null; el.cine.classList.remove('on');
+    cut=null; el.cine.classList.remove('on'); document.body.classList.remove('in-cut');
     if (C.mode==='depart'){ ship.vel.add((C.world?tan.clone():depotDir(tan)).multiplyScalar(340)); throttle=0.35; el.center.classList.add('on'); camQ.copy(ship.q); toast(C.world?`You have the ${CARGO_SHIP.toLowerCase()}`:'You have the ship'); }
     else if (C.world) enterBerth(C.bay);
     else enterHangar(C.bay);
@@ -3624,7 +3634,8 @@ function renderMap(){
 }
 // A held exterior shot, a sudden jump, then hyperspace and a snap back to real space.
 // Motion/stretch affect the rendered carrier only; docking anchors and orbital velocity remain physical.
-let warpCut=null;
+let warpCut=null, cineFadeT=-1;
+const cameraShots=BeltRunnerCameraShots;
 const hyperspace=createBeltRunnerHyperspace({scene,renderer});
 const stationEngines=station.children.filter(o=>o.isSprite && o.position.x<-3500);
 function warpFrame(W){
@@ -3634,7 +3645,7 @@ function warpFrame(W){
 function warpTo(z){
   if (warping || z===zone) return;
   if (!docked){ toast('Dock with the cargo ship before warping · it makes the jump', true); return; }
-  closeMap(); warping=true; el.center.classList.remove('on');
+  closeMap(); warping=true; cineFadeT=-1; el.center.classList.remove('on');
   el.station.hidden=true; document.body.classList.remove('in-hangar'); document.body.classList.add('in-cut'); if (invOpen) closeInventory();
   warpCut={phase:'depart',t:0,z,loaded:false,pose:BeltRunnerHyperspace.sample(0),origin:V3(),rotation:new THREE.Quaternion(),nose:V3(),side:V3(),up:V3(),scale:station.scale.clone(),
     engines:stationEngines.map(s=>({sprite:s,scale:s.scale.clone(),opacity:s.material.opacity}))};
@@ -3655,9 +3666,8 @@ function warpCutUpdate(dt){
     station.scale.copy(W.scale); placeDepot();
     for (const e of W.engines){ e.sprite.scale.copy(e.scale); e.sprite.material.opacity=e.opacity; }
     hyperspace.reset(); shake=0; warpCut=null; warping=false;
-    document.body.classList.remove('in-cut'); el.cine.classList.remove('on');
-    if (W.z.hub){ docked=false; dockBay=null; toast(`Arrived · ${W.z.name}`); startHoldApproach(); }
-    else { const b=planetBay(); ship.pos.copy(b.park); ship.q.copy(b.q); enterHangar(b); }
+    if (W.z.hub){ docked=false; dockBay=null; toast(`Arrived · ${W.z.name}`); startHoldApproach(!W.skip); }
+    else { cineFadeT=W.skip?-1:0; el.cine.classList.remove('on'); const b=planetBay(); ship.pos.copy(b.park); ship.q.copy(b.q); enterHangar(b); }
     save();
   }
 }
@@ -4087,6 +4097,10 @@ function updateVisuals(dt, t){
     for (const e of W.engines){ e.sprite.scale.copy(e.scale).multiplyScalar(p.engineGain); e.sprite.material.opacity=Math.min(1,e.opacity*p.engineGain); }
     camPos.copy(W.origin).addScaledVector(W.nose,arriving?12500:-12000).addScaledVector(W.side,arriving?7200:6900).addScaledVector(W.up,arriving?3600:3200);
     camLook.copy(W.origin).addScaledVector(W.nose,arriving?600:2400); cu=W.up; cf=camLook.clone().sub(camPos).normalize(); camQ.copy(ship.q);
+  } else if (cut && cut.world && cut.bay.hold){
+    // Carry the last warp composition into one unbroken orbit, ending on the holding-station view.
+    cameraShots.hub({start:cut.cameraStart,progress:Math.min(1,cut.t/cut.dur),ship:ship.pos,forward:HOLD_FWD,side:HOLD_SIDE,position:camPos,target:camLook,up:camera.up});
+    cu=camera.up; cf=camLook.clone().sub(camPos).normalize(); camQ.copy(ship.q);
   } else if (cut && cut.world){
     // berthing at the colony: first a chase camera riding behind and above the carrier as it flies the approach, then a fixed
     // camera at the terminal watching it taxi in and settle (departure: the terminal camera, then the chase)
@@ -4099,24 +4113,21 @@ function updateVisuals(dt, t){
     hangarT+=dt; const a=0.6+hangarT*0.05;
     if(dockBay.hold){
       // Keep Meridian and its colony beyond the carrier while it holds station.
-      camPos.copy(ship.pos).addScaledVector(HOLD_FWD,-15500).addScaledVector(HOLD_SIDE,7000+Math.sin(hangarT*.04)*3500).add(V3(0,7000,0));
-      camLook.copy(ship.pos).addScaledVector(HOLD_FWD,22000).add(V3(0,-11000,0));
+      cameraShots.holding(camPos,camLook,ship.pos,HOLD_FWD,HOLD_SIDE,hangarT);
     }else{
       camPos.copy(ship.pos).add(V3(Math.cos(a)*11500, 2600+1400*Math.sin(a*0.7), Math.sin(a)*11500)); camLook.copy(ship.pos);
     }
     cu=V3(0,1,0); cf=camLook.clone().sub(camPos).normalize(); camQ.copy(ship.q);
   } else if (cut){
-    // cutscene: two fixed cameras in the carrier's frame. First a wide shot from out past the approach point,
-    // then, once the ship is committed, a low camera at the bay mouth watching it slide in and settle on the pad.
-    const b=cut.bay, k=Math.min(1, cut.t/cut.dur), side=b.side;
-    let camL;
-    if (cut.mode==='depart'){
-      // departure: first from the entry end of the hangar watching the ship taxi away down the deck, then from outside the
-      // far mouth, off to one side, as it clears the hull and opens up
-      camL = k<.42 ? V3(b.cx-175, b.y1-64, -side*700) : V3(b.cx+560, 190, side*(b.zOut+420));   // the ship leaves by its own mouth: watch from the far end, then from outside that mouth
-    } else camL = k<.5 ? b.openingL.clone().add(V3(760, 300, side*1900)) : V3(b.cx+205, b.y1-40, side*(b.zOut-80));
-    camPos.copy(depotWorld(camL)); camLook.copy(ship.pos); cu=depotDir(V3(0,1,0)); cf=camLook.clone().sub(camPos).normalize();
-    camQ.copy(ship.q);
+    // Ride beside the ship through the open passage. Settle onto the pad view or ease into the flight camera.
+    const b=cut.bay, f=shipForward(), u=shipUp();
+    const chasePosition=f.clone().multiplyScalar(-88*SHIP_SCALE).addScaledVector(u,30*SHIP_SCALE).applyQuaternion(STATION.qInv);
+    const chaseTarget=f.clone().multiplyScalar(140*SHIP_SCALE).addScaledVector(u,10*SHIP_SCALE).applyQuaternion(STATION.qInv);
+    cameraShots.hangar({mode:cut.mode,side:b.side,time:cut.t,duration:cut.dur,phase:cut.phase,settleTime:cut.pt,start:cut.cameraStart,chasePosition,chaseTarget,position:camPos,target:camLook});
+    camPos.applyQuaternion(STATION.q).add(ship.pos); camLook.applyQuaternion(STATION.q).add(ship.pos);
+    cu=depotDir(cut.cameraStart.up).lerp(depotDir(V3(0,1,0)),cameraShots.ease(cut.t/1.25)).normalize();
+    if(cut.mode==='depart') cu.lerp(u,cameraShots.ease((cut.t/cut.dur-.55)/.45)).normalize();
+    cf=camLook.clone().sub(camPos).normalize(); camQ.copy(ship.q);
   } else if (docked && dockBay){
     // hangar view: a camera on a slow elliptical walk round the pad, kept inside the bay walls, looking at the ship
     hangarT+=dt; const b=dockBay, a=hangarT*0.16, side=b.side;
@@ -4135,6 +4146,9 @@ function updateVisuals(dt, t){
   const fov=warpCut && !hyperspace.reducedMotion?warpCut.pose.fov:62;
   if (camera.fov!==fov){ camera.fov=fov; camera.updateProjectionMatrix(); }
   if (warpCut) hyperspace.update({pose:warpCut.pose,time:warpCut.t,camera,nose:warpCut.nose,quality});
+  // A short covered edit moves from the exterior carrier to its interior without crossing solid geometry.
+  el.cineFade.style.opacity=warpCut && !warpCut.z.hub && !warpCut.skip?cameraShots.cover(warpCut.t,BeltRunnerHyperspace.duration):cineFadeT>=0?cameraShots.uncover(cineFadeT):0;
+  if (cineFadeT>=0 && !paused){ cineFadeT+=dt; if(cineFadeT>.5) cineFadeT=-1; }
 }
 
 // screen projection helpers
@@ -4370,7 +4384,7 @@ if(rockAssets)rockAssets.load({renderer,scene,heatable,asteroids:()=>asteroids,s
 if (window.loadBeltRunnerCarrier) window.loadBeltRunnerCarrier({station, renderer, glowTexture:texSoft, install:installCarrierModel, status:carrierAsset});
 else { carrierAsset.state='fallback'; carrierAsset.error='Carrier asset script unavailable'; }
 if(window.BeltRunner){
-  Object.assign(window.BeltRunner,{rockCollisionGrid,collideRocks,nearRocks,lighting,rockAssets,makeAsteroid,findTarget,noisyCollide,radiusAlong,SHIP_R,shipPrev,damageRock,removeAsteroid,shipGroup,playerAsset,shipAim,shipDishAnglesTo,shipDishFocusWorld,startGame,setLaserAim:p=>{laserAim=p;}, carrierAsset, station, stationEngines, hyperspace, TURRET_PIVOT, forceFields, stationPointLights, droneDock, depotDish, turretAnglesTo, turretMuzzleWorld, updateDepot, depotBeam, DROP_PAD});
+  Object.assign(window.BeltRunner,{rockCollisionGrid,collideRocks,nearRocks,lighting,rockAssets,makeAsteroid,findTarget,noisyCollide,radiusAlong,SHIP_R,shipPrev,damageRock,removeAsteroid,shipGroup,playerAsset,shipAim,shipDishAnglesTo,shipDishFocusWorld,startGame,setLaserAim:p=>{laserAim=p;}, carrierAsset, station, stationEngines, hyperspace, cameraShots, camLook, TURRET_PIVOT, forceFields, stationPointLights, droneDock, depotDish, turretAnglesTo, turretMuzzleWorld, updateDepot, depotBeam, DROP_PAD});
   Object.defineProperties(window.BeltRunner,{playerModel:{get:()=>playerModel},shipDish:{get:()=>shipDish},exhausts:{get:()=>exhausts},navLights:{get:()=>navLights}});
 }
 requestAnimationFrame(frame);

@@ -1,0 +1,71 @@
+{
+  "passed": true,
+  "gameSHA256": "8a33c1b631671e4dfbd718e0c7fc9be76203d4a0811fd5e53eee6df0d3db95eb",
+  "cameraShotsSHA256": "5258075f8e4d254dd81c16841c71aceec927a3c8b9f11e5363e277032fa33e02",
+  "checks": [
+    "Continuous warp-to-colony handoff",
+    "Continuous colony orbit and holding composition",
+    "Covered exterior-to-hangar edit",
+    "Both hangar mouths and safe camera corridor",
+    "Camera continuity into flight and pad views",
+    "Warp, colony, departure and docking skips",
+    "Cargo and upgrades preserved"
+  ],
+  "metrics": {
+    "warpToApproach": {
+      "position": 0.08814716930666938,
+      "angle": 0,
+      "relative": 0.000024650637882220134
+    },
+    "hub": {
+      "maxStep": 290.51190051683943,
+      "maxAngle": 0.006884884654110711,
+      "minRadius": 14867.750421253468,
+      "frames": 840,
+      "completion": {
+        "position": 4.638728086039502,
+        "angle": 0.00012163106576408949,
+        "relative": 4.666877497794905
+      }
+    },
+    "beltFade": {
+      "before": 0.999777,
+      "atSwitch": 1
+    },
+    "hangar0": {
+      "visit": 0,
+      "bay": "Dock 1",
+      "departureMax": 19.77243196895196,
+      "departEnd": {
+        "position": 13.03982610609137,
+        "angle": 0.0006079721999946702,
+        "relative": 0.16957499073412446
+      },
+      "approachMax": 18.917911703124435,
+      "approachAngle": 0.06264775153830844,
+      "approachEnd": {
+        "position": 3.65261421559806,
+        "angle": 0.0070324755315842435,
+        "relative": 1.33672493245614
+      }
+    },
+    "hangar1": {
+      "visit": 1,
+      "bay": "Dock 2",
+      "departureMax": 19.772130764135678,
+      "departEnd": {
+        "position": 13.048833668826743,
+        "angle": 0.0006079721999946702,
+        "relative": 0.16957499078044228
+      },
+      "approachMax": 18.9210788385088,
+      "approachAngle": 0.06263943095058802,
+      "approachEnd": {
+        "position": 3.649022762746409,
+        "angle": 0.0070324755315842435,
+        "relative": 1.3367249324574915
+      }
+    }
+  },
+  "errors": []
+}
