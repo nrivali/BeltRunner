@@ -714,7 +714,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.80';
+const GAME_VERSION = '0.9.81';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -1653,11 +1653,16 @@ function coolDebris(b){ if (!b.hot) return; b.mesh.material=b.base; if (--b.hot.
 const SPLIT_CLASS={colossal:'giant', giant:'large', large:'small'};
 function splitRock(a, vel){
   const cls=SPLIT_CLASS[a.cls], k=3+Math.floor(Math.random()*(a.cls==='large'?3:2)), share=a.barren?0:a.max*0.75/k;
-  const dirs=[]; for (let i=0;i<k;i++) dirs.push(V3(rand(-1,1),rand(-1,1),rand(-1,1)).normalize());
+  // directions kept at least ~70 degrees apart so no two fragments start inside each other (random fill if that fails)
+  const dirs=[]; let tries=0;
+  while (dirs.length<k && tries++<200){ const d=V3(rand(-1,1),rand(-1,1),rand(-1,1)).normalize(); if (dirs.every(o=>o.dot(d)<0.35)) dirs.push(d); }
+  while (dirs.length<k) dirs.push(V3(rand(-1,1),rand(-1,1),rand(-1,1)).normalize());
   for (let i=0;i<k;i++){
-    const r=Math.max(a.belt.size[0]*.6, a.r*Math.cbrt(0.5/k)*rand(.85,1.15));   // the fragments together hold about half the parent's volume
-    const c=makeAsteroid(a.belt, null, null, {cls, r, ore:a.ore, barren:a.barren, pos:a.pos.clone().addScaledVector(dirs[i], a.r*0.55), amount:share*rand(.8,1.2)});
-    c.fragment=true; setAdrift(c); c.vel.copy(vel).addScaledVector(dirs[i], rand(14,40)); c.hp=c.hpMax; c.glow=1; hotRocks.add(c); asteroids.push(c);   // fragments start hot and cool over 30 s
+    // fragments are a good deal smaller than the parent: together about an eighth of its volume, so each is roughly a third of
+    // its radius, and they start well out from the centre with a firmer shove apart, so they read as pieces rather than a clump
+    const r=Math.max(a.belt.size[0]*.6, a.r*Math.cbrt(0.12/k)*rand(.85,1.15));
+    const c=makeAsteroid(a.belt, null, null, {cls, r, ore:a.ore, barren:a.barren, pos:a.pos.clone().addScaledVector(dirs[i], a.r*rand(.6,.85)), amount:share*rand(.8,1.2)});
+    c.fragment=true; setAdrift(c); c.vel.copy(vel).addScaledVector(dirs[i], rand(30,70)); c.hp=c.hpMax; c.glow=1; hotRocks.add(c); asteroids.push(c);   // fragments start hot and cool over 30 s
   }
   return k;
 }
