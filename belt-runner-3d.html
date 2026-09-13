@@ -251,27 +251,27 @@ table.manifest td:first-child{font-family:var(--body);}
 table.manifest td.dimmed{color:var(--dim);}
 .dot{display:inline-block;width:8px;height:8px;transform:rotate(45deg);margin-right:8px;vertical-align:1px;}
 /* inventory: a card listing every ore aboard with its zone price and value, plus lifetime totals */
-.inv-card{width:min(620px,96vw);padding:24px 28px;} .inv-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;} .inv-cap b{font-size:18px;color:var(--amber2);}
+.inv-card{width:min(620px,96vw);padding:24px 28px;} .inv-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;} .inv-cap b{font-size:20px;color:var(--amber2);}
 .inv-bar{margin:12px 0 14px;height:8px;} .inv-bar i{background:#B8C0DA;} .inv-bar i.full{background:var(--amber);}
-.inv-foot{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:16px;} .inv-foot .hint{font-size:12px;color:var(--dim);} .inv-foot .btn{width:auto;padding:8px 16px;}
-.inv-total{display:flex;justify-content:space-between;font-family:var(--mono);font-size:13px;padding:10px 0 0;border-top:1px solid var(--line2);margin-top:4px;} .inv-total b{color:var(--amber2);}
-.inv-empty{padding:18px 0;color:var(--dim);text-align:center;font-size:13px;}
-.inv-sub{font-size:11px;color:var(--dim);display:block;margin-top:2px;}
-.inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px;}
-.slot{position:relative;background:var(--panel2);border:1px solid var(--line2);border-top:2px solid var(--c,var(--line2));padding:8px 10px 8px;min-height:78px;display:flex;flex-direction:column;gap:3px;box-sizing:border-box;}
-.slot b{font-size:12px;font-weight:600;padding-right:24px;} .slot .n{font-family:var(--mono);font-size:12px;color:var(--text);} .slot .v{font-family:var(--mono);font-size:11px;color:var(--dim);}
-.slot .ico{width:44px;height:44px;position:absolute;right:8px;bottom:6px;image-rendering:auto;pointer-events:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.6));}
+.inv-foot{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:16px;} .inv-foot .hint{font-size:13.5px;line-height:1.45;color:var(--dim);} .inv-foot .btn{width:auto;padding:8px 16px;}
+.inv-total{display:flex;justify-content:space-between;font-family:var(--mono);font-size:15px;padding:10px 0 0;border-top:1px solid var(--line2);margin-top:4px;} .inv-total b{color:var(--amber2);}
+.inv-empty{padding:18px 0;color:var(--dim);text-align:center;font-size:14.5px;}
+.inv-sub{font-size:12.5px;color:var(--dim);display:block;margin-top:2px;}
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;}
+.slot{position:relative;background:var(--panel2);border:1px solid var(--line2);border-top:2px solid var(--c,var(--line2));padding:10px 12px 10px;min-height:92px;display:flex;flex-direction:column;gap:4px;box-sizing:border-box;}
+.slot b{font-size:14px;font-weight:600;padding-right:26px;} .slot .n{font-family:var(--mono);font-size:14px;color:var(--text);} .slot .v{font-family:var(--mono);font-size:12.5px;color:var(--dim);}
+.slot .ico{width:50px;height:50px;position:absolute;right:8px;bottom:6px;image-rendering:auto;pointer-events:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.6));}
 .slot[draggable]{cursor:grab;user-select:none;} .slot.dragging{opacity:.35;} .slot.over{border-color:var(--amber);background:rgba(242,163,58,.12);}
-.slot.empty{border-style:dashed;opacity:.45;align-items:center;justify-content:center;font-size:11px;color:var(--dim);letter-spacing:.12em;text-transform:uppercase;min-height:78px;} .slot.empty.over{opacity:1;}
+.slot.empty{border-style:dashed;opacity:.45;align-items:center;justify-content:center;font-size:12.5px;color:var(--dim);letter-spacing:.12em;text-transform:uppercase;min-height:92px;} .slot.empty.over{opacity:1;}
 .slot .x{position:absolute;top:4px;right:4px;width:20px;height:20px;border:1px solid var(--line2);background:var(--panel);color:var(--muted);cursor:pointer;font-size:11px;line-height:1;padding:0;} .slot .x:hover{color:var(--red);border-color:var(--red);}
-.inv-drop{margin-top:10px;padding:12px;border:1px dashed var(--line2);text-align:center;font-size:12px;color:var(--dim);letter-spacing:.06em;} .inv-drop.over{border-color:var(--red);color:var(--red);background:rgba(242,107,94,.08);}
+.inv-drop{margin-top:10px;padding:12px;border:1px dashed var(--line2);text-align:center;font-size:13.5px;color:var(--dim);letter-spacing:.06em;} .inv-drop.over{border-color:var(--red);color:var(--red);background:rgba(242,107,94,.08);}
 /* cargo transfer in the services panel: the ship's hold and the cargo ship's storage as two compact grids; click a stack to move it across */
 .xfer-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:14px 0 8px;} .xfer-head:first-child{margin-top:0;}
-.xfer-head .eyebrow{margin:0;} .xfer-head .mono{font-size:12px;color:var(--dim);} .xfer-head .link{padding:0;font-size:12px;}
-.inv-grid.small{grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:5px;}
-.inv-grid.small .slot{min-height:58px;padding:5px 6px 4px;cursor:pointer;gap:1px;} .inv-grid.small .slot:hover{border-color:var(--amber);background:rgba(242,163,58,.12);}
-.inv-grid.small .slot b{font-size:10px;padding-right:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .inv-grid.small .slot .n{font-size:11px;} .inv-grid.small .slot .ico{width:26px;height:26px;right:4px;bottom:4px;}
-.inv-grid.small .slot.empty{min-height:58px;font-size:9px;cursor:default;} .inv-grid.small .slot.empty:hover{border-color:var(--line2);background:var(--panel2);}
+.xfer-head .eyebrow{margin:0;} .xfer-head .mono{font-size:13.5px;color:var(--dim);} .xfer-head .link{padding:0;font-size:13.5px;}
+.inv-grid.small{grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px;}
+.inv-grid.small .slot{min-height:68px;padding:6px 8px 5px;cursor:pointer;gap:2px;} .inv-grid.small .slot:hover{border-color:var(--amber);background:rgba(242,163,58,.12);}
+.inv-grid.small .slot b{font-size:12px;padding-right:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;} .inv-grid.small .slot .n{font-size:13px;} .inv-grid.small .slot .ico{width:30px;height:30px;right:4px;bottom:4px;}
+.inv-grid.small .slot.empty{min-height:68px;font-size:10.5px;cursor:default;} .inv-grid.small .slot.empty:hover{border-color:var(--line2);background:var(--panel2);}
 #inv .inv-grid.small .slot[draggable]{cursor:grab;} #inv .inv-grid.small .slot.over{border-color:var(--amber);background:rgba(242,163,58,.12);opacity:1;}
 .delta{font-size:11px;margin-left:4px;}
 .delta.up{color:var(--green);} .delta.down{color:var(--red);}
@@ -471,7 +471,7 @@ table.manifest td.dimmed{color:var(--dim);}
       <span><kbd>LMB</kbd></span><span>Hold to fire the mining laser (Space or L too). While you hold it, the dish under the nose swings onto whatever the crosshair is on and cuts it until it breaks. It never picks targets by itself: keep the nose on the rock.</span>
       <span><kbd>Q</kbd></span><span>Hover the mouse over a rock, a raider or the cargo ship (the label names it), then press Q to lock the crosshair on it. The ship steers itself to keep it in the crosshair (you keep the throttle and roll) until you press Q again, or it breaks up or goes beyond 100,000 m. A locked object always shows its range, and its details sit top centre.</span>
       <span><kbd>F</kbd></span><span>Flashlight: a spot beam from the nose, on or off. While docked F opens the cargo ship services instead.</span>
-      <span>Docking</span><span>Fly slowly into either mouth of the cargo ship's through-hangar, or press <kbd>E</kbd> within 4,500 of it and approach control flies you in. You taxi to the pad at the far end and park nose-out, so you leave straight ahead. Fuel and repairs flow while you sit on the pad, and the services panel moves ore between your hold and the cargo ship's 50-slot storage. The cargo ship warps with you; ore only sells at the Hub.</span>
+      <span>Docking</span><span>Fly slowly into either mouth of the cargo ship's through-hangar, or press <kbd>E</kbd> within 4,500 of it and approach control flies you in. Once docked, <kbd>E</kbd> deposits all your ore into the cargo ship's storage. You taxi to the pad at the far end and park nose-out, so you leave straight ahead. Fuel and repairs flow while you sit on the pad, and the services panel moves ore between your hold and the cargo ship's 50-slot storage. The cargo ship warps with you; ore only sells at the Hub.</span>
       <span><kbd>N</kbd></span><span>Open the nav map. The cargo ship makes the jump between zones, so dock in its hangar first; you ride along and arrive in Dock 1.</span>
       <span><kbd>K</kbd></span><span>Sound on or off</span>
       <span><kbd>C</kbd></span><span>Hide or show the flight controls list in the bottom-left corner. Remembered between sessions.</span>
@@ -711,7 +711,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.70';
+const GAME_VERSION = '0.9.71';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -2670,7 +2670,7 @@ window.addEventListener('keydown', e => {
   if (paused){ if (e.key==='Escape') resumeGame(); return; }   // nothing else answers while the pause menu is up
   const k=e.key.toLowerCase(); keys[k]=true;
   if (k==='f' && !e.repeat){ if (docked) toggleServices(); else if (pilotingCarrier()){ if (nearColony()) toast('Berth at the colony first · press E for an approach', true); } else toggleTorch(); }   // F: services when docked, the flashlight in flight
-  if (k==='e' && !e.repeat) startApproach();
+  if (k==='e' && !e.repeat){ if (docked && !pilotingCarrier()) stowAll(); else startApproach(); }   // E: in the hangar, deposit all ore into the cargo ship; in flight, auto-dock
   if (k==='t' && !e.repeat) callTow();
   if (k==='n' && !e.repeat) toggleMap();
   if (k==='k' && !e.repeat) toggleSound();
@@ -4173,6 +4173,7 @@ function updateHud(dt){
     else if (target){ segs.push(!trigger?'<kbd>LMB</kbd>Hold to mine':target.obj.barren?'Breaking rock · scrap only':`${laserOn?'Cutting':'Aiming at'} ${ORES[target.obj.ore].name}`); }
   }
   if (started && !docked && !pilotingCarrier()){ if (lock) segs.push('<kbd>Q</kbd>Release lock'); else if (hover) segs.push(`<kbd>Q</kbd>Lock on ${hoverName(hover)}`); }
+  if (started && docked && !pilotingCarrier() && cargoTotal()>0.5) segs.push(`<kbd>E</kbd>Deposit all ore into the ${CARGO_SHIP.toLowerCase()}`);
   const p=segs.join('<span class="sep">·</span>');
   el.prompt.innerHTML=p; el.prompt.classList.toggle('on', !!p);
   // the hint bar sits just above the bottom-centre status pane, between it and the ship, whatever the HUD scale; the
