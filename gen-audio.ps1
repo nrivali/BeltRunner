@@ -10,7 +10,7 @@ $key=(Get-Content (Join-Path $root 'elevenlabs.key') -Raw).Trim()
 $out=Join-Path $root 'sfx'; New-Item -ItemType Directory -Force $out | Out-Null
 # One voice for everything spoken in the game since 2026-09-13: the user's own "Nick Walkie Talkie Voice" clone (male,
 # American, radio-flavoured). Both the controllers and Flight Ops use it; a clip's `voice` key can still override per line.
-$VOICE_GAME='qJNvazAFWgdySz9n6ZlZ'
+$VOICE_GAME='U9rx50vRcbe96IFzQNVp'   # "Nick Radio Voice" (2026-09-13; the earlier clone qJNvazAFWgdySz9n6ZlZ was replaced)
 $VOICE_CONTROL=$VOICE_GAME   # the colony and approach controllers (was River SAz9YHcvj6GT2YYXdXww)
 $VOICE_OPS=$VOICE_GAME       # Flight Ops, the tutorial voice (was Sarah EXAVITQu4vr4xnSDxMaL)
 $clips=@(
@@ -41,6 +41,9 @@ $clips=@(
   @{name='dock';        kind='sfx'; dur=2.2; text='heavy spaceship docking clamps locking with a deep metallic clunk and a hydraulic hiss, hangar interior'},
   @{name='stow';        kind='sfx'; dur=1.0; text='metal cargo crate sliding into a rack and latching, short mechanical clunk, sci-fi'},
   @{name='cash';        kind='sfx'; dur=1.5; text='futuristic cash register sale confirmation, pleasant two-note ascending chime, clean'},
+  # --- radio: the squelch that opens and closes every spoken transmission (played round each voice line by SFX.clip)
+  @{name='radio_on';    kind='sfx'; dur=0.7; text='walkie talkie push-to-talk key click followed by a short burst of radio static, transmission opening, no voice'},
+  @{name='radio_off';   kind='sfx'; dur=0.7; text='walkie talkie transmission ending, brief static burst then a sharp squelch click as the key releases, no voice'},
   # --- no music here: the soundtrack is the game's own procedural synth engine; the API only makes sound effects and voices
   # --- voice lines
   @{name='colony_control';   kind='voice'; text='Colony control to cargo ship. You are cleared to hold station off Meridian. Welcome to the Hub.'},
