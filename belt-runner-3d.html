@@ -418,7 +418,7 @@ table.manifest td.dimmed{color:var(--dim);}
         <div id="manifest"></div>
       </section>
       <section class="col">
-        <h3>Refit</h3>
+        <h3>Personal ship</h3>
         <div class="ups" id="upgrades"></div>
       </section>
     </div>
@@ -715,7 +715,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.87';
+const GAME_VERSION = '0.9.88';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -4264,7 +4264,7 @@ const TUT=[
     text:'While you sit on the pad your tank fills from the cargo ship\'s fuel supply and hull damage is patched from its store of repair parts, one part per hull point. Both run down, and both restock at the Hub for credits from the cargo ship panel, so keep an eye on their gauges. Nothing sells here: the cargo ship has 50 storage slots of its own, and the inventory moves stacks between your hold and that storage.'},
   {id:'services', title:'Storage and refits', ring:['#station .panel'],
     text:'The services panel is open beside you (<kbd>F</kbd> hides and shows it). To move ore aboard the cargo ship, open your inventory (<kbd>Tab</kbd>) while docked: its storage grid appears under your hold, and stacks drag or double-click across. Ore only sells at the Hub, a colony zone on the nav map (<kbd>N</kbd>); the cargo ship, storage and all, warps there with you. The refit list below is where the money goes.'},
-  {id:'upgrades', title:'The refit list', ring:['#upgrades'],
+  {id:'upgrades', title:'Personal ship refits', ring:['#upgrades'],
     text:'Each refit shows its current level and the next. Laser, engine, tank, cargo, scanner and hull all pay for themselves; a bigger hold and a stronger laser fastest. Below them are the cargo ship upgrades: radar, the mining dish and collector drones that stow what they gather in its storage. The jump drive at the bottom is the long game.'},
   {id:'depart', title:'Back out', ring:['#depart'], wait:'press Depart',
     text:'Press <b>Depart</b> (or <kbd>W</kbd> on the pad) to launch. Worth knowing: <kbd>N</kbd> opens the nav map for warping between zones, <kbd>T</kbd> calls a tow if you run dry (15% of credits), <kbd>I</kbd> opens your inventory, <kbd>Esc</kbd> pauses. Raiders roam the richer fields; the laser cuts them too.', auto:()=>!docked && !cut},
