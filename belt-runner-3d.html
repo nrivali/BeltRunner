@@ -356,7 +356,7 @@ table.manifest td.dimmed{color:var(--dim);}
 <div class="hud hud-tr">
   <div class="pane readouts">
     <div class="readout"><span>ZONE <b id="zoneName"></b></span><span>SPD <b id="spd">0</b></span><span id="distLbl">CARGO SHIP <b id="dist">0</b></span><span>FIELD <b id="fieldState">â€”</b></span></div>
-    <div class="readout"><span>LASER <b id="laserState">off</b></span><span>RADAR <b id="radarState">READY</b></span><span>THREAT <b id="threatState">none</b></span></div>
+    <div class="readout"><span>LASER <b id="laserState">off</b></span><span>RANGE <b id="laserRange">2500</b></span><span>RADAR <b id="radarState">READY</b></span><span>THREAT <b id="threatState">none</b></span></div>
   </div>
   <div class="target" id="target">
     <div class="eyebrow">Target</div>
@@ -704,7 +704,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.23';
+const GAME_VERSION = '0.9.24';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D Â· v' + GAME_VERSION;
 
@@ -2617,7 +2617,7 @@ const el={credits:$('credits'),goalFill:$('goalFill'),goalPct:$('goalPct'),fuelT
   hullText:$('hullText'),hullFill:$('hullFill'),dmg:$('dmg'),thrText:$('thrText'),thrFill:$('thrFill'),
   win:$('win'),wTime:$('wTime'),wMined:$('wMined'),wEarned:$('wEarned'),keepFlying:$('keepFlying'),intro:$('intro'),
   menuMain:$('menuMain'),menuSettings:$('menuSettings'),menuControls:$('menuControls'),mContinue:$('mContinue'),mNew:$('mNew'),mSaveInfo:$('mSaveInfo'),mNewInfo:$('mNewInfo'),mControls:$('mControls'),mSettings:$('mSettings'),sSound:$('sSound'),sMusic:$('sMusic'),sQuality:$('sQuality'),sHud:$('sHud'),sHudT:$('sHudT'),sReset:$('sReset'),
-  zoneName:$('zoneName'),depotName:$('depotName'),laserState:$('laserState'),radarState:$('radarState'),
+  zoneName:$('zoneName'),depotName:$('depotName'),laserState:$('laserState'),laserRange:$('laserRange'),radarState:$('radarState'),
   cine:$('cine'),cineCap:$('cineCap'),depart:$('depart'),fieldMarker:$('fieldMarker'),fArr:$('fArr'),fieldLbl:$('fieldLbl'),fieldState:$('fieldState'),threatState:$('threatState'),
   callsign:$('callsign'),hullSw:$('hullSw'),trimSw:$('trimSw'),wingSeg:$('wingSeg'),dockedEyebrow:$('dockedEyebrow'),blips:[...document.querySelectorAll('.blip')],map:$('map'),chart:$('chart'),zinfo:$('zinfo'),mFuel:$('mFuel'),mapClose:$('mapClose'),warp:$('warp'),wName:$('wName'),wSub:$('wSub')};
 function toast(msg,bad){ const d=document.createElement('div'); d.className='toast'+(bad?' bad':''); d.textContent=msg; el.toasts.appendChild(d); setTimeout(()=>d.remove(),3300); }
@@ -3986,7 +3986,7 @@ function updateOverlays(){
   if (target && started && !docked){
     const p=project(target.obj.pos);
     if (p.on){ el.reticle.classList.add('on'); el.reticle.classList.toggle('hot', laserOn); el.reticle.style.left=p.x+'px'; el.reticle.style.top=p.y+'px';
-      el.rLbl.textContent=target.type==='pirate'?`Raider Â· ${Math.max(0,Math.ceil(target.obj.hp))} hp`:`${rockName(target.obj)} Â· ${Math.ceil(100*target.obj.hp/target.obj.hpMax)}%`; }
+      el.rLbl.textContent=(target.type==='pirate'?`Raider Â· ${Math.max(0,Math.ceil(target.obj.hp))} hp`:`${rockName(target.obj)} Â· ${Math.ceil(100*target.obj.hp/target.obj.hpMax)}%`)+` Â· ${Math.round(target.dist)} u Â· ${Math.round(laserPower(target.dist)*100)}% pwr`; }
     else el.reticle.classList.remove('on');
   } else el.reticle.classList.remove('on');
   // depot marker (clamped to the screen edge with an arrow when off screen)
@@ -4040,6 +4040,7 @@ function updateHud(dt){
     el.dbHull.style.width=(hf*100)+'%'; el.dbHullT.textContent=state.hull>=hp-0.01?'hull sound':(state.credits<2?'no credits':`${repairRate()} pt/s Â· 2 cr/pt`);
     if (!el.station.hidden && document.activeElement!==el.callsign){ panelT+=0.08; if (panelT>1){ panelT=0; renderPanel(); } }
   }
+  { const reach=stat('scanner').mine; el.laserRange.textContent=target?`${Math.round(target.dist)} / ${reach}`:`${reach}`; }   // range: how far the crosshair target is against the beam's reach
   el.laserState.textContent=(laserOn?`CUTTING Â· ${Math.round(heatFx.heat*100)}% heat Â· ${Math.round(laserPower(target.dist)*100)}% power`:firing?'FIRING':heatFx.heat>0.01?`ready Â· ${Math.round(heatFx.heat*100)}% heat`:'ready'); el.laserState.style.color=laserOn?'var(--amber2)':''; el.radarState.textContent=pulseCd>0?`${pulseCd.toFixed(1)}s`:'READY';
   if (target && !docked){
     const t=target.obj; el.target.classList.add('on');
