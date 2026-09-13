@@ -7,4 +7,14 @@ The user edits this game with Claude as well as Codex. Preserve concurrent work.
 - Recheck the file hash immediately before writing. If it changed, reread and reconcile the latest contents before applying the patch. Do not blindly reapply edits that another process removed.
 - Review the resulting diff against the immediate pre-edit backup. Preserve all unrelated changes from Claude or the user. If changes conflict and intent cannot be determined, ask the user.
 - Before any push or publication, identify and check the authoritative latest game version, reconcile changes, and validate that exact result. A push request does not authorize overwriting newer work.
-- This folder had no Git repository or configured remote when checked on 2026-09-12. Do not claim remote freshness without verifying the actual source location.
+- This folder became a Git repository on 2026-09-12 (branch `main`, no remote yet). Git is at `C:\Program Files\Git\cmd\git.exe` if it is not on PATH.
+
+## Git workflow (both agents)
+
+- Edit files in place in this folder. Never copy a whole file in from elsewhere.
+- Before starting a task: `git status` must be clean (commit or ask about anything left over), then `git log -1` to see the latest commit.
+- Before editing `belt-runner-3d.html`: `git diff` / `git status` to confirm nothing uncommitted is sitting there from the other agent. If there is, leave it alone and ask the user.
+- After finishing a change: `git add -A` and `git commit` with a message that says what changed and which agent made it (add a `Co-Authored-By:` trailer for the agent). One task, one commit.
+- `elevenlabs.key`, `backups/`, `*.zip` and `*.blend1` are ignored on purpose. Do not force-add them.
+- Publishing (Claude's artifact) always happens from the committed working tree, never from a copy.
+- Bump `GAME_VERSION` in `belt-runner-3d.html` on every commit that changes gameplay or assets.
