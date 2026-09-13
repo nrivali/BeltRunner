@@ -717,7 +717,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.97';
+const GAME_VERSION = '0.9.98';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -3257,6 +3257,15 @@ function impact(speed, at){
 // A hull breach disables the ship: it drifts with no thrust or steering until a tug from the depot arrives,
 // latches on with a tractor beam and hauls it nose-first into a hangar bay. Running dry (T) calls the same tug.
 let tow=null, disabled=false, lookYaw=0, lookPitch=0;
+// measured speed: world units the ship actually covered per real second, averaged over the last half second of wall-clock
+// time. A teleport (warp, zone load, spawn) resets the window so it never shows a spike.
+const spdHist=[];
+function measuredSpeed(){
+  const now=performance.now(), p=ship.pos.clone();
+  if (spdHist.length && p.distanceTo(spdHist[spdHist.length-1].p)>4000) spdHist.length=0;
+  spdHist.push({t:now, p}); while (spdHist.length>2 && now-spdHist[0].t>500) spdHist.shift();
+  const a=spdHist[0], ms=now-a.t; return ms>=50 ? p.distanceTo(a.p)/(ms/1000) : ship.vel.length();
+}
 function requestTow(reason){
   if (tow || docked) return;
   const b=nearestBay().bay, start=b.opening.clone().addScaledVector(depotDir(V3(0,0,b.side)), 1800);
@@ -4193,8 +4202,11 @@ function updateHud(dt){
   if (full && !wasFull && started && !docked){ toast('Cargo hold full · head back to the cargo ship to stow it', true); SFX.chime(); } wasFull=full;
   el.center.classList.toggle('hot', laserOn);
   if (invOpen) renderInventory();
-  el.spd.textContent=docked?(pilotingCarrier()?'HOLDING':'DOCKED'):parked?'PARKED':Math.round(ship.vel.length()*METRE);
-  el.spdBig.textContent=docked?(pilotingCarrier()?'HOLD':'DOCK'):fm(ship.vel.length());   // the bottom gauge: the same reading, in m/s
+  // speed as actually travelled: metres covered per real second over the last half second, not the nominal velocity. The
+  // simulation steps at most 50 ms per frame, so on a slow frame rate it lags real time and the nominal figure would overstate
+  const spdNow=measuredSpeed();
+  el.spd.textContent=docked?(pilotingCarrier()?'HOLDING':'DOCKED'):parked?'PARKED':Math.round(spdNow*METRE);
+  el.spdBig.textContent=docked?(pilotingCarrier()?'HOLD':'DOCK'):fm(spdNow);   // the bottom gauge: the same reading, in m/s
   { const big=pilotingCarrier(); el.dist.textContent=fm(big?ship.pos.length():ship.pos.distanceTo(STATION.pos)); const lbl=$('distLbl').firstChild; const want=big?'COLONY ':'CARGO SHIP '; if (lbl.textContent!==want) lbl.textContent=want; }
   if (docked){
     if (!el.station.hidden){ panelT+=0.08; if (panelT>1){ panelT=0; renderPanel(); } }
