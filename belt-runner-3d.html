@@ -681,7 +681,7 @@ const JUMP_COST = 250000, FUEL_PRICE = 1.2, FUEL_BURN = 0.55;   // (no cruise mu
 let WORLD_R = 14000*WORLD_SCALE, planetR = 20000;   // both set per zone in loadZone
 // The depot carrier orbits the planet inside the ring belt, nose-first and a little faster than the rocks, so the belt slides
 // past it astern. pos/q are its world transform; everything about docking is computed in the carrier's local frame.
-const STATION = {pos:V3(0,0,DEPOT_ORBIT), q:new THREE.Quaternion(), qInv:new THREE.Quaternion(), ang:Math.PI/2, orbit:DEPOT_ORBIT, speed:34, vel:V3()};
+const STATION = {pos:V3(0,0,DEPOT_ORBIT), q:new THREE.Quaternion(), qInv:new THREE.Quaternion(), ang:Math.PI/2, orbit:DEPOT_ORBIT, speed:102, vel:V3()};   // orbit drift in m/s (tripled from 34)
 // The depot is a carrier hull along the X axis with four open hangar bays on its flanks (two per side).
 // Hull runs from the engine bells at x≈-3550 to the prow tip at x≈4600; the collision box covers the fat part and the prow is a cone (see depotCollide).
 const DEPOT = {half:V3(3700,540,900), prow:{x0:3700, x1:4600, r0:800}, bays:[]};
@@ -708,7 +708,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.64';
+const GAME_VERSION = '0.9.65';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -2135,7 +2135,7 @@ function loadZone(z){
   // the cargo ship orbits the planet in the belts; at the Hub you fly it yourself, so it simply sits where the ship is
   // the carrier starts at a random point on its orbit each time a zone loads, so with the sun fixed per zone the belt is
   // lit differently every visit and the start is never the same stretch of rocks (the ship spawns docked, so it follows)
-  STATION.orbit=Math.max(DEPOT_ORBIT, planetR+800*WORLD_SCALE); STATION.ang=Math.random()*Math.PI*2; STATION.speed=34; STATION.vel.set(0,0,0); placeDepot();
+  STATION.orbit=Math.max(DEPOT_ORBIT, planetR+800*WORLD_SCALE); STATION.ang=Math.random()*Math.PI*2; STATION.speed=102; STATION.vel.set(0,0,0); placeDepot();
   buildColony(z); buildTraffic(z);
   z.beltObjs=z.hub ? [] : BASE_BELTS.map((b,i)=>Object.assign({}, b, {ores:z.belts[i], count:Math.round(b.count*z.density*0.65), amountMult:z.amountMult,
     rMin:planetR+b.rMin*WORLD_SCALE, rMax:planetR+b.rMax*WORLD_SCALE, spread:b.spread*WORLD_SCALE}));
