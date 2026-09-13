@@ -476,7 +476,7 @@ table.manifest td.dimmed{color:var(--dim);}
       <span><kbd>RMB</kbd></span><span>Hold the right mouse button to look around without turning the ship; the view eases back to straight ahead when you let go.</span>
       <span><kbd>Q</kbd></span><span>Hover the mouse over a rock, a raider or the cargo ship (the label names it), then press Q to lock the crosshair on it. The ship steers itself to keep it in the crosshair (you keep the throttle and roll) until it breaks up or goes beyond 50,000 m. Hover a different target and press Q to switch directly to it. Press Q over the current target or empty space to release the lock. A locked object always shows its range, and its details sit top centre.</span>
       <span><kbd>F</kbd></span><span>Flashlight: a spot beam from the nose, on or off. While docked F opens the cargo ship services instead.</span>
-      <span>Docking</span><span>Fly slowly into either mouth of the cargo ship's through-hangar, or press <kbd>E</kbd> within 2,250 of it and approach control flies you in. Once docked, <kbd>E</kbd> deposits all your ore into the cargo ship's storage. You taxi to the pad at the far end and park nose-out, so you leave straight ahead. Fuel and repairs flow while you sit on the pad, and the services panel moves ore between your hold and the cargo ship's 50-slot storage. The cargo ship warps with you; ore only sells at the Hub.</span>
+      <span>Docking</span><span>Fly slowly into either mouth of the cargo ship's through-hangar, or press <kbd>E</kbd> within 2,250 of it and approach control flies you in. Once docked, <kbd>E</kbd> deposits all your ore into the cargo ship's storage. You fly in over the deck, hover above the pad at the far end, turn about and settle facing the way you came, so you leave by the same mouth. Fuel and repairs flow while you sit on the pad, and the services panel moves ore between your hold and the cargo ship's 50-slot storage. The cargo ship warps with you; ore only sells at the Hub.</span>
       <span><kbd>N</kbd></span><span>Open the nav map. The cargo ship makes the jump between zones, so dock in its hangar first; you ride along and arrive in Dock 1.</span>
       <span><kbd>K</kbd></span><span>Sound on or off</span>
       <span><kbd>C</kbd></span><span>Hide or show the flight controls list in the bottom-left corner. Remembered between sessions.</span>
@@ -695,9 +695,9 @@ const STATION = {pos:V3(0,0,DEPOT_ORBIT), q:new THREE.Quaternion(), qInv:new THR
 // Hull runs from the engine bells at x≈-3550 to the prow tip at x≈4600; the collision box covers the fat part and the prow is a cone (see depotCollide).
 const DEPOT = {half:V3(3700,540,900), prow:{x0:3700, x1:4600, r0:800}, bays:[]};
 // One hangar runs straight through the hull amidships, open on both flanks. Each "bay" below is one of its two mouths:
-// enter through it and the ship taxis to the pad at the FAR end, parked nose-out, so it leaves straight ahead and never turns.
+// enter through it and the ship taxis to the pad at the FAR end, turns about over the pad and parks facing the mouth it came in by, so it leaves the same way.
 // Geometry is in the carrier's local frame; park/opening are world-space copies refreshed whenever the carrier moves.
-for (const side of [1,-1]) DEPOT.bays.push({cx:0, side, x0:-420, x1:420, y0:-176, y1:176, zIn:-9999, zOut:900, parkL:V3(0,-138,-side*525), openingL:V3(0,0,side*1000), park:V3(), opening:V3(), qL:side>0?new THREE.Quaternion(0,1,0,0):new THREE.Quaternion(), q:new THREE.Quaternion()});
+for (const side of [1,-1]) DEPOT.bays.push({cx:0, side, x0:-420, x1:420, y0:-176, y1:176, zIn:-9999, zOut:900, parkL:V3(0,-138,-side*525), openingL:V3(0,0,side*1000), park:V3(), opening:V3(), qL:side>0?new THREE.Quaternion():new THREE.Quaternion(0,1,0,0), q:new THREE.Quaternion()});   // parked facing the mouth it came in by (it turns about over the pad), so it leaves the same way
 // Put the carrier at its current orbit angle, nose (+X) along its direction of travel, and refresh every world-space bay point.
 // At the Hub the player flies the carrier: it takes the ship's own position and heading (its +X nose along the ship's +Z forward).
 const CARRIER_Q=new THREE.Quaternion().setFromAxisAngle(V3(0,1,0), -Math.PI/2);
@@ -717,7 +717,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.99';
+const GAME_VERSION = '0.9.100';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -2732,7 +2732,7 @@ function toggleControls(){ controlsHidden=!controlsHidden; document.body.classLi
 // Space skips a cutscene: the docking, departure or berthing flight jumps to its end (the next frame runs its finish as
 // normal), and a warp jumps to the arrival and finishes that too
 function skipCutscene(){
-  if (cut){ cut.t=cut.dur; toast('Skipped'); }
+  if (cut){ cut.t=cut.dur; if (cut.mode==='dock' && !cut.world){ cut.phase='settle'; cut.pt=99; } toast('Skipped'); }   // a hangar dock jumps straight to the final settle
   else if (warpCut){ warpCut.skip=true; warpCut.t=Math.max(warpCut.t, warpCut.phase==='depart'?5.0:4.4); toast('Skipped'); }
 }
 function toggleMusic(){ SFX.init(); MUSIC.setOn(!MUSIC.on); toast(MUSIC.on?'Music on':'Music off'); save(); syncSettings(); }
@@ -3006,10 +3006,12 @@ function startApproach(){
   if (pilotingCarrier()){ startBerthApproach(); return; }
   if (!nearStation()){ toast('Too far from the cargo ship for an approach · close to 2,250', true); return; }
   const b=nearestBay().bay, L0=depotLocal(ship.pos), side=b.side;
-  const app=b.openingL.clone().add(V3(0,0,side*1400)), mouth=b.openingL.clone(), inner=V3(b.cx,-110,0), pad=b.parkL.clone();   // straight through to the far pad
-  const pts=[L0]; if (L0.distanceTo(app)>900) pts.push(app); pts.push(mouth, inner, pad);
+  // the flight: in through the mouth, along the deck at hover height, easing to a stop above the far pad. From there the
+  // cutscene turns the ship about on the spot and lets it down onto the pad (see cutUpdate).
+  const app=b.openingL.clone().add(V3(0,0,side*1400)), mouth=b.openingL.clone(), deck=V3(b.cx,-40,side*300), hoverL=b.parkL.clone().add(V3(0,90,0));
+  const pts=[L0]; if (L0.distanceTo(app)>900) pts.push(app); pts.push(mouth, deck, hoverL);
   const curve=new THREE.CatmullRomCurve3(pts, false, 'centripetal'); const len=curve.getLength();
-  cut={mode:'dock', bay:b, curve, t:0, dur:Math.max(5, Math.min(12, len/380)), len};
+  cut={mode:'dock', bay:b, curve, t:0, dur:Math.max(6, Math.min(13, len/360)), len, phase:'fly', pt:0, hoverL};
   if (parked) releasePark(); mining=false; laserOn=false; throttle=0;
   el.cineCap.textContent=`Approach · ${b.name} · ${CARGO_SHIP} · Space skips`; el.cine.classList.add('on'); el.center.classList.remove('on');
   SFX.chime(); SFX.clip('approach_control'); toast(`Approach control has the ship · ${b.name}`);
@@ -3022,7 +3024,7 @@ function startDeparture(){
     // there is no flying at the Hub: leaving the berth means setting a course on the nav map
     toast(`Set a course on the nav map to leave ${zone.colony}`); if (!mapOpen) toggleMap(); return;
   }
-  const b=dockBay, side=b.side, out=-side;   // parked nose-out at the far end: the exit is the mouth opposite the one it came in by
+  const b=dockBay, side=b.side, out=side;   // parked at the far end facing the mouth it came in by: it taxis back down the deck and leaves that way
   leaveHangar();
   const pts=[b.parkL.clone(), V3(0,-112,out*620), V3(0,-40,out*1000), V3(0,60,out*2500)];
   const curve=new THREE.CatmullRomCurve3(pts, false, 'centripetal');
@@ -3040,6 +3042,26 @@ function cutUpdate(dt){
     ship.pos.copy(p); ship.vel.set(0,0,0);
     const q=C.mode==='dock' && k>0.9 ? C.bay.q : levelHeading(tan);
     ship.q.slerp(q, 1-Math.exp(-1.8*dt));
+  } else if (C.mode==='dock'){
+    // auto-dock, in three beats: fly the path in over the deck and ease to a hover above the pad; turn about on the spot
+    // (a smooth 180 over a few seconds) to face the mouth it came in by; then let down gently onto the pad and hand over
+    ship.vel.copy(STATION.vel);
+    if (C.phase==='fly'){
+      ship.pos.copy(depotWorld(p)); ship.q.slerp(levelHeading(depotDir(tan)), 1-Math.exp(-5*dt));
+      if (k>=1){ C.phase='turn'; C.pt=0; C.q0=ship.q.clone(); }
+      return;
+    }
+    C.pt+=dt;
+    if (C.phase==='turn'){
+      const s=Math.min(1, C.pt/3.2), e=s*s*(3-2*s);
+      ship.pos.copy(depotWorld(C.hoverL)); ship.q.copy(C.q0).slerp(C.bay.q, e);
+      if (s>=1){ C.phase='settle'; C.pt=0; }
+      return;
+    }
+    const s=Math.min(1, C.pt/2.0), e=s*s*(3-2*s);   // settle: a slow, eased descent from the hover onto the pad
+    ship.pos.copy(depotWorld(C.hoverL.clone().lerp(C.bay.parkL, e))); ship.q.copy(C.bay.q);
+    if (s>=1){ cut=null; el.cine.classList.remove('on'); enterHangar(C.bay); }
+    return;
   } else {
     ship.pos.copy(depotWorld(p)); ship.vel.copy(STATION.vel);
     ship.q.slerp(levelHeading(depotDir(tan)), 1-Math.exp(-5*dt));
@@ -4094,7 +4116,7 @@ function updateVisuals(dt, t){
     if (cut.mode==='depart'){
       // departure: first from the entry end of the hangar watching the ship taxi away down the deck, then from outside the
       // far mouth, off to one side, as it clears the hull and opens up
-      camL = k<.42 ? V3(b.cx-175, b.y1-64, side*700) : V3(b.cx+560, 190, -side*(b.zOut+420));
+      camL = k<.42 ? V3(b.cx-175, b.y1-64, -side*700) : V3(b.cx+560, 190, side*(b.zOut+420));   // the ship now leaves by the mouth it came in by, so the cameras sit at the far end, then outside that mouth
     } else camL = k<.5 ? b.openingL.clone().add(V3(760, 300, side*1900)) : V3(b.cx+205, b.y1-40, side*(b.zOut-80));
     camPos.copy(depotWorld(camL)); camLook.copy(ship.pos); cu=depotDir(V3(0,1,0)); cf=camLook.clone().sub(camPos).normalize();
     camQ.copy(ship.q);
