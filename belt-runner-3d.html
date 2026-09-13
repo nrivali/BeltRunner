@@ -418,7 +418,7 @@ table.manifest td.dimmed{color:var(--dim);}
       </section>
     </div>
     <footer>
-      <div class="fgroup"><button id="depart" class="btn primary">Depart &nbsp;<kbd>W</kbd></button><button id="closeSvc" class="btn">Hide &nbsp;<kbd>F</kbd></button></div>
+      <div class="fgroup"><button id="depart" class="btn primary">Depart &nbsp;<kbd>W</kbd></button><button id="toHub" class="btn">Warp to the Hub</button><button id="closeSvc" class="btn">Hide &nbsp;<kbd>F</kbd></button></div>
       <button id="reset" class="link">Reset save</button>
     </footer>
   </div>
@@ -690,7 +690,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.45';
+const GAME_VERSION = '0.9.46';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -2702,6 +2702,7 @@ let wipeArmed=false;
 el.sReset.addEventListener('click', ()=>{ if (wipeArmed) resetSave(); else { wipeArmed=true; el.sReset.textContent='Click again'; setTimeout(()=>{ wipeArmed=false; el.sReset.textContent='Wipe save'; }, 4000); } });
 el.closeSvc.addEventListener('click', ()=>{ el.station.hidden=true; });
 el.depart.addEventListener('click', startDeparture);
+$('toHub').addEventListener('click', ()=>{ if (docked && !zone.hub) warpTo(zoneById('hub')); });
 el.keepFlying.addEventListener('click', () => { el.win.hidden=true; });
 let resetArmed=false;
 el.reset.addEventListener('click', () => { if(resetArmed) resetSave(); else { resetArmed=true; el.reset.textContent='Click again to wipe save'; setTimeout(()=>{resetArmed=false; el.reset.textContent='Reset save';},4000); } });
@@ -3075,6 +3076,7 @@ function renderMarket(){
 function renderPanel(){
   el.pCredits.textContent=fmt(state.credits)+' cr'; renderHangar();
   el.depart.innerHTML=zone.hub ? 'Nav map &nbsp;<kbd>N</kbd>' : 'Depart &nbsp;<kbd>W</kbd>';
+  $('toHub').hidden=!!zone.hub;   // a straight jump to the colony market from any belt; at the Hub the nav map is the way out
   $('manifestH').textContent=zone.hub?'Cargo and market':'Cargo';
   el.manifest.innerHTML=renderCargoSummary()+(zone.hub?renderMarket():'');
   el.manifest.querySelectorAll('[data-sell]').forEach(b=>b.addEventListener('click',()=>sellOre([b.dataset.sell], true, true)));
