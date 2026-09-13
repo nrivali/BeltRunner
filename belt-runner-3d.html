@@ -711,7 +711,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.116';
+const GAME_VERSION = '0.9.117';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -1016,7 +1016,7 @@ const SFX=(()=>{
   const CLIP_GAIN={warp_charge:.8, warp_jump:.9, dock:.7, stow:.6, cash:.6, colony_control:.9, approach_control:.9, warp_ready:.9,
     laser_on:.5, laser_off:.4, laser_bite:.45, rock_break:.7, radar_ping:.5, zap:.35, hit:.7, boom:.8, boom_big:1, chime:.5, pickup:.45, alarm:.6, click:.3,
     radio_on:.5, radio_off:.45,   // the squelch round every spoken line
-    hangar_1:.9, hangar_2:.9, hangar_3:.9, hangar_4:.9,   // the deck's welcome when you settle on a pad
+    hangar_1:1.1, hangar_2:1.1, hangar_3:1.1, hangar_4:1.1, pa_chime:.5,   // the hangar PA: chime, then one of the deck's announcements (through the intercom chain, which eats some level)
     approach_1:.9, approach_2:.9, approach_3:.9, approach_4:.9,   // approach control's other calls (approach_control is the fifth)
     // Flight Ops: the tutorial's voice lines, one per step (see TUT)
     tut_launch:.95, tut_steer:.95, tut_hud:.95, tut_radar:.95, tut_lock:.95, tut_mine:.95, tut_inv:.95, tut_return:.95, tut_hangar:.95, tut_stow:.95, tut_refit:.95, tut_hub:.95, tut_depart:.95, tut_done:.95};
@@ -1032,23 +1032,51 @@ const SFX=(()=>{
       }).catch(()=>{});
     }
   }
-  function play(name, vol, rate, at){ const buf=BUF[name]; if (!buf) return null; const src=ctx.createBufferSource(), g=ctx.createGain(); src.buffer=buf; src.playbackRate.value=rate||1; g.gain.value=(CLIP_GAIN[name]||.6)*(vol===undefined?1:vol); src.connect(g); g.connect(master); src.start(at||0); return src; }
+  function play(name, vol, rate, at, out){ const buf=BUF[name]; if (!buf) return null; const src=ctx.createBufferSource(), g=ctx.createGain(); src.buffer=buf; src.playbackRate.value=rate||1; g.gain.value=(CLIP_GAIN[name]||.6)*(vol===undefined?1:vol); src.connect(g); g.connect(out||master); src.start(at||0); return src; }
+  // The hangar intercom: a public-address chain for the deck announcements. The voice is band-limited like a tannoy
+  // horn, pushed a little into soft clipping, then split between a dry feed and the reverb of a big steel room (a
+  // synthesised impulse: a short predelay, a few early slaps off the walls, and a two-and-a-half-second noise tail).
+  let intercom=null;
+  function intercomBus(){
+    if (intercom) return intercom;
+    const hp=ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=380; hp.Q.value=0.8;
+    const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=3800; lp.Q.value=1.2;
+    const pk=ctx.createBiquadFilter(); pk.type='peaking'; pk.frequency.value=1800; pk.gain.value=5; pk.Q.value=1.1;   // the honk of a horn speaker
+    const drive=ctx.createWaveShaper(); const n=1024, curve=new Float32Array(n); for (let i=0;i<n;i++){ const x=i*2/n-1; curve[i]=Math.tanh(x*2.2)/Math.tanh(2.2); } drive.curve=curve; drive.oversample='2x';
+    const sr=ctx.sampleRate, len=Math.floor(sr*2.6), ir=ctx.createBuffer(2, len, sr);
+    for (let ch=0;ch<2;ch++){ const d=ir.getChannelData(ch); const pre=Math.floor(sr*0.028);
+      for (let i=pre;i<len;i++){ const t=(i-pre)/sr; d[i]=(Math.random()*2-1)*Math.exp(-t*2.6)*(ch?0.92:1); }
+      for (const [ms,g] of [[41,.55],[67,.4],[94,.32],[131,.25],[176,.18]]){ const k=pre+Math.floor(sr*ms/1000*(ch?1.03:1)); if (k<len) d[k]+=g*(Math.random()<.5?-1:1); } }
+    const conv=ctx.createConvolver(); conv.buffer=ir; const dry=ctx.createGain(); dry.gain.value=0.62; const wet=ctx.createGain(); wet.gain.value=0.5;
+    hp.connect(pk); pk.connect(lp); lp.connect(drive); drive.connect(dry); dry.connect(master); drive.connect(conv); conv.connect(wet); wet.connect(master);
+    return intercom={input:hp};
+  }
+  const isIntercom=name=>name.startsWith('hangar_');
   const sfxOr=(name, fallback, vol, rate)=>{ if (!play(name, vol, rate) && fallback) fallback(); };
   const loopGain=(name, v, t)=>{ const l=loops[name]; if (l) ramp(l.g.gain, v, t||0.12); };
   function clip(name, fallback){
     if (!ctx){ if (fallback) fallback(); return; }
+    if (isIntercom(name)){
+      // a deck announcement: the PA chime rings through the hangar, then the line follows over the intercom chain
+      stopVoice();
+      const lead=BUF.pa_chime ? 1.1 : 0, src=play(name, undefined, undefined, ctx.currentTime+lead, intercomBus().input); if (!src){ if (fallback) fallback(); return; }
+      if (lead) play('pa_chime', undefined, undefined, undefined, intercomBus().input);
+      voiceSrc=src; voiceRadio=false; src.onended=()=>{ if (voiceSrc===src) voiceSrc=null; };
+      return;
+    }
     if (isVoice(name)){
       // a radio transmission: the key clicks open with a burst of static, the line follows a beat later, and the squelch
       // closes it when the line ends (or when it is cut off by the next one). One voice at a time.
       stopVoice();
       const lead=BUF.radio_on ? 0.32 : 0, src=play(name, undefined, undefined, ctx.currentTime+lead); if (!src){ if (fallback) fallback(); return; }
       if (lead) play('radio_on');
-      voiceSrc=src; src.onended=()=>{ if (voiceSrc===src){ voiceSrc=null; play('radio_off'); } };
+      voiceSrc=src; voiceRadio=true; src.onended=()=>{ if (voiceSrc===src){ voiceSrc=null; play('radio_off'); } };
       return;
     }
     const src=play(name); if (!src && fallback) fallback();
   }
-  function stopVoice(){ if (voiceSrc){ const s=voiceSrc; voiceSrc=null; s.onended=null; try{ s.stop(); }catch(e){} play('radio_off'); } }
+  let voiceRadio=false;   // whether the voice now playing is a radio call (gets the closing squelch) or an intercom announcement (does not)
+  function stopVoice(){ if (voiceSrc){ const s=voiceSrc; voiceSrc=null; s.onended=null; try{ s.stop(); }catch(e){} if (voiceRadio) play('radio_off'); } }
   return {
     get ctx(){ return ctx; }, get master(){ return master; }, get loops(){ return loops; }, get buffers(){ return BUF; },   // read-only handles for ?debug
     init, resume, engine:guard(engine), laser:guard(laser), clip, stopVoice,

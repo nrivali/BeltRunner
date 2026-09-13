@@ -13,6 +13,7 @@ $out=Join-Path $root 'sfx'; New-Item -ItemType Directory -Force $out | Out-Null
 $VOICE_GAME='U9rx50vRcbe96IFzQNVp'   # "Nick Radio Voice" (2026-09-13; the earlier clone qJNvazAFWgdySz9n6ZlZ was replaced)
 $VOICE_CONTROL=$VOICE_GAME   # the colony and approach controllers (was River SAz9YHcvj6GT2YYXdXww)
 $VOICE_OPS=$VOICE_GAME       # Flight Ops, the tutorial voice (was Sarah EXAVITQu4vr4xnSDxMaL)
+$VOICE_PA='Xb7hH8MSUJpSbSDYk0k2'   # Alice: clear, measured, female - the hangar's public-address announcer (2026-09-13)
 $clips=@(
   # --- continuous layers (seamless loops): the engine, the laser, the space hum
   @{name='engine_idle';   kind='sfx'; dur=4.0; loop=$true; text='spaceship engine idling, low steady hum with a soft turbine whir, seamless loop, no music'},
@@ -55,10 +56,13 @@ $clips=@(
   @{name='approach_3'; kind='voice'; text='Approach control. You are ours until the pad. Nice and slow.'},
   @{name='approach_4'; kind='voice'; text='Got you, pilot. Follow the lights. We will do the rest.'},
   # --- hangar deck: one of these plays at random when the ship settles on a pad after a flight (not on the first launch or during the tutorial)
-  @{name='hangar_1'; kind='voice'; text='Contact. Clamps are on. Welcome back aboard, pilot.'},
-  @{name='hangar_2'; kind='voice'; text='Good approach. You are on the pad, and the deck crew is moving in.'},
-  @{name='hangar_3'; kind='voice'; text='Locked down. Fuel and repairs are flowing. Take a breather.'},
-  @{name='hangar_4'; kind='voice'; text='Nice and easy. The hangar has you. Stow your ore whenever you are ready.'},
+  # (public-address announcements in a female voice; the game runs them through an intercom chain: band-limited, a little
+  #  overdriven, with the reverb of a big steel hangar, and a PA chime before each one instead of the radio squelch)
+  @{name='hangar_1'; kind='voice'; voice=$VOICE_PA; text='Attention hangar deck. Inbound ship is on the pad. Clamps engaged. Welcome back, pilot.'},
+  @{name='hangar_2'; kind='voice'; voice=$VOICE_PA; text='Deck crew to the pad. The ship is secure. Fuel and repair services are now in progress.'},
+  @{name='hangar_3'; kind='voice'; voice=$VOICE_PA; text='Pilot, you are docked. Please stand by while the deck crew moves in.'},
+  @{name='hangar_4'; kind='voice'; voice=$VOICE_PA; text='Welcome aboard. Your ship is locked down. Ore transfer is available at the cargo terminal.'},
+  @{name='pa_chime';  kind='sfx'; dur=1.6; text='public address intercom announcement chime, two soft descending tones, ding dong, clean, no voice'},
   # --- tutorial: Flight Ops walks a new pilot through the first run (Sarah: mature, reassuring; a different voice from the controllers)
   @{name='tut_launch';   kind='voice'; voice=$VOICE_OPS; text='Welcome aboard, pilot. Flight Ops here. Approach control is taxiing you out of the hangar. Sit tight, and I will talk you through your first run.'},
   @{name='tut_steer';    kind='voice'; voice=$VOICE_OPS; text='You have the ship. The mouse steers. W and S work the throttle, A and D roll, and X cuts the throttle. Open her up and give me a turn.'},
