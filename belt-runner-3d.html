@@ -595,12 +595,13 @@ const BASE_BELTS = [
   {name:'Mid belt',   rMin:3800, rMax:7000,  count:925,  size:[20,68], amount:[45,150],  spread:900},
   {name:'Outer belt', rMin:7200, rMax:10500, count:800,  size:[22,74], amount:[60,210],  spread:1150},
 ];
-const DEPOT_ORBIT = 425000;   // the depot carrier holds station this far from the planet's centre, inside the ring belt
+const DEPOT_ORBIT = 925000;   // the depot carrier holds station this far from the planet's centre, inside the ring belt
 // Nothing that orbits is seeded in the depot's lane (same orbit radius and height), so the belt sweeps past it instead of through it.
 function inDepotLane(p, m){ m=m||0; const dO=Math.hypot(STATION.pos.x,STATION.pos.z); return Math.abs(Math.hypot(p.x,p.z)-dO)<7000+m && Math.abs(p.y-STATION.pos.y)<3500+m; }
 // A dense ring of rock at a fixed distance from the planet's centre (not its surface). Thin, crowded, mostly common ore, and
 // a good share of the rocks are plain barren stone.
-const RING_BELT = {name:'Ring belt', rMin:400000, rMax:450000, count:5600, size:[16,54], amount:[30,95], spread:9000,
+// The ring is centred 700 km above the planet's surface (Ferron: 225 km radius, so 925 km from the centre), 50 km wide.
+const RING_BELT = {name:'Ring belt', rMin:900000, rMax:950000, count:5600, size:[16,54], amount:[30,95], spread:9000,
   ores:{iron:.48, copper:.3, gold:.12, platinum:.06, crystal:.04}};
 // Rock mix for every belt. Sizes: 30% small, 40% large, 20% giant, 10% colossal. Colossals only spawn as loose belt rocks
 // (never inside a field, they would swallow it) and loose rocks are about two thirds of the zone, so their loose-rock roll is
@@ -677,7 +678,7 @@ const JUMP_COST = 250000, FUEL_PRICE = 1.2, FUEL_BURN = 0.55, BOOST = 5;
 let WORLD_R = 14000*WORLD_SCALE, planetR = 20000;   // both set per zone in loadZone
 // The depot carrier orbits the planet inside the ring belt, nose-first and a little faster than the rocks, so the belt slides
 // past it astern. pos/q are its world transform; everything about docking is computed in the carrier's local frame.
-const STATION = {pos:V3(0,0,425000), q:new THREE.Quaternion(), qInv:new THREE.Quaternion(), ang:Math.PI/2, orbit:425000, speed:34, vel:V3()};
+const STATION = {pos:V3(0,0,DEPOT_ORBIT), q:new THREE.Quaternion(), qInv:new THREE.Quaternion(), ang:Math.PI/2, orbit:DEPOT_ORBIT, speed:34, vel:V3()};
 // The depot is a carrier hull along the X axis with four open hangar bays on its flanks (two per side).
 // Hull runs from the engine bells at x≈-3550 to the prow tip at x≈4600; the collision box covers the fat part and the prow is a cone (see depotCollide).
 const DEPOT = {half:V3(3700,540,900), prow:{x0:3700, x1:4600, r0:800}, bays:[]};
@@ -704,7 +705,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.53';
+const GAME_VERSION = '0.9.54';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
