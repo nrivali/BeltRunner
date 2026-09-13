@@ -717,7 +717,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.100';
+const GAME_VERSION = '0.9.101';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -3053,13 +3053,21 @@ function cutUpdate(dt){
     }
     C.pt+=dt;
     if (C.phase==='turn'){
-      const s=Math.min(1, C.pt/3.2), e=s*s*(3-2*s);
-      ship.pos.copy(depotWorld(C.hoverL)); ship.q.copy(C.q0).slerp(C.bay.q, e);
-      if (s>=1){ C.phase='settle'; C.pt=0; }
+      // a proper yaw about the deck's up axis (a quaternion slerp through a dead 180 can pick any path and tumble), after a
+      // short hover pause, over 5.5 s on a very soft curve, always turning to port when it is a true about-face
+      if (C.turnAng===undefined){
+        const up=depotDir(V3(0,1,0)), flat=v=>v.addScaledVector(up, -v.dot(up)).normalize();
+        const f0=flat(V3(0,0,1).applyQuaternion(C.q0)), f1=flat(V3(0,0,1).applyQuaternion(C.bay.q));
+        let ang=Math.atan2(f0.clone().cross(f1).dot(up), f0.dot(f1)); if (Math.abs(ang)>Math.PI-0.05) ang=Math.PI; C.turnAng=ang; C.up=up;
+      }
+      const tt=Math.max(0, C.pt-0.8), s=Math.min(1, tt/5.5), e=s*s*s*(s*(s*6-15)+10);   // smootherstep: no visible start or stop
+      ship.pos.copy(depotWorld(C.hoverL)); ship.q.copy(C.q0).premultiply(new THREE.Quaternion().setFromAxisAngle(C.up, C.turnAng*e));
+      if (s>=1){ C.phase='settle'; C.pt=0; C.qEnd=ship.q.clone(); }
       return;
     }
-    const s=Math.min(1, C.pt/2.0), e=s*s*(3-2*s);   // settle: a slow, eased descent from the hover onto the pad
-    ship.pos.copy(depotWorld(C.hoverL.clone().lerp(C.bay.parkL, e))); ship.q.copy(C.bay.q);
+    // settle: a beat of hover, then a slow eased descent from the hover onto the pad, easing the last few degrees onto the pad heading
+    const tt=Math.max(0, C.pt-0.4), s=Math.min(1, tt/2.5), e=s*s*(3-2*s);
+    ship.pos.copy(depotWorld(C.hoverL.clone().lerp(C.bay.parkL, e))); ship.q.copy(C.qEnd||C.bay.q).slerp(C.bay.q, e);
     if (s>=1){ cut=null; el.cine.classList.remove('on'); enterHangar(C.bay); }
     return;
   } else {
