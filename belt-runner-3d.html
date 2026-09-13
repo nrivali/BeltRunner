@@ -376,7 +376,7 @@ table.manifest td.dimmed{color:var(--dim);}
     <span><kbd>Shift</kbd></span><span>Cruise Ã—5 while throttled up</span>
     <span><kbd>A</kbd> <kbd>D</kbd></span><span>Roll left Â· right</span>
     <span><kbd>â†‘</kbd> <kbd>â†“</kbd></span><span>Pitch</span>
-    <span><kbd>LMB</kbd></span><span>Mining laser on Â· off (<kbd>Space</kbd> or <kbd>L</kbd> too). It cuts only what the crosshair is on: aim the nose at a rock</span>
+    <span><kbd>LMB</kbd></span><span>Hold to fire the mining laser (<kbd>Space</kbd> or <kbd>L</kbd> too). It cuts only what the crosshair is on: aim the nose at a rock</span>
     <span><kbd>P</kbd></span><span>Park Â· release</span>
     <span><kbd>R</kbd></span><span>Radar pulse</span>
     <span><kbd>F</kbd></span><span>Cargo ship services (docked) Â· store ore, refit, sell at the Hub</span>
@@ -487,7 +487,7 @@ table.manifest td.dimmed{color:var(--dim);}
       <span><kbd>Shift</kbd></span><span>Hold to cruise at five times speed while throttled up. Zones are vast.</span>
       <span><kbd>A</kbd> <kbd>D</kbd> <kbd>â†‘</kbd> <kbd>â†“</kbd></span><span>Roll left and right Â· pitch up and down on keys.</span>
       <span><kbd>R</kbd></span><span>Radar pulse Â· marks every rock in scanner range</span>
-      <span><kbd>LMB</kbd></span><span>Click to switch the mining laser on or off (Space or L too). While it is on, the dish under the nose swings onto whatever the crosshair is on and cuts it until it breaks. It never picks targets by itself: keep the nose on the rock.</span>
+      <span><kbd>LMB</kbd></span><span>Hold to fire the mining laser (Space or L too). While you hold it, the dish under the nose swings onto whatever the crosshair is on and cuts it until it breaks. It never picks targets by itself: keep the nose on the rock.</span>
       <span><kbd>P</kbd></span><span>Park beside a rock or planet Â· thrust to leave</span>
       <span>Docking</span><span>Fly slowly into either mouth of the cargo ship's through-hangar, or press <kbd>E</kbd> within 4,500 of it and approach control flies you in. You taxi to the pad at the far end and park nose-out, so you leave straight ahead. Fuel and repairs flow while you sit on the pad, and the services panel moves ore between your hold and the cargo ship's 50-slot storage. The cargo ship warps with you; ore only sells at the Hub.</span>
       <span><kbd>N</kbd></span><span>Open the nav map. The cargo ship makes the jump between zones, so dock in its hangar first; you ride along and arrive in Dock 1.</span>
@@ -704,7 +704,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.20';
+const GAME_VERSION = '0.9.21';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D Â· v' + GAME_VERSION;
 
@@ -2183,7 +2183,7 @@ let exhausts=[], navLights=[], laserMuzzle=new THREE.Object3D();   // the game i
 // the ship's dish mount, under the nose: dish forward (+x of the turret â†’ +z of the ship), yaw ring up against the hull
 const SHIP_DISH_POS=V3(0,-4.5,7), SHIP_DISH_ARC=Math.PI/2, shipDishQ=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(V3(0,0,1), V3(0,-1,0), V3(1,0,0))), shipDishQInv=shipDishQ.clone().invert();
 let shipDish=null, shipDishMount=null; const shipAim={yaw:0, pitch:0, aimed:false};
-let autoMine=true, laserAim=null, laserHit=null;   // autoMine: the laser is armed (it still only cuts what the crosshair is on); laserAim is where the beam is going this frame
+let trigger=false, laserAim=null, laserHit=null;   // trigger: the fire button is held this frame (the laser only cuts what the crosshair is on); laserAim is where the beam is going this frame
 function shipDishPivotWorld(){ return ship.pos.clone().add(SHIP_DISH_POS.clone().multiplyScalar(SHIP_SCALE).applyQuaternion(ship.q)); }
 function shipDishAnglesTo(worldPos){ const L=worldPos.clone().sub(shipDishPivotWorld()).applyQuaternion(ship.q.clone().invert()).applyQuaternion(shipDishQInv); return {yaw:Math.atan2(-L.z, L.x), pitch:Math.atan2(L.y, Math.hypot(L.x, L.z))}; }
 function shipDishFocusWorld(){
@@ -2574,7 +2574,7 @@ void main(){
 let resetting=false;
 function save(){
   if (resetting) return;
-  try { localStorage.setItem(SAVE_KEY, JSON.stringify({credits:state.credits,cargo:state.cargo,store:state.store,fuel:state.fuel,hull:state.hull,up:state.up,depot:state.depot,droneUnits:state.droneUnits,shipFuel:state.shipFuel,tut:state.tut,autoMine,hudSize,muted:SFX.muted,music:MUSIC.on,sfxVol:SFX.volume,musicVol:MUSIC.volume,quality,jump:state.jump,mined:state.mined,minedBy:state.minedBy,slotOrder:state.slotOrder,earned:state.earned,time:state.time,mouseAim,zone:zone.id,custom:state.custom,
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify({credits:state.credits,cargo:state.cargo,store:state.store,fuel:state.fuel,hull:state.hull,up:state.up,depot:state.depot,droneUnits:state.droneUnits,shipFuel:state.shipFuel,tut:state.tut,hudSize,muted:SFX.muted,music:MUSIC.on,sfxVol:SFX.volume,musicVol:MUSIC.volume,quality,jump:state.jump,mined:state.mined,minedBy:state.minedBy,slotOrder:state.slotOrder,earned:state.earned,time:state.time,mouseAim,zone:zone.id,custom:state.custom,
     ship:{p:ship.pos.toArray(), q:ship.q.toArray()}})); } catch(e){}
 }
 function load(){
@@ -2582,7 +2582,6 @@ function load(){
     const raw=localStorage.getItem(SAVE_KEY); if(!raw) return false; const s=JSON.parse(raw);
     state.credits=s.credits; state.fuel=s.fuel; state.jump=!!s.jump; state.mined=s.mined||0; state.minedBy=s.minedBy||{}; state.slotOrder=Array.isArray(s.slotOrder)?s.slotOrder:[]; state.earned=s.earned||0; state.time=s.time||0;
     if (typeof s.hull==='number') state.hull=s.hull;
-    if (typeof s.autoMine==='boolean') autoMine=s.autoMine;
     if (typeof s.hudSize==='number'){ hudSize=s.hudSize; applyHudSize(); }
     state.tut=typeof s.tut==='number' ? s.tut : -1;   // saves from before the tutorial existed skip it
     if (typeof s.muted==='boolean') SFX.setMuted(s.muted);
@@ -2630,7 +2629,6 @@ window.addEventListener('keydown', e => {
   if (k==='e' && !e.repeat) startApproach();
   if (k==='t' && !e.repeat) callTow();
   if (k==='n' && !e.repeat) toggleMap();
-  if ((k==='l' || k===' ') && !e.repeat && !docked) toggleAutoMine();
   if (k==='k' && !e.repeat) toggleSound();
   if (k==='p' && !e.repeat) togglePark();
   if (k==='r' && !e.repeat) radarPulse();
@@ -2644,7 +2642,7 @@ window.addEventListener('keyup', e => { keys[e.key.toLowerCase()]=false; });
 window.addEventListener('blur', () => { for (const k in keys) keys[k]=false; mouse.inside=false; mouse.down=false; });
 window.addEventListener('mousemove', e => { mouse.x=e.clientX; mouse.y=e.clientY; mouse.inside=true; });
 // left mouse button fires the laser (ignored on buttons, inputs and the overlay panels)
-window.addEventListener('mousedown', e => { if (e.button!==0) return; if (e.target && e.target.closest && e.target.closest('.overlay, button, input, a')) return; if (started && !docked && !mapOpen && !paused && !invOpen) toggleAutoMine(); if (started) e.preventDefault(); });
+window.addEventListener('mousedown', e => { if (e.button!==0) return; if (e.target && e.target.closest && e.target.closest('.overlay, button, input, a')) return; mouse.down=true; if (started) e.preventDefault(); });   // the laser fires while the button is held (see trigger in updatePhysics)
 window.addEventListener('mouseup', e => { if (e.button===0) mouse.down=false; });
 window.addEventListener('contextmenu', e => { if (started) e.preventDefault(); });
 // scroll wheel: throttle up (wheel away from you) and down, in 5% steps; ignored inside the overlays
@@ -2658,7 +2656,6 @@ window.addEventListener('wheel', e => {
 }, {passive:false});
 document.addEventListener('mouseleave', () => { mouse.inside=false; });
 // ---- start menu
-function toggleAutoMine(){ autoMine=!autoMine; toast(autoMine?'Mining laser on Â· it cuts whatever you aim the crosshair at':'Mining laser off'); save(); }
 function toggleSound(){ SFX.init(); SFX.setMuted(!SFX.muted); toast(SFX.muted?'Sound off':'Sound on'); save(); syncSettings(); }
 function toggleMusic(){ SFX.init(); MUSIC.setOn(!MUSIC.on); toast(MUSIC.on?'Music on':'Music off'); save(); syncSettings(); }
 function cycleQuality(){ const keys=Object.keys(QUALITY); quality=keys[(keys.indexOf(quality)+1)%keys.length]; applyQuality(); toast(`Quality: ${QUALITY[quality].label}${(quality==='low')!==(savedQuality==='low')?' Â· anti-aliasing changes on next load':''}`); save(); syncSettings(); }
@@ -3786,9 +3783,10 @@ function update(dt){
   const rd=ship.pos.length();
   if (rd>WORLD_R){ ship.vel.addScaledVector(ship.pos.clone().divideScalar(rd), -420*dt); if (rd>WORLD_R+40) ship.pos.multiplyScalar(WORLD_R/rd); }
 
-  // mining: the laser is a toggle (click, Space or L). While it is on, the dish cuts whatever the crosshair is on and
+  // mining: the laser fires only while the trigger is held (LMB, Space or L). It cuts whatever the crosshair is on and
   // nothing else: no auto-tracking of nearby rocks, so the player has to keep the nose on the target. It only fires once
   // the dish has swung onto it.
+  trigger=canFly && !mapOpen && !invOpen && (mouse.down || !!keys[' '] || !!keys['l']);
   target=findTarget(); laserOn=false;
   // the beam always goes to the centre of its target; the heat, sparks and scorch sit where it enters the surface on the dish's side
   if (target){
@@ -3796,7 +3794,7 @@ function update(dt){
     else {laserAim=target.obj.pos.clone();const toDish=shipDishPivotWorld().sub(target.obj.pos).normalize();laserHit=target.type==='pirate'?target.obj.pos.clone():target.obj.pos.clone().addScaledVector(toDish,radiusAlong(target.obj,toDish));}
   }
   else laserAim=laserHit=null;
-  mining=autoMine && canFly && !!target && (target.type==='pirate' || !mineReason(target)) && shipAim.aimed; firing=mining;
+  mining=trigger && canFly && !!target && (target.type==='pirate' || !mineReason(target)) && shipAim.aimed; firing=mining;
   if (mining && target && target.type==='pirate'){
     // the mining laser cuts raiders too
     const p=target.obj; p.hp-=stat('laser').rate*6*dt; laserOn=true;
@@ -3875,7 +3873,7 @@ function updateVisuals(dt, t){
     if (shipDish){
       if(playerModel){shipDish.yaw.rotation.y=-shipAim.yaw;shipDish.pitch.rotation.x=shipAim.pitch;}
       else {shipDish.yaw.rotation.y=shipAim.yaw;shipDish.pitch.rotation.z=shipAim.pitch;}
-      animateDish(shipDish, laserOn, !laserOn && !!laserAim && (firing||autoMine), t);
+      animateDish(shipDish, laserOn, !laserOn && !!laserAim && (firing||trigger), t);
     } }
   // laser: from the dish's focus lens to whatever it is cutting; with nothing in reach it runs out along the nose so you
   // can see where you are pointing.
@@ -4037,7 +4035,7 @@ function updateHud(dt){
     el.dbHull.style.width=(hf*100)+'%'; el.dbHullT.textContent=state.hull>=hp-0.01?'hull sound':(state.credits<2?'no credits':`${repairRate()} pt/s Â· 2 cr/pt`);
     if (!el.station.hidden && document.activeElement!==el.callsign){ panelT+=0.08; if (panelT>1){ panelT=0; renderPanel(); } }
   }
-  el.laserState.textContent=(autoMine?'ARMED Â· ':'')+(laserOn?`CUTTING Â· ${Math.round(heatFx.heat*100)}% heat`:firing?'FIRING':heatFx.heat>0.01?`ready Â· ${Math.round(heatFx.heat*100)}% heat`:'ready'); el.laserState.style.color=laserOn?'var(--amber2)':''; el.radarState.textContent=pulseCd>0?`${pulseCd.toFixed(1)}s`:'READY';
+  el.laserState.textContent=(laserOn?`CUTTING Â· ${Math.round(heatFx.heat*100)}% heat`:firing?'FIRING':heatFx.heat>0.01?`ready Â· ${Math.round(heatFx.heat*100)}% heat`:'ready'); el.laserState.style.color=laserOn?'var(--amber2)':''; el.radarState.textContent=pulseCd>0?`${pulseCd.toFixed(1)}s`:'READY';
   if (target && !docked){
     const t=target.obj; el.target.classList.add('on');
     el.target.classList.toggle('pirate', target.type==='pirate');
@@ -4056,8 +4054,8 @@ function updateHud(dt){
     else if (pilotingCarrier()) segs.push(nearColony()?`<kbd>E</kbd>Berth at ${zone.colony} Â· the market and services`:`Fly the ${CARGO_SHIP.toLowerCase()} to ${zone.colony} Â· within ${fmt(COLONY.near)} press <kbd>E</kbd> to berth`);
     else if (nearStation()) segs.push(`<kbd>E</kbd>Auto-dock with the ${CARGO_SHIP.toLowerCase()} Â· or fly in through either hangar mouth`);
     else if (state.fuel<=0.5 && !parked) segs.push('<kbd>T</kbd>Out of fuel Â· call a tow (15% of credits)');
-    if (target && target.type==='pirate'){ segs.push(autoMine?'Laser on the raider':'<kbd>LMB</kbd>Laser on Â· fire at raider'); }
-    else if (target){ segs.push(!autoMine?'<kbd>LMB</kbd>Laser on to mine':target.obj.barren?'Breaking rock Â· scrap only':`${laserOn?'Cutting':'Aiming at'} ${ORES[target.obj.ore].name}`); segs.push(parked?'<kbd>P</kbd>Release':'<kbd>P</kbd>Park at rock'); }
+    if (target && target.type==='pirate'){ segs.push(trigger?'Laser on the raider':'<kbd>LMB</kbd>Hold to fire at raider'); }
+    else if (target){ segs.push(!trigger?'<kbd>LMB</kbd>Hold to mine':target.obj.barren?'Breaking rock Â· scrap only':`${laserOn?'Cutting':'Aiming at'} ${ORES[target.obj.ore].name}`); segs.push(parked?'<kbd>P</kbd>Release':'<kbd>P</kbd>Park at rock'); }
     else if (parked) segs.push('<kbd>P</kbd>Release');
   }
   const p=segs.join('<span class="sep">Â·</span>');
