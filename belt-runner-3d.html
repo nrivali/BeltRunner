@@ -714,7 +714,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.78';
+const GAME_VERSION = '0.9.79';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -3492,7 +3492,7 @@ function renderInventory(){
   // drop zone any more: dragging a stack anywhere off the grids jettisons it.
   const canDeposit=docked && !pilotingCarrier() && cargoTotal()>0.5;
   let html=`<div class="inv-grid" id="invHold">${S.map(cell).join('')}</div>`
-    + `<div class="row-actions" style="margin:10px 0 2px"><button class="btn ${canDeposit?'primary':''}" data-stowall="1" ${canDeposit?'':'disabled'}>${canDeposit?`Deposit all · ${fmt(cargoTotal())} u`:docked&&!pilotingCarrier()?'Deposit all · hold empty':'Deposit all · dock with the cargo ship'} &nbsp;<kbd>E</kbd></button></div>`;
+    + `<div class="row-actions" style="margin:10px 0 2px"><button class="btn ${canDeposit?'primary':''}" data-stowall="1" ${canDeposit?'':'disabled'}>Deposit all &nbsp;<kbd>E</kbd></button></div>`;   // plain label; the disabled state says when it cannot act
   if (S.length>ns) html+=`<p class="hint" style="color:var(--amber)">Over capacity by ${S.length-ns} slot${S.length-ns>1?'s':''} · jettison something.</p>`;
   html+=us ? `<div class="inv-total"><span>Hold value at Hub prices</span><b>${fmt(total)} cr</b></div>` : `<div class="inv-empty">The hold is empty. Break a rock and fly through the ore it drops.</div>`;
   if (aboard){
