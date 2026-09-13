@@ -552,6 +552,7 @@ table.manifest td.dimmed{color:var(--dim);}
 <script src="assets/asteroids_v2/mesh-collision.js"></script>
 <script src="assets/asteroids_v2/load-asteroids.js"></script>
 <script src="assets/lighting/space-lighting.js"></script>
+<script src="assets/planet_v2/load-planet.js"></script>
 <script>
 (() => {
 'use strict';
@@ -702,7 +703,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.50';
+const GAME_VERSION = '0.9.51';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -1307,7 +1308,7 @@ const stationPointLights=[]; station.traverse(o=>{ if (o.isPointLight) stationPo
 lighting.configureHangar(station);
 let frameNo=0;
 
-// planets (built per zone)
+// planets (built per zone): procedural terrain remains visible until the Blender asset loads
 // The zone's planet sits at the origin. Its surface is noise-displaced so the terminator and the horizon read as terrain from orbit.
 // Planet surface: a baked equirectangular map of lowlands, uplands, craters and, for cold worlds, polar caps, with a bump
 // map from the same height field, over a gently displaced sphere. A fresnel shell gives the limb a glowing atmosphere.
@@ -1334,7 +1335,7 @@ function buildPlanet(def){
     const h=(n-.5)*.008+(n2-.5)*.003; pos.setXYZ(i, tmp.x*p.r*(1+h), tmp.y*p.r*(1+h), tmp.z*p.r*(1+h));   // terrain stays under the 0.6% collision shell
   }
   g.computeVertexNormals();
-  const tex=planetTexture(def);
+  const tex=planetTexture(def); tex.bump.dispose();   // unused by the temporary Lambert surface
   p.group.add(new THREE.Mesh(g, new THREE.MeshLambertMaterial({map:tex.map})));   // Lambert: the planet can fill the whole screen, so its per-pixel cost matters most of all
   const light=new THREE.Color(p.tint).lerp(new THREE.Color(0xffffff), .45);
   const atm=new THREE.Mesh(new THREE.SphereGeometry(p.r*1.06, 64, 40), new THREE.MeshBasicMaterial({color:p.tint, transparent:true, opacity:.12, side:THREE.BackSide})); atm.visible=false; p.group.add(atm);
@@ -1356,9 +1357,15 @@ void main(){
   gl_FragColor=vec4(uColor, vF*.45*vDay); }`});
   p.group.add(new THREE.Mesh(new THREE.SphereGeometry(p.r*1.028, 96, 60), rimMat));
   // no planetary rings: the asteroid belts are the only rings in a zone
-  p.group.position.copy(p.pos); scene.add(p.group); return p;
+  p.group.position.copy(p.pos); scene.add(p.group);
+  window.BeltRunnerPlanets?.attach(p,{renderer,sunDir});
+  return p;
 }
-function removePlanet(p){ scene.remove(p.group); p.group.traverse(o=>{ if(o.geometry) o.geometry.dispose(); }); }
+function removePlanet(p){
+  p.removed=true; scene.remove(p.group);
+  if(window.BeltRunnerPlanets) window.BeltRunnerPlanets.release(p);
+  else p.group.traverse(o=>{ if(o.geometry)o.geometry.dispose(); if(o.material){o.material.map?.dispose();o.material.dispose();} });
+}
 
 // asteroids
 const rockAssets=window.BeltRunnerAsteroids;
