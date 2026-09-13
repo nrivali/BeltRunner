@@ -704,7 +704,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.21';
+const GAME_VERSION = '0.9.22';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D Â· v' + GAME_VERSION;
 
@@ -3783,9 +3783,9 @@ function update(dt){
   const rd=ship.pos.length();
   if (rd>WORLD_R){ ship.vel.addScaledVector(ship.pos.clone().divideScalar(rd), -420*dt); if (rd>WORLD_R+40) ship.pos.multiplyScalar(WORLD_R/rd); }
 
-  // mining: the laser fires only while the trigger is held (LMB, Space or L). It cuts whatever the crosshair is on and
-  // nothing else: no auto-tracking of nearby rocks, so the player has to keep the nose on the target. It only fires once
-  // the dish has swung onto it.
+  // mining: the laser fires while the trigger is held (LMB, Space or L), anywhere, rock or no rock. It cuts whatever the
+  // crosshair is on and nothing else: no auto-tracking of nearby rocks, so the player has to keep the nose on the target,
+  // and it only cuts once the dish has swung onto it.
   trigger=canFly && !mapOpen && !invOpen && (mouse.down || !!keys[' '] || !!keys['l']);
   target=findTarget(); laserOn=false;
   // the beam always goes to the centre of its target; the heat, sparks and scorch sit where it enters the surface on the dish's side
@@ -3794,7 +3794,8 @@ function update(dt){
     else {laserAim=target.obj.pos.clone();const toDish=shipDishPivotWorld().sub(target.obj.pos).normalize();laserHit=target.type==='pirate'?target.obj.pos.clone():target.obj.pos.clone().addScaledVector(toDish,radiusAlong(target.obj,toDish));}
   }
   else laserAim=laserHit=null;
-  mining=trigger && canFly && !!target && (target.type==='pirate' || !mineReason(target)) && shipAim.aimed; firing=mining;
+  mining=trigger && canFly && !!target && (target.type==='pirate' || !mineReason(target)) && shipAim.aimed;
+  firing=trigger && canFly;   // the beam fires whenever the trigger is held, rock or no rock; it only cuts (mining) once it is on a target it can work
   if (mining && target && target.type==='pirate'){
     // the mining laser cuts raiders too
     const p=target.obj; p.hp-=stat('laser').rate*6*dt; laserOn=true;
@@ -3873,7 +3874,7 @@ function updateVisuals(dt, t){
     if (shipDish){
       if(playerModel){shipDish.yaw.rotation.y=-shipAim.yaw;shipDish.pitch.rotation.x=shipAim.pitch;}
       else {shipDish.yaw.rotation.y=shipAim.yaw;shipDish.pitch.rotation.z=shipAim.pitch;}
-      animateDish(shipDish, laserOn, !laserOn && !!laserAim && (firing||trigger), t);
+      animateDish(shipDish, firing, !firing && !!laserAim, t);
     } }
   // laser: from the dish's focus lens to whatever it is cutting; with nothing in reach it runs out along the nose so you
   // can see where you are pointing.
