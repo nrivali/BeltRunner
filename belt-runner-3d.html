@@ -702,7 +702,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.11';
+const GAME_VERSION = '0.9.12';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D Â· v' + GAME_VERSION;
 
@@ -919,12 +919,11 @@ const MUSIC_PROC=(()=>{
     set onGroove(fn){ onGroove=fn; }, set onTrack(fn){ onTrack=fn; },
     get state(){ return ctx?ctx.state:'none'; }, get step(){ return step; }, cue(){ modeUntil=0; } };   // cue(): bring the next section on at the next bar (debug)
 })();
-// The soundtrack: no songs and no synth pads. A recorded deep-space ambience bed (ElevenLabs) is the whole harmony: two
-// voices take turns playing it, each pitched to a different note of a minor scale, crossfading every half minute or so,
-// so the tone keeps moving instead of sitting on one note. Every couple of minutes a short recorded beat phrase fades in
-// over the top and out again. Nothing else plays; if the bed cannot be loaded only the beats remain.
+// The soundtrack: no songs, no synth pads and no ambience bed (the user asked for it to go). The quiet space hum from
+// the sound effects is the only constant, and every couple of minutes a short recorded beat phrase fades in over it and
+// out again. BEDS is kept empty so a bed can be dropped back in later (it would drift between scale notes by pitch).
 const MUSIC=(()=>{
-  const BEDS=['ambient_bed_a'], BEATS=['beat_1','beat_2','beat_3','beat_4'], BED_GAIN=.8;
+  const BEDS=[], BEATS=['beat_1','beat_2','beat_3','beat_4'], BED_GAIN=.8;
   const STEPS=[0,-5,-2,3,5,-3,2,7];   // semitone offsets the bed drifts between: a minor scale round the original note
   let ctx=null, out=null, on=true, vol=1, bed=null, bedIdx=0, voice=null, semi=0, beat=null, timer=null, onTrack=null, onGroove=null, nextBeatAt=0, nextShiftAt=0;
   const bufs={}, rnd=(a,b)=>a+Math.random()*(b-a);

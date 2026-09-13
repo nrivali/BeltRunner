@@ -39,9 +39,6 @@ $clips=@(
   @{name='cash';        kind='sfx'; dur=1.5; text='futuristic cash register sale confirmation, pleasant two-note ascending chime, clean'},
   # --- soundtrack: no songs, just a deep space ambience bed (two variants, looped, crossfaded now and then) and a few
   # short beat phrases that sit on top of it every few minutes (eleven music endpoint)
-  @{name='ambient_bed_a'; kind='music'; ms=75000; text='Deep space ambient pad that keeps moving: slow chord changes every few seconds through a wide minor progression, notes swelling in and fading out, soft airy synth voices, faint hull hum underneath, no single held drone, no rhythm, no drums, calm and vast, seamless loop'},
-  @{name='ambient_bed_b'; kind='music'; ms=75000; text='Evolving cosmic ambient, gentle arpeggiated synth notes drifting and changing over slow shifting chords, warm sub bass swells, sparse bell-like tones far away, no held drone, no drums, weightless and calm, seamless loop'},
-  @{name='ambient_bed_c'; kind='music'; ms=75000; text='Slow ambient space pad with a wandering melodic motif, chords resolving and changing every few bars, soft pulsing textures, distant metallic shimmer, no constant tone, no drums, mysterious and vast, seamless loop'},
   @{name='beat_1'; kind='music'; ms=24000; text='A short sparse downtempo beat phrase to sit over a deep space ambient drone: soft muffled kick, dusty snare, subtle closed hi-hat, 84 bpm, minimal, no melody, fades in and fades out'},
   @{name='beat_2'; kind='music'; ms=24000; text='A short minimal electronic beat phrase over a dark ambient pad: deep kick, clicky rim, soft shaker, 96 bpm, restrained, no melody, fades in and fades out'},
   @{name='beat_3'; kind='music'; ms=24000; text='A short half-time beat phrase over a cosmic ambient drone: heavy slow kick, brushed snare, sparse tuned metallic percussion, 72 bpm, no melody, fades in and fades out'},
