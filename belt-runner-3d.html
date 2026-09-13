@@ -678,8 +678,8 @@ const UPGRADES = {
   cargo:   {name:'Cargo hold',   levels:[{slots:4},{slots:6},{slots:8},{slots:11},{slots:14},{slots:18}], costs:[200,700,2400,7500,20000]},   // slots of STACK (100) units each
   engine:  {name:'Engines',      levels:[{thrust:164,max:250},{thrust:219,max:320},{thrust:281,max:400},{thrust:359,max:490},{thrust:461,max:610}], costs:[300,1100,3500,10000]},   // top speed 250 at level 1, and that is the ceiling (no cruise); thrust scaled with it so the time to reach it is unchanged
   tank:    {name:'Fuel tank',    levels:[{cap:100},{cap:160},{cap:250},{cap:400},{cap:600}], costs:[150,600,2000,6000]},
-  scanner: {name:'Scanner',      levels:[{range:28000,mine:2500},{range:46000,mine:2500},{range:74000,mine:2500},{range:135000,mine:2500}], costs:[400,1800,6000]},   // laser reach is a flat 2500 at every scanner level
-  refinery:{name:'Refinery',     levels:[{bonus:0},{bonus:.15},{bonus:.35},{bonus:.6}], costs:[2500,9000,25000]},
+  scanner: {name:'Scanner',      levels:[{range:28000},{range:46000},{range:74000},{range:135000}], costs:[400,1800,6000]},   // scan range only; laser reach is its own upgrade below
+  range:   {name:'Laser range',  levels:[{reach:2500},{reach:3500},{reach:5000},{reach:7000}], costs:[2500,9000,25000]},   // how far the mining laser reaches (replaces the old refinery)
   hull:    {name:'Hull plating', levels:[{hp:100},{hp:160},{hp:250},{hp:400},{hp:600}], costs:[250,900,3000,9000]},
 };
 const JUMP_COST = 250000, FUEL_PRICE = 1.2, FUEL_BURN = 0.55;   // (no cruise multiplier any more: the engine cap is the top speed)
@@ -713,14 +713,14 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.84';
+const GAME_VERSION = '0.9.85';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
 // ---------------------------------------------------------------- state
 const state = {
   credits:60, cargo:{}, store:{}, fuel:100, jump:false,   // cargo: the ship's hold; store: the cargo ship's storage, which travels with you
-  up:{laser:0,cargo:0,engine:0,tank:0,scanner:0,refinery:0,hull:0}, hull:100,
+  up:{laser:0,cargo:0,engine:0,tank:0,scanner:0,range:0,hull:0}, hull:100,
   depot:{radar:0, laser:0, collectors:0}, droneUnits:0, shipFuel:1200, parts:120,   // cargo ship upgrades: level 0 = not installed; droneUnits: ore the collectors have stowed; shipFuel: the cargo ship's fuel supply
   market:{}, marketNext:{}, marketT:0, mined:0, minedBy:{}, earned:0, time:0,
 };
@@ -768,7 +768,7 @@ const stackValueOrder=(a,b)=>(b.u*price(b.k)-a.u*price(a.k))||(price(b.k)-price(
 function storeStacks(){ const out=[]; for (const k of ORE_KEYS){ let t=state.store[k]||0; while (t>0.5){ const u=Math.min(STACK,t); out.push({k,u}); t-=u; } } return out.sort(stackValueOrder); }
 // Every exclusive ore is an export at the Hub, the only market, so it always carries the premium there.
 const isExport = k => !!ORES[k].zone;
-const price = k => ORES[k].price * state.market[k] * (1+stat('refinery').bonus) * (isExport(k)?EXPORT_BONUS:1);
+const price = k => ORES[k].price * state.market[k] * (isExport(k)?EXPORT_BONUS:1);   // (no refinery bonus any more)
 const rand = (a,b) => a + Math.random()*(b-a);
 const fmt = n => Math.floor(n).toLocaleString('en-US');
 const fmtTime = s => { s=Math.floor(s); const m=Math.floor(s/60), h=Math.floor(m/60); return h? `${h}h ${m%60}m` : `${m}m ${s%60}s`; };
@@ -3099,8 +3099,8 @@ function describe(k,i){
     case 'cargo': return `${L.slots} slots · ${L.slots*STACK} u`;
     case 'engine': return `${L.thrust} thrust · ${L.max} top speed`;
     case 'tank': return `${L.cap} fuel`;
-    case 'scanner': return `${fmt(L.range)} m scan · ${fmt(L.mine)} m laser reach`;
-    case 'refinery': return L.bonus? `+${Math.round(L.bonus*100)}% sale price` : 'raw ore prices';
+    case 'scanner': return `${fmt(L.range)} m scan`;
+    case 'range': return `${fmt(L.reach)} m laser reach`;
     case 'hull': return `${L.hp} hull points`;
   }
 }
@@ -3699,7 +3699,7 @@ function intricateCollide(a){
 const MUZZLE=V3(0,-2.6,19).multiplyScalar(SHIP_SCALE);
 function laserOrigin(){ return ship.pos.clone().add(MUZZLE.clone().applyQuaternion(ship.q)); }   // the nose: where the crosshair ray starts (the beam itself leaves the dish)
 function findTarget(){
-  const reach=stat('scanner').mine, origin=laserOrigin(), dir=shipForward();
+  const reach=stat('range').reach, origin=laserOrigin(), dir=shipForward();
   let best=null, bd=Infinity;
   const test=(pos, r, type, obj, extra)=>{
     const to=pos.clone().sub(origin), t=to.dot(dir); if (t<0) return;
@@ -4011,7 +4011,7 @@ function updateVisuals(dt, t){
   laser.visible=laserGlow.visible=showBeam; hitGlow.visible=showBeam && laserOn;
   hitLight.intensity=0;
   if (showBeam){
-    const from=shipDishFocusWorld(), hit=laserAim ? laserAim.clone() : laserOrigin().addScaledVector(shipForward(), stat('scanner').mine);
+    const from=shipDishFocusWorld(), hit=laserAim ? laserAim.clone() : laserOrigin().addScaledVector(shipForward(), stat('range').reach);
     const dir=hit.clone().sub(from), len=dir.length(); dir.normalize(); const mid=from.clone().addScaledVector(dir, len/2);
     const q=new THREE.Quaternion().setFromUnitVectors(AY, dir); const w=(1.8+state.up.laser*0.7)*(laserOn?1:0.55);
     laser.material.opacity=laserOn?.95:.5; laserGlow.material.opacity=laserOn?.22:.08;
@@ -4182,11 +4182,11 @@ function updateHud(dt){
   if (docked){
     if (!el.station.hidden){ panelT+=0.08; if (panelT>1){ panelT=0; renderPanel(); } }
   }
-  { const reach=stat('scanner').mine; el.laserRange.textContent=lock?`${fmt(lockDist)} / ${fmt(reach)} m`:`${fmt(reach)} m`; }   // range in metres: the locked object's distance against the beam's reach, else just the reach
+  { const reach=stat('range').reach; el.laserRange.textContent=lock?`${fmt(lockDist)} / ${fmt(reach)} m`:`${fmt(reach)} m`; }   // range in metres: the locked object's distance against the beam's reach, else just the reach
   el.laserState.textContent=(laserOn?`CUTTING · ${Math.round(heatFx.heat*100)}% heat`:firing?'FIRING':heatFx.heat>0.01?`ready · ${Math.round(heatFx.heat*100)}% heat`:'ready'); el.laserState.style.color=laserOn?'var(--amber2)':''; el.radarState.textContent=pulseCd>0?`${pulseCd.toFixed(1)}s`:'READY';
   const T=lock?{type:lockType, obj:lock, dist:lockDist, locked:true}:target;   // the panel (top centre) follows the lock when there is one, else the crosshair target
   if (T && !docked){
-    const t=T.obj, reach=stat('scanner').mine; el.target.classList.add('on');
+    const t=T.obj, reach=stat('range').reach; el.target.classList.add('on');
     el.target.classList.toggle('pirate', T.type==='pirate');
     el.tEyebrow.textContent=T.locked?'Locked target':'Target';
     el.tRange.textContent=`${fmt(T.dist)} m`+(T.dist<=reach?'':' · beyond reach');
