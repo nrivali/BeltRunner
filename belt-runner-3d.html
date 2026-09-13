@@ -148,6 +148,7 @@ kbd{font-family:var(--mono);font-size:11px;color:var(--text);background:#151A30;
 .reticle i:nth-child(3){left:0;bottom:0;border-right:none;border-top:none;}
 .reticle i:nth-child(4){right:0;bottom:0;border-left:none;border-top:none;}
 .reticle.hot i{border-color:var(--amber);}
+.reticle.lock i{border-width:3px;width:18px;height:18px;}   /* locked on: heavier, wider corners */
 .reticle .lbl{position:absolute;top:70px;left:50%;transform:translateX(-50%);white-space:nowrap;font-family:var(--mono);font-size:11px;color:var(--text);text-shadow:0 1px 3px #000;}
 .marker{position:fixed;pointer-events:none;z-index:2;transform:translate(-50%,-50%);display:none;text-align:center;}
 .marker.on{display:block;}
@@ -377,6 +378,7 @@ table.manifest td.dimmed{color:var(--dim);}
     <span><kbd>A</kbd> <kbd>D</kbd></span><span>Roll left Â· right</span>
     <span><kbd>â†‘</kbd> <kbd>â†“</kbd></span><span>Pitch</span>
     <span><kbd>LMB</kbd></span><span>Hold to fire the mining laser (<kbd>Space</kbd> or <kbd>L</kbd> too). It cuts only what the crosshair is on: aim the nose at a rock</span>
+    <span><kbd>Q</kbd></span><span>Lock the crosshair on the rock it is on Â· press again to release</span>
     <span><kbd>P</kbd></span><span>Park Â· release</span>
     <span><kbd>R</kbd></span><span>Radar pulse</span>
     <span><kbd>F</kbd></span><span>Cargo ship services (docked) Â· store ore, refit, sell at the Hub</span>
@@ -488,6 +490,7 @@ table.manifest td.dimmed{color:var(--dim);}
       <span><kbd>A</kbd> <kbd>D</kbd> <kbd>â†‘</kbd> <kbd>â†“</kbd></span><span>Roll left and right Â· pitch up and down on keys.</span>
       <span><kbd>R</kbd></span><span>Radar pulse Â· marks every rock in scanner range</span>
       <span><kbd>LMB</kbd></span><span>Hold to fire the mining laser (Space or L too). While you hold it, the dish under the nose swings onto whatever the crosshair is on and cuts it until it breaks. It never picks targets by itself: keep the nose on the rock.</span>
+      <span><kbd>Q</kbd></span><span>Lock the crosshair on the rock it is on. The target stays on that rock wherever you point, until it breaks or leaves laser range. Press Q again to release.</span>
       <span><kbd>P</kbd></span><span>Park beside a rock or planet Â· thrust to leave</span>
       <span>Docking</span><span>Fly slowly into either mouth of the cargo ship's through-hangar, or press <kbd>E</kbd> within 4,500 of it and approach control flies you in. You taxi to the pad at the far end and park nose-out, so you leave straight ahead. Fuel and repairs flow while you sit on the pad, and the services panel moves ore between your hold and the cargo ship's 50-slot storage. The cargo ship warps with you; ore only sells at the Hub.</span>
       <span><kbd>N</kbd></span><span>Open the nav map. The cargo ship makes the jump between zones, so dock in its hangar first; you ride along and arrive in Dock 1.</span>
@@ -705,7 +708,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.25';
+const GAME_VERSION = '0.9.26';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D Â· v' + GAME_VERSION;
 
@@ -2105,7 +2108,7 @@ function loadZone(z){
   for (const a of asteroids) if(!a.dead) removeAsteroid(a); asteroids=[]; clearDrops(); resetCollectors();
   for (const p of planets) removePlanet(p); planets=[];
   clearHazards();
-  target=null; laserOn=false; parked=null; pulse=null; pulseCd=0;
+  target=null; lock=null; laserOn=false; parked=null; pulse=null; pulseCd=0;
   lighting.setZone(z);
   rockMat.color.setHex(z.rock); rockMatSmooth.color.setHex(z.rock); rockMatCave.color.setHex(z.rock);
   for (const k of ORE_KEYS) for (const m of Object.values(oreRockMats[k])) m.color.setHex(z.rock);
@@ -2166,6 +2169,12 @@ let exhausts=[], navLights=[], laserMuzzle=new THREE.Object3D();   // the game i
 // the ship's dish mount, under the nose: dish forward (+x of the turret â†’ +z of the ship), yaw ring up against the hull
 const SHIP_DISH_POS=V3(0,-4.5,7), SHIP_DISH_ARC=Math.PI/2, shipDishQ=new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(V3(0,0,1), V3(0,-1,0), V3(1,0,0))), shipDishQInv=shipDishQ.clone().invert();
 let shipDish=null, shipDishMount=null; const shipAim={yaw:0, pitch:0, aimed:false};
+let lock=null;   // Q: the rock the crosshair is locked on; the target stays on it while it lives and is in reach, wherever the nose points
+function toggleLock(){
+  if (lock){ lock=null; toast('Lock released'); }
+  else if (target && target.type==='rock'){ lock=target.obj; toast(`Locked on ${rockName(lock)}`); }
+  else toast('Nothing in the crosshair to lock on', true);
+}
 let trigger=false, laserAim=null, laserHit=null;   // trigger: the fire button is held this frame (the laser only cuts what the crosshair is on); laserAim is where the beam is going this frame
 function shipDishPivotWorld(){ return ship.pos.clone().add(SHIP_DISH_POS.clone().multiplyScalar(SHIP_SCALE).applyQuaternion(ship.q)); }
 function shipDishAnglesTo(worldPos){ const L=worldPos.clone().sub(shipDishPivotWorld()).applyQuaternion(ship.q.clone().invert()).applyQuaternion(shipDishQInv); return {yaw:Math.atan2(-L.z, L.x), pitch:Math.atan2(L.y, Math.hypot(L.x, L.z))}; }
@@ -2614,6 +2623,7 @@ window.addEventListener('keydown', e => {
   if (k==='n' && !e.repeat) toggleMap();
   if (k==='k' && !e.repeat) toggleSound();
   if (k==='p' && !e.repeat) togglePark();
+  if (k==='q' && !e.repeat && !docked) toggleLock();
   if (k==='r' && !e.repeat) radarPulse();
   if ((k==='i' || e.key==='Tab') && !e.repeat) toggleInventory();
   if (e.key==='Escape' && invOpen){ closeInventory(); return; }
@@ -3771,6 +3781,12 @@ function update(dt){
   // and it only cuts once the dish has swung onto it.
   trigger=canFly && !mapOpen && !invOpen && (mouse.down || !!keys[' '] || !!keys['l']);
   target=findTarget(); laserOn=false;
+  if (lock){   // a locked rock stays the target wherever the nose points, until it breaks or drops out of reach
+    const o=laserOrigin(), d=lock.pos.distanceTo(o)-(lock.asset?lock.boundR:lock.r);
+    if (lock.dead || d>stat('scanner').mine){ lock=null; toast('Lock lost', true); }
+    else if (!(target && target.obj===lock)) target={type:'rock', obj:lock, dist:Math.max(0,d), hitT:0, locked:true};
+    else target.locked=true;
+  }
   // the beam always goes to the centre of its target; the heat, sparks and scorch sit where it enters the surface on the dish's side
   if (target){
     if(target.obj.asset){laserHit=rockAssets.aimPoint(target.obj,shipDishPivotWorld(),target.hitPoint);laserAim=laserHit.clone();}
@@ -3964,8 +3980,8 @@ function updateOverlays(){
   // target reticle
   if (target && started && !docked){
     const p=project(target.obj.pos);
-    if (p.on){ el.reticle.classList.add('on'); el.reticle.classList.toggle('hot', laserOn); el.reticle.style.left=p.x+'px'; el.reticle.style.top=p.y+'px';
-      el.rLbl.textContent=(target.type==='pirate'?`Raider Â· ${Math.max(0,Math.ceil(target.obj.hp))} hp`:`${rockName(target.obj)} Â· ${Math.ceil(100*target.obj.hp/target.obj.hpMax)}%`)+` Â· ${Math.round(target.dist)} u Â· ${Math.round(laserPower(target.dist)*100)}% pwr`; }
+    if (p.on){ el.reticle.classList.add('on'); el.reticle.classList.toggle('hot', laserOn); el.reticle.classList.toggle('lock', !!target.locked); el.reticle.style.left=p.x+'px'; el.reticle.style.top=p.y+'px';
+      el.rLbl.textContent=(target.locked?'LOCK Â· ':'')+(target.type==='pirate'?`Raider Â· ${Math.max(0,Math.ceil(target.obj.hp))} hp`:`${rockName(target.obj)} Â· ${Math.ceil(100*target.obj.hp/target.obj.hpMax)}%`)+` Â· ${Math.round(target.dist)} u Â· ${Math.round(laserPower(target.dist)*100)}% pwr`; }
     else el.reticle.classList.remove('on');
   } else el.reticle.classList.remove('on');
   // depot marker (clamped to the screen edge with an arrow when off screen)
@@ -4040,7 +4056,7 @@ function updateHud(dt){
     else if (nearStation()) segs.push(`<kbd>E</kbd>Auto-dock with the ${CARGO_SHIP.toLowerCase()} Â· or fly in through either hangar mouth`);
     else if (state.fuel<=0.5 && !parked) segs.push('<kbd>T</kbd>Out of fuel Â· call a tow (15% of credits)');
     if (target && target.type==='pirate'){ segs.push(trigger?'Laser on the raider':'<kbd>LMB</kbd>Hold to fire at raider'); }
-    else if (target){ segs.push(!trigger?'<kbd>LMB</kbd>Hold to mine':target.obj.barren?'Breaking rock Â· scrap only':`${laserOn?'Cutting':'Aiming at'} ${ORES[target.obj.ore].name}`); segs.push(parked?'<kbd>P</kbd>Release':'<kbd>P</kbd>Park at rock'); }
+    else if (target){ segs.push(!trigger?'<kbd>LMB</kbd>Hold to mine':target.obj.barren?'Breaking rock Â· scrap only':`${laserOn?'Cutting':'Aiming at'} ${ORES[target.obj.ore].name}`); segs.push(parked?'<kbd>P</kbd>Release':'<kbd>P</kbd>Park at rock'); if (target.type==='rock') segs.push(target.locked?'<kbd>Q</kbd>Release lock':'<kbd>Q</kbd>Lock on'); }
     else if (parked) segs.push('<kbd>P</kbd>Release');
   }
   const p=segs.join('<span class="sep">Â·</span>');
