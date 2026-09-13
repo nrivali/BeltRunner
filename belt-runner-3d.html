@@ -708,7 +708,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.57';
+const GAME_VERSION = '0.9.58';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -1028,6 +1028,7 @@ const SFX=(()=>{
     if (name.endsWith('_control') || name==='warp_ready'){ if (voiceSrc){ try{ voiceSrc.stop(); }catch(e){} } voiceSrc=src; }   // one voice at a time
   }
   return {
+    get ctx(){ return ctx; }, get master(){ return master; }, get loops(){ return loops; }, get buffers(){ return BUF; },   // read-only handles for ?debug
     init, resume, engine:guard(engine), laser:guard(laser), clip,
     ping:guard(()=>sfxOr('radar_ping', ()=>{ tone('sine', 1400, 420, 0.7, 0.18); tone('sine', 2100, 630, 0.5, 0.06, 0.05); })),
     zap:guard((vol=1)=>sfxOr('zap', ()=>{ tone('square', 900, 180, 0.14, 0.12*vol); }, vol, 0.9+Math.random()*0.2)),
