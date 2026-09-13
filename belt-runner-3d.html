@@ -138,7 +138,7 @@ kbd{font-family:var(--mono);font-size:11px;color:var(--text);background:#151A30;
 .toast.bad{border-left-color:var(--red);}
 @keyframes toast{0%{opacity:0;transform:translateY(-6px)}8%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
 .center{left:50%;top:50%;width:22px;height:22px;margin:-11px 0 0 -11px;border:1px solid rgba(232,236,248,.6);border-radius:50%;display:none;box-shadow:0 0 0 1px rgba(0,0,0,.4);}
-.center.on{display:block;}
+.center.on{display:none;}   /* the centre crosshair is retired: the reticle brackets, the hover readout and the Q lock show what the nose is on; keep the .on toggling so it can come back with one word */
 .aimoff{left:50%;top:calc(50% + 28px);transform:translateX(-50%);font-size:12px;color:var(--amber);background:rgba(14,18,36,.85);border:1px solid var(--amber-dim);padding:5px 10px;white-space:nowrap;}
 .center::after{content:'';position:absolute;left:50%;top:50%;width:2px;height:2px;margin:-1px 0 0 -1px;background:var(--muted);}
 .reticle{position:fixed;width:64px;height:64px;margin:-32px 0 0 -32px;pointer-events:none;z-index:2;display:none;}
@@ -720,7 +720,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.30';
+const GAME_VERSION = '0.9.31';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D Â· v' + GAME_VERSION;
 
@@ -2129,7 +2129,9 @@ function loadZone(z){
   if (z.hub){ planets=[]; planetR=0; } else { planets=[buildPlanet(z.planet)]; planetR=planets[0].r; }
   WORLD_R=planetR+WORLD_EDGE_BASE*WORLD_SCALE; worldEdge.scale.setScalar(WORLD_R);
   // the cargo ship orbits the planet in the belts; at the Hub you fly it yourself, so it simply sits where the ship is
-  STATION.orbit=Math.max(DEPOT_ORBIT, planetR+800*WORLD_SCALE); STATION.ang=Math.PI/2; STATION.speed=34; STATION.vel.set(0,0,0); placeDepot();
+  // the carrier starts at a random point on its orbit each time a zone loads, so with the sun fixed per zone the belt is
+  // lit differently every visit and the start is never the same stretch of rocks (the ship spawns docked, so it follows)
+  STATION.orbit=Math.max(DEPOT_ORBIT, planetR+800*WORLD_SCALE); STATION.ang=Math.random()*Math.PI*2; STATION.speed=34; STATION.vel.set(0,0,0); placeDepot();
   buildColony(z); buildTraffic(z);
   z.beltObjs=z.hub ? [] : BASE_BELTS.map((b,i)=>Object.assign({}, b, {ores:z.belts[i], count:Math.round(b.count*z.density*0.65), amountMult:z.amountMult,
     rMin:planetR+b.rMin*WORLD_SCALE, rMax:planetR+b.rMax*WORLD_SCALE, spread:b.spread*WORLD_SCALE}));
