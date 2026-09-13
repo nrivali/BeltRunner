@@ -581,6 +581,10 @@ const ORES = {
 };
 for (const k in ORES){ ORES[k].key=k; ORES[k].hex=parseInt(ORES[k].color.slice(1),16); if(!ORES[k].rarity) ORES[k].rarity='Exclusive'; }
 const ORE_KEYS = Object.keys(ORES);
+// which laser level opens each ore: the five common ores in the order the laser upgrade unlocks them; zone exclusives come
+// one level after the common ore of the same tier (tier 5 at level 5)
+const ORE_UNLOCK={copper:1, iron:2, gold:3, platinum:4, crystal:5};
+for (const k of ORE_KEYS) ORES[k].unlock=ORE_UNLOCK[k]||Math.min(5, ORES[k].hardness+1);
 const COMMON_KEYS = ORE_KEYS.filter(k=>!ORES[k].zone);
 const EXPORT_BONUS = 1.5;
 // Zone data below is authored in base units. At load, distances (belt radii, spreads) are multiplied by
@@ -703,7 +707,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.103';
+const GAME_VERSION = '0.9.104';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -2853,7 +2857,7 @@ function updateDepot(dt){
     if (!dl.rock && dl.retarget<=0){
       dl.retarget=0.6; let best=null, bd=L.range*L.range;
       for (const a of asteroids){
-        if (a.dead || a.barren || a.amount<=0.05) continue;
+        if (a.dead || a.barren || a.amount<=0.05 || ORES[a.ore].unlock>state.depot.laser+1) continue;   // the dish only works ores its own level has opened
         const d=a.pos.distanceToSquared(STATION.pos); if (d>=bd) continue;
         if (!inArc(turretAnglesTo(a.pos), a.pos)) continue;   // too low, or the hull is in the way
         bd=d; best=a;
@@ -3093,10 +3097,11 @@ function buyJump(){
   el.wTime.textContent=fmtTime(state.time); el.wMined.textContent=fmt(state.mined); el.wEarned.textContent=fmt(state.earned)+' cr';
   el.station.hidden=true; docked=false; document.body.classList.remove('in-hangar'); el.win.hidden=false;
 }
-// the mining laser row says only what the next level buys: the damage step (every laser cuts every ore; tougher ore has more health)
+// the mining laser row says what the next level buys: the damage step and the ore it opens (ORE_UNLOCK); tougher ore also has more health
 function laserRowDesc(i, maxed){
   const L=UPGRADES.laser.levels; if (maxed) return `<b>${L[i].rate} dmg/s</b> · Fully Upgraded`;
-  return `${L[i].rate} dmg/s → <b>${L[i+1].rate} dmg/s</b>`;
+  const next=ACTIVE_KEYS.filter(k=>ORES[k].unlock===i+2).map(k=>ORES[k].name);
+  return `${L[i].rate} dmg/s → <b>${L[i+1].rate} dmg/s</b>${next.length?` · unlocks <b>${next.join(', ')}</b>`:''}`;
 }
 function describe(k,i){
   const L=UPGRADES[k].levels[i];
@@ -3184,7 +3189,7 @@ function renderMarket(){
     const exp=isExport(k)?`<span class="delta up">exotic +${Math.round((EXPORT_BONUS-1)*100)}%</span>`:'';
     rows+=`<tr><td><span class="dot" style="background:${ORES[k].color}"></span>${ORES[k].name}${exp}</td><td>${fmt(h)}</td><td>${fmt(s)}</td><td>${p.toFixed(1)}${delta}</td><td>${fmt(v)}</td><td><button class="link" data-sell="${k}">sell</button></td></tr>`;
   }
-  const list=ACTIVE_KEYS.map(k=>{ const d=Math.round((state.market[k]-1)*100); return `<tr><td><span class="dot" style="background:${ORES[k].color}"></span>${ORES[k].name}${ORES[k].zone?' <span class="delta" style="color:var(--dim)">exotic</span>':''}</td><td class="dimmed"></td><td>${price(k).toFixed(1)}${d?`<span class="delta ${d>0?'up':'down'}">${d>0?'▲':'▼'}${Math.abs(d)}%</span>`:''}</td></tr>`; }).join('');
+  const list=ACTIVE_KEYS.map(k=>{ const d=Math.round((state.market[k]-1)*100); return `<tr><td><span class="dot" style="background:${ORES[k].color}"></span>${ORES[k].name}${ORES[k].zone?' <span class="delta" style="color:var(--dim)">exotic</span>':''}</td><td class="dimmed">${ORES[k].unlock>state.up.laser+1?'needs laser Lv'+ORES[k].unlock:''}</td><td>${price(k).toFixed(1)}${d?`<span class="delta ${d>0?'up':'down'}">${d>0?'▲':'▼'}${Math.abs(d)}%</span>`:''}</td></tr>`; }).join('');
   return `<h3 style="margin:22px 0 10px">${z.colony} market</h3>`+(any
     ? `<table class="manifest"><thead><tr><th>Ore</th><th>Hold</th><th>Storage</th><th>cr each</th><th>Value</th><th></th></tr></thead><tbody>${rows}</tbody></table><div class="total"><span>Everything aboard</span><b>${fmt(total)} cr</b></div><div class="row-actions"><button class="btn primary" data-sellall="1">Sell everything</button><button class="btn" data-sellhold="1">Sell hold only</button><button class="btn" data-sellstore="1">Sell storage only</button></div>`
     : `<div class="empty">Nothing aboard to sell. Cut ore in a belt zone and bring it back.</div>`)
@@ -3570,8 +3575,8 @@ function toggleMap(){ if (!started || warping) return; if (disabled || tow){ toa
 function openMap(){ mapOpen=true; if (mapSel===zone) mapSel=null; renderMap(); el.map.hidden=false; el.center.classList.remove('on'); for (const k in keys) keys[k]=false; }
 function closeMap(){ mapOpen=false; el.map.hidden=true; if (started && !docked) el.center.classList.add('on'); }
 function oreRow(k){
-  const o=ORES[k];
-  return `<div class="ore"><span><span class="dot" style="background:${o.color}"></span>${o.name}</span><span class="rar">${o.rarity||'Zone exclusive'}</span><span class="pr">${Math.round(o.price*EXPORT_BONUS)} cr<br><span style="font-size:11px">at the Hub</span></span></div>`;
+  const o=ORES[k], locked=o.unlock>state.up.laser+1;
+  return `<div class="ore"><span><span class="dot" style="background:${o.color}"></span>${o.name}</span><span class="rar">${o.rarity||'Zone exclusive'}${locked?` · needs laser Lv${o.unlock}`:''}</span><span class="pr">${Math.round(o.price*EXPORT_BONUS)} cr<br><span style="font-size:11px">at the Hub</span></span></div>`;
 }
 function renderMap(){
   el.mFuel.textContent=`${Math.floor(state.shipFuel)} / ${CARGO_FUEL_CAP}`;
@@ -3750,7 +3755,9 @@ function findTarget(){
 function mineReason(t){
   if (!t) return null;
   if (t.type==='pirate') return null;
-  return null;   // any laser cuts any rock; tougher ore just has more health
+  const need=t.obj.barren?1:ORES[t.obj.ore].unlock, lvl=state.up.laser+1;   // the laser level opens ores one by one; tougher ore also has more health
+  if (lvl<need) return `Laser Lv${lvl} can't cut ${ORES[t.obj.ore].name} · needs Lv${need}`;
+  return null;
 }
 const tmpQ=new THREE.Quaternion(), tmpV=V3();
 function rotateLocal(axis, angle){ tmpQ.setFromAxisAngle(axis, angle); ship.q.multiply(tmpQ); }
