@@ -293,7 +293,7 @@ table.manifest td.dimmed{color:var(--dim);}
 .ups{display:flex;flex-direction:column;}
 .up{display:grid;grid-template-columns:1fr auto;gap:3px 14px;padding:13px 0;border-top:1px solid var(--line);align-items:center;}
 /* the cargo ship panel's own gauges (storage, fuel supply, parts) read larger than the HUD's copies of the same rule */
-#station .gauge-head span:first-child{font-size:12.5px;} #station .gauge-head .mono{font-size:13.5px;}
+#station .gauge-head span:first-child{font-size:14px;} #station .gauge-head .mono{font-size:15.5px;} #station .gauge .bar{height:10px;} #station .gauge{gap:7px;}
 .up:first-child{border-top:none;padding-top:0;}
 .up-head{display:flex;align-items:baseline;gap:10px;}
 .up-name{font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:.03em;}
@@ -715,7 +715,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.88';
+const GAME_VERSION = '0.9.89';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
