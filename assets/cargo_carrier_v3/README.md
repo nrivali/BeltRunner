@@ -19,6 +19,8 @@ The hull and technical-panel source textures were generated with **built-in Imag
 
 The Blender scene uses Cycles, AgX, a solar key, soft fill, and warm hangar and cool engine lighting. Runtime materials use the existing game sunlight, reflection environment, shadows, and tone mapping. Only the model and material textures are exported; the studio lighting is not added to the game. Existing two hangar lights and three engine effects are retained.
 
+The ceiling lining sits six units below the hull's inner ceiling face to prevent overlapping surfaces from flickering as the camera moves. `repair_hangar_ceiling.py` applies the same correction to the existing Blender source and both GLB exports without rebaking textures. `ceiling-repair.json` records the geometry change and texture preservation; `ceiling-validation.json` records the rendering and passage checks.
+
 The assembled model has **31,056 triangles**, about 17% fewer than the previous carrier's 37,496. It uses four carrier mesh draws and three dish material draws before effects. The GLB is about 18.5 MB; direct-file base64 is larger on disk. This is one detailed hero asset, with a 4K albedo map as the main texture-memory tradeoff. See `asset_report.json` for exact geometry counts and map dimensions.
 
 ## Gameplay integration

@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "ceilingUndersideY": 170,
+  "hullCeilingY": 176,
+  "clearance": 6.0,
+  "blenderVerticesMoved": 8,
+  "exportVerticesMoved": {
+    "cargo_carrier.glb": 24,
+    "cargo_carrier_assembled.glb": 24
+  },
+  "embeddedTexturesUnchanged": true,
+  "backup": "C:\\Users\\rival\\Documents\\BeltRunner\\backups\\hangar-ceiling-20260913T124944Z",
+  "files": {
+    "cargo_carrier.blend": {
+      "beforeSHA256": "eb39d5f509ae36b2654bb2b14da741395f2def903705b0a14072cab39ad8b748",
+      "afterSHA256": "70b8e8ee588dc5f0cd0f9f84cf0f6d8ff989ad1ce8e8ee48d50a978eedf12916"
+    },
+    "cargo_carrier.glb": {
+      "beforeSHA256": "67844d5bea80deab0f7f6c7a1278ee96eac9d120a01b181bea76b63d7762b7a5",
+      "afterSHA256": "b9035531613623b059ed8dd98cf629aeffcfa4f3c00af71f1da41e3fc2ca5165"
+    },
+    "cargo_carrier_assembled.glb": {
+      "beforeSHA256": "ec3331b3c763384e29a3fd1a04673f2deaa9fbd170dee3a9780b4e2a58c58d43",
+      "afterSHA256": "9240cb476bc3414eced04e199563d129c3365b2cd61207cdff8375f375db77ad"
+    },
+    "cargo_carrier_assembled.data.js": {
+      "beforeSHA256": "bbaa522f3cadeb51d27fe9faff0f3dfd91b5843a1990ff36c93f14b343108ca5",
+      "afterSHA256": "459ea0e1875beff788e58f64b07bd3f82834772ebcba07952ff40347c56d687e"
+    }
+  }
+}

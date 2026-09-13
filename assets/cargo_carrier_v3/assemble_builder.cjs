@@ -6,6 +6,7 @@ let source=base.slice(0,base.indexOf('# Beveled pressure hull'))+'\n'+fs.readFil
 source=source.replace("'light':'B4BCCF','mid':'9AA4BF','plate':'828CA9','dark':'303847','structure':'566078'","'light':'E9E3D2','mid':'CFCABA','plate':'89969C','dark':'242C34','structure':'667680'")
  .replace("mat['metalness']=.28 if k not in EMIT else .2;mat['roughness']=.72 if k=='dark' else .48","mat['metalness']=.64 if k in ('dark','structure') else .34;mat['roughness']=.56 if k=='dark' else .37")
  .replace("tint.inputs[0].default_value=.45","tint.inputs[0].default_value=.8")
+ .replace("box('ceiling skin',(0,183,0),(840,14,1800),'dark','interior',0)","# The liner underside is at 170, six units below the hull's 176 ceiling face.\n# Coplanar surfaces here flicker against each other as the hangar camera moves.\nbox('ceiling skin',(0,177,0),(840,14,1800),'dark','interior',0)")
  .replace("'engine_0':(-3480,0,-540),'engine_1':(-3480,0,0),'engine_2':(-3480,0,540)","'engine_0':(-3480,220,0),'engine_1':(-3480,-140,-470),'engine_2':(-3480,-140,470)")
  .replace("'bridge_windows':(900,734,0)","'bridge_windows':(2200,610,0)")
  .replace("anchors={n:empty(n,p) for n,p in ANCHORS.items()}","anchors={n:empty(n,p) for n,p in ANCHORS.items()}\nshape=empty('hull_collision_profile',(0,0,0));shape['definition']=json.dumps({'stations':PROFILE,'exponent':EXPONENT,'engines':[[-3550,-2840,y,z,283] for y,z in ENGINE_CENTERS]})")

@@ -1,0 +1,54 @@
+{
+  "passed": true,
+  "gameSHA256": "b715820079fbad718edefe2164cfbce073cad3d222824dda0e1315e1ca8ec71c",
+  "assets": [
+    {
+      "name": "cargo_carrier.glb",
+      "sha256": "b9035531613623b059ed8dd98cf629aeffcfa4f3c00af71f1da41e3fc2ca5165",
+      "ceilingVertices": 24,
+      "coplanarVertices": 0,
+      "embeddedImages": 4
+    },
+    {
+      "name": "cargo_carrier_assembled.glb",
+      "sha256": "9240cb476bc3414eced04e199563d129c3365b2cd61207cdff8375f375db77ad",
+      "ceilingVertices": 24,
+      "coplanarVertices": 0,
+      "embeddedImages": 4
+    }
+  ],
+  "scriptFallbackIdentical": true,
+  "ceilingGaps": [
+    5.9999847412109375,
+    5.9999847412109375,
+    5.9999847412109375,
+    5.9999847412109375
+  ],
+  "passageRays": 18,
+  "repairedDrawOrderDifference": 0,
+  "originalDrawOrderDifference": 0,
+  "docking": [
+    [
+      -1.7053025658242404e-13,
+      -100,
+      -525.0000000000321
+    ],
+    [
+      5.115907697472721e-12,
+      -100,
+      525.0000000000481
+    ]
+  ],
+  "lights": [
+    {
+      "intensity": 2600,
+      "visible": true
+    },
+    {
+      "intensity": 2600,
+      "visible": true
+    }
+  ],
+  "triangles": 31056,
+  "errors": []
+}

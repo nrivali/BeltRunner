@@ -202,7 +202,9 @@ for i,(y,z) in enumerate(ENGINE_CENTERS):
 
 # Fully modeled hangar with thin panel layers, recessed deck lanes, pads and workstations.
 box('hangar floor',(0,-163,0),(840,26,1800),'dark','interior',0)
-box('ceiling skin',(0,183,0),(840,14,1800),'dark','interior',0)
+# The liner underside is at 170, six units below the hull's 176 ceiling face.
+# Coplanar surfaces here flicker against each other as the hangar camera moves.
+box('ceiling skin',(0,177,0),(840,14,1800),'dark','interior',0)
 for z in range(-780,781,260):
     for x in (-265,0,265):box('deck access tile',(x,-148,z),(252,4,244),'plate','interior',0)
     for s in (-1,1):
