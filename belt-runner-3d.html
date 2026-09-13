@@ -704,7 +704,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.52';
+const GAME_VERSION = '0.9.53';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -2212,8 +2212,9 @@ function shipDishFocusWorld(){
 const shipLight=new THREE.PointLight(0x5ed3f0, 0, 140*SHIP_SCALE);
 // the nose flashlight (F): a warm spot beam that lives in the scene, not in shipGroup (the ship is rebuilt when the model or
 // the paint changes), and follows the nose every frame from updateVisuals
-const torch=new THREE.SpotLight(0xfff1d6, 0, 4000, Math.PI/10, .45, 1); torch.castShadow=false; scene.add(torch); scene.add(torch.target);
-const TORCH_POWER=3500; let torchOn=false;
+// a big searchlight: four times the old power, nearly twice the reach and a wider cone, so the dark side of a rock lights up from well outside laser range
+const torch=new THREE.SpotLight(0xfff1d6, 0, 7000, Math.PI/8, .4, 1); torch.castShadow=false; scene.add(torch); scene.add(torch.target);
+const TORCH_POWER=14000; let torchOn=false;
 function toggleTorch(){ torchOn=!torchOn; torch.intensity=torchOn?TORCH_POWER:0; toast(torchOn?'Flashlight on':'Flashlight off'); save(); }
 function wingShape(style){
   const s=new THREE.Shape(); const pts={
