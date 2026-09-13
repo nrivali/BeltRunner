@@ -467,7 +467,7 @@ table.manifest td.dimmed{color:var(--dim);}
       <span><kbd>A</kbd> <kbd>D</kbd> <kbd>↑</kbd> <kbd>↓</kbd></span><span>Roll left and right · pitch up and down on keys.</span>
       <span><kbd>R</kbd></span><span>Radar pulse · marks every rock in scanner range</span>
       <span><kbd>LMB</kbd></span><span>Hold to fire the mining laser (Space or L too). While you hold it, the dish under the nose swings onto whatever the crosshair is on and cuts it until it breaks. It never picks targets by itself: keep the nose on the rock.</span>
-      <span><kbd>Q</kbd></span><span>Hover the mouse over a rock or raider (the label names its ore), then press Q to lock the crosshair on it. The ship steers itself to keep it in the crosshair (you keep the throttle and roll) until you press Q again, or it breaks up or goes beyond 100,000 m. A locked object always shows its range, and its details sit top centre.</span>
+      <span><kbd>Q</kbd></span><span>Hover the mouse over a rock, a raider or the cargo ship (the label names it), then press Q to lock the crosshair on it. The ship steers itself to keep it in the crosshair (you keep the throttle and roll) until you press Q again, or it breaks up or goes beyond 100,000 m. A locked object always shows its range, and its details sit top centre.</span>
       <span><kbd>F</kbd></span><span>Flashlight: a spot beam from the nose, on or off. While docked F opens the cargo ship services instead.</span>
       <span>Docking</span><span>Fly slowly into either mouth of the cargo ship's through-hangar, or press <kbd>E</kbd> within 4,500 of it and approach control flies you in. You taxi to the pad at the far end and park nose-out, so you leave straight ahead. Fuel and repairs flow while you sit on the pad, and the services panel moves ore between your hold and the cargo ship's 50-slot storage. The cargo ship warps with you; ore only sells at the Hub.</span>
       <span><kbd>N</kbd></span><span>Open the nav map. The cargo ship makes the jump between zones, so dock in its hangar first; you ride along and arrive in Dock 1.</span>
@@ -708,7 +708,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.67';
+const GAME_VERSION = '0.9.68';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -2192,7 +2192,7 @@ let shipDish=null, shipDishMount=null; const shipAim={yaw:0, pitch:0, aimed:fals
 let lock=null;   // Q: the rock the crosshair is locked on; the ship steers itself to keep the crosshair on it until Q again, or it breaks or falls far out of range
 let hover=null, lockType='rock', lockDist=0;   // hover: what the mouse is over this frame ({type, obj, dist}); lockType/lockDist describe the lock
 const LOCK_RANGE=100000;   // a lock holds out to this distance (well beyond laser reach: it is for navigating to things too)
-const hoverName=h=>h.type==='pirate'?'Raider':rockName(h.obj);
+const hoverName=h=>h.type==='pirate'?'Raider':h.type==='station'?CARGO_SHIP:rockName(h.obj);
 function toggleLock(){
   if (lock){ lock=null; toast('Lock released'); }
   else if (hover){ lock=hover.obj; lockType=hover.type; lockDist=hover.dist; toast(`Locked on ${hoverName(hover)}`); }
@@ -2214,6 +2214,7 @@ function hoverPick(){
   };
   for (const a of asteroids) test(a, a.asset?a.boundR:a.r, 'rock');
   for (const p of pirates) test(p, p.r, 'pirate');
+  test(STATION, DEPOT.half.x, 'station');   // the cargo ship can be hovered and locked too (its half-length stands in for a radius)
   return best;
 }
 let trigger=false, laserAim=null, laserHit=null;   // trigger: the fire button is held this frame (the laser only cuts what the crosshair is on); laserAim is where the beam is going this frame
@@ -2925,7 +2926,7 @@ function bumpRock(a, dir, speed){
   const cap=speed+40; if (a.vel.length()>cap) a.vel.setLength(cap);   // a shove over several frames never launches the rock faster than the ship hit it
 }
 function enterHangar(b){
-  docked=true; dockBay=b; mining=false; laserOn=false; parked=null; depWait=true; throttle=0; ship.vel.set(0,0,0);
+  docked=true; dockBay=b; mining=false; laserOn=false; parked=null; lock=null; depWait=true; throttle=0; ship.vel.set(0,0,0);
   el.center.classList.remove('on'); SFX.clip('dock', SFX.dock);
   // the hangar view: HUD clears, the camera walks slowly round the ship on the pad, and the services panel opens beside it
   document.body.classList.add('in-hangar'); hangarT=0; renderPanel(); el.station.hidden=false; openInventory();   // the inventory opens on the left, with the cargo ship's storage under your hold
@@ -2948,7 +2949,7 @@ let cut=null;
 // the colony's own traffic.
 const HOLD={name:'Holding station', berth:true, hold:true, side:1, park:V3(-40000, 14000, 56000), q:levelHeading(V3(40000, -9000, -56000).normalize())};
 function enterBerth(b){
-  docked=true; dockBay=b; mining=false; laserOn=false; parked=null; depWait=true; throttle=0; ship.vel.set(0,0,0);
+  docked=true; dockBay=b; mining=false; laserOn=false; parked=null; lock=null; depWait=true; throttle=0; ship.vel.set(0,0,0);
   el.center.classList.remove('on'); SFX.clip('dock', SFX.dock); setTimeout(()=>SFX.clip('colony_control'), 900);
   document.body.classList.remove('in-cut'); document.body.classList.add('in-hangar'); hangarT=0; renderPanel(); el.station.hidden=false; openInventory();
   toast(`Holding station off ${zone.colony} · the market is open`); save();
@@ -3866,8 +3867,8 @@ function update(dt){
   trigger=canFly && !mapOpen && !invOpen && (mouse.down || !!keys[' '] || !!keys['l']);
   target=findTarget(); laserOn=false;
   if (lock){   // Q lock: the ship steers itself to keep the crosshair on the locked object (see steering); the laser still only cuts what the crosshair is on
-    const gone=lockType==='pirate'?!pirates.includes(lock):lock.dead;
-    lockDist=Math.max(0, lock.pos.distanceTo(laserOrigin())-(lock.asset?lock.boundR:lock.r));
+    const gone=lockType==='pirate'?!pirates.includes(lock):lockType==='station'?false:lock.dead;   // the cargo ship never goes away
+    lockDist=Math.max(0, lock.pos.distanceTo(laserOrigin())-(lockType==='station'?DEPOT.half.x:lock.asset?lock.boundR:lock.r));
     if (gone || lockDist>LOCK_RANGE){ toast(gone?(lockType==='pirate'?'Lock lost · raider destroyed':'Lock lost · rock broke up'):'Lock lost · out of range', true); lock=null; }   // lapses when it is destroyed or falls far out of range
     else if (target && target.obj===lock) target.locked=true;
   }
@@ -4073,7 +4074,7 @@ function updateOverlays(){
   // hover readout beside the cursor: name and distance of whatever the mouse is over (the only place range shows for an unlocked object)
   hover=hoverPick();
   if (hover){ el.hoverLbl.classList.add('on'); el.hoverLbl.style.left=Math.min(W-160, mouse.x+16)+'px'; el.hoverLbl.style.top=Math.min(H-30, mouse.y+16)+'px';
-    el.hoverLbl.textContent=hover.type==='pirate'?'Raider':hover.obj.barren?'Barren':ORES[hover.obj.ore].name; }   // just the ore type; the target panel has the rest once locked
+    el.hoverLbl.textContent=hover.type==='pirate'?'Raider':hover.type==='station'?CARGO_SHIP:hover.obj.barren?'Barren':ORES[hover.obj.ore].name; }   // just the ore type; the target panel has the rest once locked
   else el.hoverLbl.classList.remove('on');
   // (no marker under the locked object: the target panel at the top carries its name and range)
   // target reticle
@@ -4140,7 +4141,9 @@ function updateHud(dt){
     el.target.classList.toggle('pirate', T.type==='pirate');
     el.tEyebrow.textContent=T.locked?'Locked target':'Target';
     el.tRange.textContent=`${fmt(T.dist)} m`+(T.dist<=reach?'':' · beyond reach');
-    if (T.type==='pirate'){
+    $('tHpRow').style.display=T.type==='station'?'none':'';   // the carrier has no health bar
+    if (T.type==='station'){ el.tName.textContent=CARGO_SHIP; el.tSize.textContent='Carrier'; el.tWarn.textContent=''; el.tWarn.style.display='none'; }
+    else if (T.type==='pirate'){
       el.tName.textContent='Pirate raider'; el.tSize.textContent='Ship';
       el.tHp.style.width=(100*Math.max(0,t.hp)/t.maxHp)+'%'; el.tHpT.textContent=`${Math.max(0,Math.ceil(t.hp))} / ${t.maxHp}`;
       el.tWarn.textContent=t.state==='attack'?'Hostile · laser cuts it':''; el.tWarn.style.display=t.state==='attack'?'block':'none';
