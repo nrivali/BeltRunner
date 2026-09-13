@@ -708,7 +708,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.59';
+const GAME_VERSION = '0.9.60';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -3769,9 +3769,9 @@ function update(dt){
     }
     yaw=Math.max(-1,Math.min(1,yaw)); roll=Math.max(-1,Math.min(1,roll)); pitch=Math.max(-1,Math.min(1,pitch));
     const big=pilotingCarrier(), TURN=(big?9:30)*Math.PI/180;   // yaw and pitch: 30 degrees per second at full deflection; the carrier answers at a third of that
-    rotateLocal(AY, yaw*TURN*dt); rotateLocal(AX, -pitch*TURN*dt); rotateLocal(AZ, roll*(big?.35:1.2)*dt);
-    // auto-recenter: with no roll input the ship eases its wings back level to the belt plane
-    if (!roll){ const r=shipRight(); const lean=Math.max(-1,Math.min(1,r.y)); rotateLocal(AZ, lean*(big?.5:1.4)*dt); }
+    rotateLocal(AY, yaw*TURN*dt); rotateLocal(AX, -pitch*TURN*dt); rotateLocal(AZ, roll*(big?.35:.6)*dt);   // roll: 0.6 rad/s on the ship (half what it was)
+    // no auto-recenter on the ship: it stays at whatever bank you leave it at. The carrier still eases its deck level with no roll input.
+    if (!roll && big){ const r=shipRight(); const lean=Math.max(-1,Math.min(1,r.y)); rotateLocal(AZ, lean*.5*dt); }
     ship.q.normalize();
     // ease the free-look camera back to straight ahead once the ship answers again
     lookYaw*=Math.exp(-4*dt); lookPitch*=Math.exp(-4*dt);
