@@ -393,7 +393,7 @@ table.manifest td.dimmed{color:var(--dim);}
 <div class="hud toasts" id="toasts"></div>
 <div class="hud notice" id="fullNotice" hidden><b>CARGO HOLD FULL</b><span>Return to the cargo ship to stow it · press <kbd>E</kbd> within 2,250 to auto-dock</span></div>
 <div id="tut" class="tut" hidden>
-  <div class="tut-head"><span class="eyebrow" id="tutStep">Tutorial</span><button class="link" id="tutSkip">Skip tutorial</button></div>
+  <div class="tut-head"><span class="eyebrow" id="tutStep">Tutorial</span><span><button class="link" id="tutVoice" title="Play the line again">🔊 Replay</button> &nbsp; <button class="link" id="tutSkip">Skip tutorial</button></span></div>
   <div class="tut-title" id="tutTitle"></div>
   <div class="tut-text" id="tutText"></div>
   <div class="tut-foot"><button class="btn primary" id="tutNext">Next &nbsp;<kbd>Enter</kbd></button><span class="tut-wait" id="tutWait"></span></div>
@@ -456,6 +456,7 @@ table.manifest td.dimmed{color:var(--dim);}
       <div class="setting"><span>Music volume</span><span class="vol"><input type="range" id="sMusicVol" min="0" max="100" value="100"><b id="sMusicVolT" class="mono">100%</b></span></div>
       <div class="setting"><span>Quality</span><button id="sQuality" class="btn">Balanced</button></div>
       <div class="setting"><span>HUD size</span><span class="vol"><input type="range" id="sHud" min="70" max="160" step="5" value="100"><b id="sHudT" class="mono">100%</b></span></div>
+      <div class="setting"><span>Tutorial</span><button id="sTut" class="btn">Run again</button></div>
       <div class="setting"><span>Saved game</span><button id="sReset" class="btn">Wipe save</button></div>
       <button class="btn menu-back">Back</button>
     </div>
@@ -710,7 +711,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.108';
+const GAME_VERSION = '0.9.109';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -1013,7 +1014,10 @@ const SFX=(()=>{
   // gains driven from engine() and laser(); one-shots go through sfxOr(), which falls back to the old procedural sound
   // whenever a clip is missing or has not decoded yet, so the game is never silent.
   const CLIP_GAIN={warp_charge:.8, warp_jump:.9, dock:.7, stow:.6, cash:.6, colony_control:.9, approach_control:.9, warp_ready:.9,
-    laser_on:.5, laser_off:.4, laser_bite:.45, rock_break:.7, radar_ping:.5, zap:.35, hit:.7, boom:.8, boom_big:1, chime:.5, pickup:.45, alarm:.6, click:.3};
+    laser_on:.5, laser_off:.4, laser_bite:.45, rock_break:.7, radar_ping:.5, zap:.35, hit:.7, boom:.8, boom_big:1, chime:.5, pickup:.45, alarm:.6, click:.3,
+    // Flight Ops: the tutorial's voice lines, one per step (see TUT)
+    tut_launch:.95, tut_steer:.95, tut_hud:.95, tut_radar:.95, tut_lock:.95, tut_mine:.95, tut_inv:.95, tut_return:.95, tut_hangar:.95, tut_stow:.95, tut_refit:.95, tut_hub:.95, tut_depart:.95, tut_done:.95};
+  const isVoice=name=>name.endsWith('_control') || name==='warp_ready' || name.startsWith('tut_');
   const LOOP_NAMES=['engine_idle','engine_thrust','engine_boost','retro','laser_beam','laser_cut','space_hum'];
   const BUF={}, loops={}; let voiceSrc=null, clipsLoaded=false;
   function loadClips(){
@@ -1031,11 +1035,12 @@ const SFX=(()=>{
   function clip(name, fallback){
     if (!ctx){ if (fallback) fallback(); return; }
     const src=play(name); if (!src){ if (fallback) fallback(); return; }
-    if (name.endsWith('_control') || name==='warp_ready'){ if (voiceSrc){ try{ voiceSrc.stop(); }catch(e){} } voiceSrc=src; }   // one voice at a time
+    if (isVoice(name)){ stopVoice(); voiceSrc=src; }   // one voice at a time
   }
+  function stopVoice(){ if (voiceSrc){ try{ voiceSrc.stop(); }catch(e){} voiceSrc=null; } }
   return {
     get ctx(){ return ctx; }, get master(){ return master; }, get loops(){ return loops; }, get buffers(){ return BUF; },   // read-only handles for ?debug
-    init, resume, engine:guard(engine), laser:guard(laser), clip,
+    init, resume, engine:guard(engine), laser:guard(laser), clip, stopVoice,
     ping:guard(()=>sfxOr('radar_ping', ()=>{ tone('sine', 1400, 420, 0.7, 0.18); tone('sine', 2100, 630, 0.5, 0.06, 0.05); })),
     zap:guard((vol=1)=>sfxOr('zap', ()=>{ tone('square', 900, 180, 0.14, 0.12*vol); }, vol, 0.9+Math.random()*0.2)),
     hit:guard(()=>sfxOr('hit', ()=>{ burst('lowpass', 900, 0.28, 0.5); tone('sine', 130, 50, 0.25, 0.3); })),
@@ -2673,7 +2678,7 @@ const el={credits:$('credits'),goalFill:$('goalFill'),goalPct:$('goalPct'),fuelT
   station:$('station'),pCredits:$('pCredits'),manifest:$('manifest'),upgrades:$('upgrades'),closeSvc:$('closeSvc'),reset:$('reset'),
   hullText:$('hullText'),hullFill:$('hullFill'),dmg:$('dmg'),thrText:$('thrText'),thrFill:$('thrFill'),
   win:$('win'),wTime:$('wTime'),wMined:$('wMined'),wEarned:$('wEarned'),keepFlying:$('keepFlying'),intro:$('intro'),
-  menuMain:$('menuMain'),menuSettings:$('menuSettings'),menuControls:$('menuControls'),mContinue:$('mContinue'),mNew:$('mNew'),mSaveInfo:$('mSaveInfo'),mNewInfo:$('mNewInfo'),mControls:$('mControls'),mSettings:$('mSettings'),sSound:$('sSound'),sMusic:$('sMusic'),sQuality:$('sQuality'),sHud:$('sHud'),sHudT:$('sHudT'),sReset:$('sReset'),
+  menuMain:$('menuMain'),menuSettings:$('menuSettings'),menuControls:$('menuControls'),mContinue:$('mContinue'),mNew:$('mNew'),mSaveInfo:$('mSaveInfo'),mNewInfo:$('mNewInfo'),mControls:$('mControls'),mSettings:$('mSettings'),sSound:$('sSound'),sMusic:$('sMusic'),sQuality:$('sQuality'),sHud:$('sHud'),sHudT:$('sHudT'),sReset:$('sReset'),sTut:$('sTut'),
   zoneName:$('zoneName'),depotName:$('depotName'),laserState:$('laserState'),laserRange:$('laserRange'),radarState:$('radarState'),
   cine:$('cine'),cineCap:$('cineCap'),cineFade:$('cineFade'),depart:$('depart'),fieldMarker:$('fieldMarker'),fArr:$('fArr'),fieldLbl:$('fieldLbl'),fieldState:$('fieldState'),threatState:$('threatState'),
   dockedEyebrow:$('dockedEyebrow'),blips:[...document.querySelectorAll('.blip')],map:$('map'),chart:$('chart'),zinfo:$('zinfo'),mFuel:$('mFuel'),mapClose:$('mapClose')};
@@ -4305,31 +4310,41 @@ function frame(now){
 // docking, the hangar services and the refit list. Steps either wait for a Next click (Enter) or advance on their own when
 // the thing they asked for happens. Progress is saved as state.tut (-1 once finished or skipped).
 if (state.tut===undefined) state.tut=0;
-const tutFlags={pulsed:false};
+const tutFlags={pulsed:false, flown:false, head0:null};
+// Every step is spoken by Flight Ops (a recorded ElevenLabs line, sfx/tut_<id>.mp3, played once when the step appears and
+// again from the card's Replay button); the card text is the short written version with the keys. Steps with `auto` wait
+// for the pilot to actually do the thing; the rest wait for Next.
 const TUT=[
-  {id:'launch', title:'Welcome aboard', text:'', auto:()=>!cut},
-  {id:'controls', title:'Your controls', ring:['.hud-bl .controls'],
-    text:'Everything you can press is listed bottom-left. The mouse steers, <kbd>W</kbd> <kbd>S</kbd> work the throttle, <kbd>A</kbd> <kbd>D</kbd> roll and <kbd>X</kbd> cuts the throttle. Try a lap now if you like.'},
-  {id:'hud', title:'Ship and status', ring:['.hud-tl','.hud-tr'],
-    text:'Bottom-centre is your ship: hull, fuel, speed, thrust and cargo. Credits and the jump-drive fund are in the inventory (<kbd>I</kbd>). Top-right is the situation: zone, speed, distance to your cargo ship, the laser and its heat, the radar, and whatever you are targeting.'},
+  {id:'launch', title:'Welcome aboard', text:'Flight Ops is on the line. Approach control is taxiing you out of the hangar; the ship is yours the moment it lets go.', auto:()=>!cut, wait:'taxiing out'},
+  {id:'steer', title:'Take the stick', ring:['.hud-bl .controls'], wait:'open the throttle and turn',
+    text:'The mouse steers. <kbd>W</kbd> <kbd>S</kbd> work the throttle, <kbd>A</kbd> <kbd>D</kbd> roll, <kbd>X</kbd> cuts the throttle. Open her up and give me a turn.', auto:()=>tutFlags.flown},
+  {id:'hud', title:'Ship and world', ring:['.hud-tl','.hud-tr'],
+    text:'Bottom centre is your ship: hull, fuel, speed, thrust and cargo. Top right is the world: zone, laser, radar, and whatever you are looking at.'},
   {id:'radar', title:'Find ore', ring:['#radarState'], wait:'press R',
-    text:'Press <kbd>R</kbd> to pulse the radar. Every rock it reaches is marked on screen and on the scanner for a while. Ore rocks show veins and crystals in their ore\'s colour; plain grey rocks are barren.', auto:()=>tutFlags.pulsed},
-  {id:'mine', title:'Mine some copper', ring:['#target'], wait:'collect copper',
-    text:'Find a copper rock (orange veins) and get within laser reach. Hold the mining laser (left mouse, <kbd>Space</kbd> or <kbd>L</kbd>): the dish under the nose swings onto the rock and cuts while you hold, until it breaks, and the health bar top-right shows how it is going. The ore comes loose as glowing pickups; fly near and they are pulled aboard.', auto:()=>state.cargo.copper>=1},
-  {id:'return', title:'Back to the cargo ship', ring:['#marker'], wait:'dock with the cargo ship',
-    text:'Copper aboard. Follow the CARGO SHIP marker home: the carrier with the hangar is yours, and it warps with you. Within 2,250 press <kbd>E</kbd> and approach control flies you into the hangar, or fly straight in through either hangar mouth yourself.', auto:()=>docked},
-  {id:'hangar', title:'In the hangar', ring:['.hud-tl'],
-    text:'While you sit on the pad your tank fills from the cargo ship\'s fuel supply and hull damage is patched from its store of repair parts, one part per hull point. Both run down, and both restock at the Hub for credits from the cargo ship panel, so keep an eye on their gauges. Nothing sells here: the cargo ship has 50 storage slots of its own, and the inventory moves stacks between your hold and that storage.'},
-  {id:'services', title:'Storage and refits', ring:['#station .panel'],
-    text:'The services panel is open beside you (<kbd>F</kbd> hides and shows it). To move ore aboard the cargo ship, open your inventory (<kbd>Tab</kbd>) while docked: its storage grid appears under your hold, and stacks drag or double-click across. Ore only sells at the Hub, a colony zone on the nav map (<kbd>N</kbd>); the cargo ship, storage and all, warps there with you. The refit list below is where the money goes.'},
-  {id:'upgrades', title:'Personal ship refits', ring:['#upgrades'],
-    text:'Each refit shows its current level and the next. Laser, engine, tank, cargo, scanner and hull all pay for themselves; a bigger hold and a stronger laser fastest. Below them are the cargo ship upgrades: radar, the mining dish and collector drones that stow what they gather in its storage. The jump drive at the bottom is the long game.'},
+    text:'Press <kbd>R</kbd> to pulse the radar. Every rock it reaches is marked for a while. Ore shows as coloured veins and crystals; plain grey rock is barren, so do not waste the laser on it.', auto:()=>tutFlags.pulsed},
+  {id:'lock', title:'Lock a copper rock', ring:['#target'], wait:'press Q on a copper rock',
+    text:'Find a copper rock (orange veins), put the mouse on it and press <kbd>Q</kbd> to lock it. The target panel shows its size and what is left in it.', auto:()=>!!lock && lockType==='rock' && lock.ore==='copper' && !lock.barren},
+  {id:'mine', title:'Cut it', ring:['#target'], wait:'collect copper',
+    text:'Get within laser reach and hold the left mouse button (<kbd>Space</kbd> or <kbd>L</kbd> too). The dish under the nose cuts while you hold. When the rock breaks, fly through the glow and the ore comes aboard.', auto:()=>state.cargo.copper>=1},
+  {id:'inv', title:'Your hold', wait:'press Tab',
+    text:'Copper in the hold. Press <kbd>Tab</kbd> for your inventory: four slots, one stack each. Drag a stack off the grid to jettison it if you ever need the room.', auto:()=>invOpen},
+  {id:'return', title:'Head home', ring:['#marker'], wait:'dock with the cargo ship',
+    text:'Follow the CARGO SHIP marker. Within 2,250 press <kbd>E</kbd> and approach control brings you in, or fly slowly into either hangar mouth yourself.', auto:()=>docked},
+  {id:'hangar', title:'On the pad', ring:['.hud-tl'],
+    text:'Your tank fills from the cargo ship\'s fuel supply and your hull mends from its repair parts, one part per hull point. Both run down, and both restock at the Hub.'},
+  {id:'stow', title:'Stow the haul', wait:'move copper into storage',
+    text:'Open the inventory (<kbd>Tab</kbd>) and drag your copper down into the cargo ship\'s storage: 50 slots, and it all warps with you. Your hold is for the trip out; the storage is for the haul.', auto:()=>(state.store.copper||0)>=1},
+  {id:'refit', title:'Refits', ring:['#upgrades'],
+    text:'The services panel (<kbd>F</kbd>) lists your refits: laser, engine, tank, cargo, scanner, hull. A bigger hold and a stronger laser pay for themselves fastest. The cargo ship\'s own upgrades sit below them.'},
+  {id:'hub', title:'Selling', ring:['#toHub'],
+    text:'Nothing sells out here. Press <kbd>N</kbd> for the nav map, or <b>Warp to the Hub</b> in the panel. Meridian Colony buys everything, and it is where the cargo ship refuels and restocks.'},
   {id:'depart', title:'Back out', ring:['#depart'], wait:'press Depart',
-    text:'Press <b>Depart</b> (or <kbd>W</kbd> on the pad) to launch. Worth knowing: <kbd>N</kbd> opens the nav map for warping between zones, <kbd>T</kbd> calls a tow if you run dry (15% of credits), <kbd>I</kbd> opens your inventory, <kbd>Esc</kbd> pauses. Raiders roam the richer fields; the laser cuts them too.', auto:()=>!docked && !cut},
-  {id:'done', title:'Tutorial complete', text:'You are on your own now. Fill the hold, stow it aboard the cargo ship, warp to the Hub to sell, refit, repeat. Good hunting.', final:true},
+    text:'Press <b>Depart</b> (or <kbd>W</kbd> on the pad) to launch. Raiders roam the richer fields, and the laser cuts them too. <kbd>T</kbd> calls a tow if you ever run dry.', auto:()=>!docked && !cut},
+  {id:'done', title:'Tutorial complete', text:'That is the loop: fill the hold, stow it, warp to the Hub, sell, refit, repeat. Flight Ops out. Good hunting.', final:true},
 ];
-const tutEl={box:$('tut'), step:$('tutStep'), title:$('tutTitle'), text:$('tutText'), next:$('tutNext'), wait:$('tutWait'), skip:$('tutSkip'), rings:[$('tutRing'),$('tutRing2')]};
+const tutEl={box:$('tut'), step:$('tutStep'), title:$('tutTitle'), text:$('tutText'), next:$('tutNext'), wait:$('tutWait'), skip:$('tutSkip'), voice:$('tutVoice'), rings:[$('tutRing'),$('tutRing2')]};
 let tutShown=-1;
+function tutSpeak(){ if (state.tut<0 || !started) return; SFX.clip('tut_'+TUT[state.tut].id); }
 function tutLaunch(){
   // start on the pad in Bay 1 and let approach control taxi the ship out (watched from the flight camera, no cutscene)
   placeDepot(); const b=planetBay();
@@ -4340,25 +4355,29 @@ function tutLaunch(){
 function tutAdvance(){
   if (state.tut<0) return;
   const s=TUT[state.tut];
-  if (s.final){ state.tut=-1; save(); toast('Tutorial complete'); SFX.chime(); tutRender(); return; }
-  state.tut++; tutFlags.pulsed=false; save(); tutRender();
+  if (s.final){ state.tut=-1; save(); SFX.stopVoice(); toast('Tutorial complete'); SFX.chime(); tutRender(); return; }
+  state.tut++; tutFlags.pulsed=false; tutFlags.flown=false; tutFlags.head0=null; save(); tutRender();
 }
-function tutSkip(){ state.tut=-1; save(); tutRender(); toast('Tutorial skipped · the controls list stays bottom-left'); }
+function tutSkip(){ state.tut=-1; save(); SFX.stopVoice(); tutRender(); toast('Tutorial skipped · Settings can run it again'); }
+function tutRestart(){ state.tut=0; tutShown=-1; tutFlags.pulsed=false; tutFlags.flown=false; tutFlags.head0=null; save(); if (started){ tutRender(); toast('Tutorial restarted'); } }
 function tutRender(){
   const on=state.tut>=0 && started;
   tutEl.box.hidden=!on; if (!on){ for (const r of tutEl.rings) r.hidden=true; tutShown=-1; return; }
   if (tutShown===state.tut) return; tutShown=state.tut;
   const s=TUT[state.tut];
-  tutEl.step.textContent=`Tutorial ${state.tut+1} / ${TUT.length}`; tutEl.title.textContent=s.title; tutEl.text.innerHTML=s.text;
+  tutEl.step.textContent=`Flight Ops · ${state.tut+1} / ${TUT.length}`; tutEl.title.textContent=s.title; tutEl.text.innerHTML=s.text;
   tutEl.next.hidden=!!s.auto; tutEl.wait.textContent=s.auto ? `waiting · ${s.wait||''}` : '';
   tutEl.next.innerHTML=s.final ? 'Finish &nbsp;<kbd>Enter</kbd>' : 'Next &nbsp;<kbd>Enter</kbd>';
+  tutSpeak();
 }
 function tutUpdate(){
   tutRender();
   if (state.tut<0 || !started) return;
   const s=TUT[state.tut];
   // the card and rings stand aside for the pause menu, the map and cutscenes
-  const hide=paused || mapOpen || !!cut || warping; tutEl.box.hidden=hide;
+  const hide=paused || mapOpen || (!!cut && cut.mode!=='depart') || warping; tutEl.box.hidden=hide;
+  // the steering step wants a real turn under power: the heading has to swing 60 degrees from where the step began while moving
+  if (s.id==='steer' && !tutFlags.flown){ const f=shipForward(); if (!tutFlags.head0) tutFlags.head0=f.clone(); else if (ship.vel.length()>150 && f.dot(tutFlags.head0)<0.5) tutFlags.flown=true; }
   if (!hide && s.auto && s.auto()) tutAdvance();
   const targets=(hide||!s.ring)?[]:s.ring;
   tutEl.rings.forEach((r,i)=>{
@@ -4369,6 +4388,8 @@ function tutUpdate(){
 }
 tutEl.next.addEventListener('click', ()=>{ const s=TUT[state.tut]; if (state.tut>=0 && !s.auto) tutAdvance(); });
 tutEl.skip.addEventListener('click', tutSkip);
+tutEl.voice.addEventListener('click', tutSpeak);
+el.sTut.addEventListener('click', ()=>{ tutRestart(); el.sTut.textContent='Restarted'; setTimeout(()=>{ el.sTut.textContent='Run again'; }, 2500); });
 window.addEventListener('keydown', e=>{ if (e.key!=='Enter' || state.tut<0 || !started || paused) return; if (document.activeElement && document.activeElement.tagName==='INPUT') return; const s=TUT[state.tut]; if (!s.auto) tutAdvance(); });
 
 if (load()) hasSave=true;
@@ -4379,7 +4400,7 @@ if (state.hull<=0){ if (pilotingCarrier()) state.hull=1; else requestTow('breach
 renderMenu();
 try { if (sessionStorage.getItem(AUTOSTART)){ sessionStorage.removeItem(AUTOSTART); startGame(); } } catch(e){}
 // dev hook: open the page with ?debug to reach the live objects from the console
-if (location.search.includes('debug')) window.BeltRunner={ship, state, camPos, keys, get asteroids(){ return asteroids; }, get planets(){ return planets; }, get fields(){ return fields; }, get warpCut(){ return warpCut; }, get flags(){ return {docked, warping, exitPending, depWait, started, parked:!!parked, bay:dockBay&&dockBay.name, disabled, tow:tow&&{phase:tow.phase, leg:tow.leg, pos:tow.pos.toArray().map(Math.round)}}; }, radarPulse, buildShip, requestTow, get tow(){ return tow; }, get pirates(){ return pirates; }, get mines(){ return mines; }, get derelicts(){ return derelicts; }, get scenery(){ return scenery; }, get beltCloud(){ return beltCloud; }, renderer, scene, camera, update, updateVisuals, heatFx, SPARKS, drops, debris, breakRock, depotLaser, collectors, rockInside, addBurn, get target(){ return target; }, STATION, DEPOT, depotLocal, SFX, MUSIC, startApproach, startDeparture, get cut(){ return cut; }, get colony(){ return colony; }, get traffic(){ return traffic; }, get padSlots(){ return padSlots; }, get zone(){ return zone; }, ZONES, warpTo, loadZone, renderPanel, stowAll, takeAll, sellOre, enterHangar};
+if (location.search.includes('debug')) window.BeltRunner={ship, state, camPos, keys, get asteroids(){ return asteroids; }, get planets(){ return planets; }, get fields(){ return fields; }, get warpCut(){ return warpCut; }, get flags(){ return {docked, warping, exitPending, depWait, started, parked:!!parked, bay:dockBay&&dockBay.name, disabled, tow:tow&&{phase:tow.phase, leg:tow.leg, pos:tow.pos.toArray().map(Math.round)}}; }, radarPulse, buildShip, requestTow, get tow(){ return tow; }, get pirates(){ return pirates; }, get mines(){ return mines; }, get derelicts(){ return derelicts; }, get scenery(){ return scenery; }, get beltCloud(){ return beltCloud; }, renderer, scene, camera, update, updateVisuals, heatFx, SPARKS, drops, debris, breakRock, depotLaser, collectors, rockInside, addBurn, get target(){ return target; }, STATION, DEPOT, depotLocal, SFX, MUSIC, startApproach, startDeparture, get cut(){ return cut; }, get colony(){ return colony; }, get traffic(){ return traffic; }, get padSlots(){ return padSlots; }, get zone(){ return zone; }, ZONES, warpTo, loadZone, renderPanel, stowAll, takeAll, sellOre, enterHangar, tutUpdate, tutAdvance, tutRestart, tutFlags, TUT};
 camQ.copy(ship.q); camPos.copy(ship.pos).addScaledVector(shipForward(),-88*SHIP_SCALE).addScaledVector(shipUp(),30*SHIP_SCALE);
 target=findTarget();
 if(window.loadBeltRunnerPlayerShip)window.loadBeltRunnerPlayerShip({renderer,install:installPlayerModel,status:playerAsset});
