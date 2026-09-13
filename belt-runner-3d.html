@@ -550,6 +550,7 @@ table.manifest td.dimmed{color:var(--dim);}
 <script src="assets/player_ship/load-player-ship.js"></script>
 <script src="assets/asteroid_surface/load-rock-texture.js"></script>
 <script src="assets/asteroids_v2/mesh-collision.js"></script>
+<script src="assets/asteroids_v2/collision-grid.js"></script>
 <script src="assets/asteroids_v2/load-asteroids.js"></script>
 <script src="assets/lighting/space-lighting.js"></script>
 <script src="assets/planet_v2/load-planet.js"></script>
@@ -703,7 +704,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.51';
+const GAME_VERSION = '0.9.52';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -2845,7 +2846,7 @@ function updateDepot(dt){
 // ---- rock-on-rock. Rocks near the player (the ones in the scene) are kept apart every frame. Along the line between two
 // rocks the true lumpy, stretched profile is measured on each, so nothing sinks into anything. An overlap pushes both out,
 // mass-weighted, and knocks them off their rails with a soft bounce; scrap chunks bounce off rocks the same way.
-const nearRocks=[], rockCells=new Map(), ROCK_CELL=1200, BIG_ROCK=500;
+const nearRocks=[], rockCollisionGrid=new BeltRunnerCollisionGrid(1200), rockCandidates=[];
 const tmpQ2=new THREE.Quaternion(), tmpN=V3(), tmpU=V3();
 function radiusAlong(a, nWorld){   // distance from the rock's centre to its surface along a world direction
   if (a.asset) return rockAssets.radiusAlong(a,nWorld);
@@ -2871,21 +2872,29 @@ function chunkRock(c, a){
   const vn=c.vel.dot(tmpN)-(a.free?a.vel.dot(tmpN):0); if (vn<0){ c.vel.addScaledVector(tmpN, -vn*1.5); c.spin=Math.min(2.5, c.spin+0.4); }
 }
 function collideRocks(){
-  if (nearRocks.length<2 && !debris.length) return;
-  rockCells.clear(); const bigs=[];
-  const key=(x,y,z)=>x+','+y+','+z;
-  for (const a of nearRocks){
-    if (a.r>BIG_ROCK){ bigs.push(a); continue; }
-    const k=key(Math.floor(a.pos.x/ROCK_CELL), Math.floor(a.pos.y/ROCK_CELL), Math.floor(a.pos.z/ROCK_CELL)); let arr=rockCells.get(k); if (!arr){ arr=[]; rockCells.set(k, arr); } arr.push(a);
+  // Rail rocks need no pair tests until an impact sets one adrift. In a dense belt
+  // this also avoids building an index for thousands of otherwise passive rocks.
+  if(!debris.length && !nearRocks.some(a=>a.free)){ rockCollisionGrid.clear(); return; }
+  rockCollisionGrid.rebuild(nearRocks);
+  const tested=new Set();
+  for(const a of nearRocks){
+    if(!a.free) continue;
+    rockCollisionGrid.query(a.pos,rockCollisionGrid.radius(a),rockCandidates);
+    for(const b of rockCandidates){
+      if(b===a) continue;
+      const key=a.id<b.id ? a.id+':'+b.id : b.id+':'+a.id;
+      if(tested.has(key)) continue;
+      tested.add(key);
+      rockPair(a,b);
+      // Contact resolution can push either centre into a different cell. Later
+      // rocks must query the corrected positions, including newly drifting ones.
+      rockCollisionGrid.update(a); rockCollisionGrid.update(b);
+    }
   }
-  const around=(pos, fn)=>{ const cx=Math.floor(pos.x/ROCK_CELL), cy=Math.floor(pos.y/ROCK_CELL), cz=Math.floor(pos.z/ROCK_CELL); for (let dx=-1;dx<=1;dx++) for (let dy=-1;dy<=1;dy++) for (let dz=-1;dz<=1;dz++){ const arr=rockCells.get(key(cx+dx,cy+dy,cz+dz)); if (arr) for (const b of arr) fn(b); } };
-  // Only rocks knocked off their rails get pair-tested: rail rocks were placed by the generator and never move relative to
-  // each other, and at belt density testing every rail pair in a crowded field cost far more than everything else in the frame.
-  for (const a of nearRocks){
-    if (a.r<=BIG_ROCK){ if (a.free) around(a.pos, b=>{ if (b!==a && (!b.free || b.id>a.id)) rockPair(a, b); }); }
-    for (const b of bigs) if (b!==a && (a.free || b.free) && (a.r<=BIG_ROCK || b.id>a.id)) rockPair(a, b);
+  for(const c of debris){
+    rockCollisionGrid.query(c.pos,c.r,rockCandidates);
+    for(const a of rockCandidates) chunkRock(c,a);
   }
-  for (const c of debris){ around(c.pos, a=>chunkRock(c, a)); for (const b of bigs) chunkRock(c, b); }
 }
 // Rocks ride their orbit rails until something hits them; after that they coast in a straight line for good.
 function orbitalVel(a){ const ang=a.field?a.field.ang:a.ang, orbit=a.field?a.field.orbit:a.orbit; return V3(Math.sin(ang)*28, 0, -Math.cos(ang)*28); }
@@ -4238,7 +4247,7 @@ if(rockAssets)rockAssets.load({renderer,scene,heatable,asteroids:()=>asteroids,s
 if (window.loadBeltRunnerCarrier) window.loadBeltRunnerCarrier({station, renderer, glowTexture:texSoft, install:installCarrierModel, status:carrierAsset});
 else { carrierAsset.state='fallback'; carrierAsset.error='Carrier asset script unavailable'; }
 if(window.BeltRunner){
-  Object.assign(window.BeltRunner,{lighting,rockAssets,makeAsteroid,findTarget,noisyCollide,radiusAlong,SHIP_R,shipPrev,damageRock,removeAsteroid,shipGroup,playerAsset,shipAim,shipDishAnglesTo,shipDishFocusWorld,startGame,setLaserAim:p=>{laserAim=p;}, carrierAsset, station, stationEngines, TURRET_PIVOT, forceFields, stationPointLights, droneDock, depotDish, turretAnglesTo, turretMuzzleWorld, updateDepot, depotBeam, DROP_PAD});
+  Object.assign(window.BeltRunner,{rockCollisionGrid,collideRocks,nearRocks,lighting,rockAssets,makeAsteroid,findTarget,noisyCollide,radiusAlong,SHIP_R,shipPrev,damageRock,removeAsteroid,shipGroup,playerAsset,shipAim,shipDishAnglesTo,shipDishFocusWorld,startGame,setLaserAim:p=>{laserAim=p;}, carrierAsset, station, stationEngines, TURRET_PIVOT, forceFields, stationPointLights, droneDock, depotDish, turretAnglesTo, turretMuzzleWorld, updateDepot, depotBeam, DROP_PAD});
   Object.defineProperties(window.BeltRunner,{playerModel:{get:()=>playerModel},shipDish:{get:()=>shipDish},exhausts:{get:()=>exhausts},navLights:{get:()=>navLights}});
 }
 requestAnimationFrame(frame);
