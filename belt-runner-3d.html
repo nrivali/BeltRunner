@@ -669,7 +669,7 @@ const UPGRADES = {
   cargo:   {name:'Cargo hold',   levels:[{slots:4},{slots:6},{slots:8},{slots:11},{slots:14},{slots:18}], costs:[200,700,2400,7500,20000]},   // slots of 25 units each
   engine:  {name:'Engines',      levels:[{thrust:840,max:1280},{thrust:1120,max:1640},{thrust:1440,max:2040},{thrust:1840,max:2520},{thrust:2360,max:3120}], costs:[300,1100,3500,10000]},
   tank:    {name:'Fuel tank',    levels:[{cap:100},{cap:160},{cap:250},{cap:400},{cap:600}], costs:[150,600,2000,6000]},
-  scanner: {name:'Scanner',      levels:[{range:28000,mine:560},{range:46000,mine:700},{range:74000,mine:880},{range:135000,mine:1120}], costs:[400,1800,6000]},
+  scanner: {name:'Scanner',      levels:[{range:28000,mine:2500},{range:46000,mine:2500},{range:74000,mine:2500},{range:135000,mine:2500}], costs:[400,1800,6000]},   // laser reach is a flat 2500; the beam loses power with distance (laserPower)
   refinery:{name:'Refinery',     levels:[{bonus:0},{bonus:.15},{bonus:.35},{bonus:.6}], costs:[2500,9000,25000]},
   hull:    {name:'Hull plating', levels:[{hp:100},{hp:160},{hp:250},{hp:400},{hp:600}], costs:[250,900,3000,9000]},
 };
@@ -704,7 +704,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.22';
+const GAME_VERSION = '0.9.23';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D Â· v' + GAME_VERSION;
 
@@ -1581,6 +1581,10 @@ const SHAPE_WORD={cluster:'cluster', shard:'shard', hollow:'hollow', slab:'slab'
 function rockName(a){ return `${a.cls==='colossal'?'Colossal ':a.cls==='giant'?'Giant ':a.cls==='large'?'Large ':''}${a.barren?'Barren':ORES[a.ore].name} ${SHAPE_WORD[a.shape]||'rock'}`; }
 // how hard the laser has to work: ore hardness above 1 slows the cut; the ship's and the depot's lasers both use this
 function rockDps(a, rate){ const hard=a.barren?1:ORES[a.ore].hardness; return rate*5/(1+(hard-1)*0.35); }
+// the beam loses power with distance: full strength up to LASER_FULL units from the surface, tapering in a straight line to
+// LASER_FAR_POWER at the reach limit, so a rock at the edge of range takes five times longer to cut than one up close
+const LASER_FULL=500, LASER_FAR_POWER=0.2;
+function laserPower(dist){ const reach=stat('scanner').mine; if (dist<=LASER_FULL) return 1; return Math.max(LASER_FAR_POWER, 1-(1-LASER_FAR_POWER)*(dist-LASER_FULL)/Math.max(1, reach-LASER_FULL)); }
 
 // ---- breaking rocks: ore drops and scrap debris
 // When a rock's health is gone it bursts: its ore comes out as a few glowing pickups that drift off slowly and are pulled
@@ -3798,12 +3802,12 @@ function update(dt){
   firing=trigger && canFly;   // the beam fires whenever the trigger is held, rock or no rock; it only cuts (mining) once it is on a target it can work
   if (mining && target && target.type==='pirate'){
     // the mining laser cuts raiders too
-    const p=target.obj; p.hp-=stat('laser').rate*6*dt; laserOn=true;
+    const p=target.obj; p.hp-=stat('laser').rate*6*laserPower(target.dist)*dt; laserOn=true;
     if (Math.random()<dt*20) spawnParticle(p.pos.clone().add(V3(rand(-8,8),rand(-8,8),rand(-8,8))), 0xff6a3a);
     if (p.hp<=0) killPirate(p, true);
   } else if (mining && target && !mineReason(target)){
     // the beam wears the whole rock down; when its bar is gone it breaks and the ore comes loose as pickups
-    const a=target.obj; damageRock(a, rockDps(a, stat('laser').rate)*(1+2*heatFx.heat)*dt); laserOn=true;   // a hot beam cuts up to three times faster
+    const a=target.obj; damageRock(a, rockDps(a, stat('laser').rate)*laserPower(target.dist)*(1+2*heatFx.heat)*dt); laserOn=true;   // a hot beam cuts up to three times faster; distance saps the beam (laserPower)
     if (a.hp<=0){ breakRock(a, false); target=null; laserOn=false; }
   }
   autosaveT+=dt; if (autosaveT>30){ autosaveT=0; save(); }
@@ -4036,7 +4040,7 @@ function updateHud(dt){
     el.dbHull.style.width=(hf*100)+'%'; el.dbHullT.textContent=state.hull>=hp-0.01?'hull sound':(state.credits<2?'no credits':`${repairRate()} pt/s Â· 2 cr/pt`);
     if (!el.station.hidden && document.activeElement!==el.callsign){ panelT+=0.08; if (panelT>1){ panelT=0; renderPanel(); } }
   }
-  el.laserState.textContent=(laserOn?`CUTTING Â· ${Math.round(heatFx.heat*100)}% heat`:firing?'FIRING':heatFx.heat>0.01?`ready Â· ${Math.round(heatFx.heat*100)}% heat`:'ready'); el.laserState.style.color=laserOn?'var(--amber2)':''; el.radarState.textContent=pulseCd>0?`${pulseCd.toFixed(1)}s`:'READY';
+  el.laserState.textContent=(laserOn?`CUTTING Â· ${Math.round(heatFx.heat*100)}% heat Â· ${Math.round(laserPower(target.dist)*100)}% power`:firing?'FIRING':heatFx.heat>0.01?`ready Â· ${Math.round(heatFx.heat*100)}% heat`:'ready'); el.laserState.style.color=laserOn?'var(--amber2)':''; el.radarState.textContent=pulseCd>0?`${pulseCd.toFixed(1)}s`:'READY';
   if (target && !docked){
     const t=target.obj; el.target.classList.add('on');
     el.target.classList.toggle('pirate', target.type==='pirate');
