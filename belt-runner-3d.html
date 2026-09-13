@@ -710,7 +710,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.107';
+const GAME_VERSION = '0.9.108';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -3033,7 +3033,7 @@ function startDeparture(){
   // no cutscene on the way out: approach control still flies the taxi, but you watch it from your own chase camera with the
   // HUD up (the camera block skips the cinematic shot for a departure), and the controls come back the moment it lets go
   cut={mode:'depart', bay:b, curve, t:0, dur:5.2, len:curve.getLength()};
-  el.center.classList.remove('on');
+  lookYaw=0; lookPitch=0; el.center.classList.remove('on');
   SFX.chime(); toast('Departing · approach control has the ship · Space skips');
 }
 function cutUpdate(dt){
@@ -3863,6 +3863,11 @@ function update(dt){
       // ease the free-look camera back to straight ahead once the button is released (or the ship answers again)
       lookYaw*=Math.exp(-4*dt); lookPitch*=Math.exp(-4*dt);
     }
+  } else if (cine){
+    // approach control has the ship (the hangar taxi, watched from the chase camera): no free look, the camera stays on the
+    // nose, and any look-around left from before eases out. Otherwise the mouse's resting offset would swing the camera
+    // round the ship for the whole taxi and whip it back at the handover.
+    lookYaw*=Math.exp(-4*dt); lookPitch*=Math.exp(-4*dt);
   } else {
     // ship out of commission: the same mouse and arrow inputs swing the camera instead
     let ly=0, lp=0;
