@@ -713,7 +713,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.85';
+const GAME_VERSION = '0.9.86';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -2886,7 +2886,7 @@ function updateDepot(dt){
         if (dl.firing){
           // the beam lands on the rock's near side; the rock breaks when its bar is gone and its ore sells on the spot
           const muzzle=turretMuzzleWorld(dl.yaw, dl.pitch); dl.hit=a.asset?rockAssets.aimPoint(a,muzzle,aim):a.pos.clone().add(muzzle.sub(a.pos).normalize().multiplyScalar(a.r*0.85));
-          damageRock(a, rockDps(a, L.rate)*(1+2*depotHeatFx.heat)*dt);   // a hot beam cuts up to three times faster
+          damageRock(a, rockDps(a, L.rate)*dt);   // a steady rate: the heat glow is only an effect
           if (a.hp<=0) breakRock(a, true);
         }
       }
@@ -3929,7 +3929,7 @@ function update(dt){
     if (p.hp<=0) killPirate(p, true);
   } else if (mining && target && !mineReason(target)){
     // the beam wears the whole rock down; when its bar is gone it breaks and the ore comes loose as pickups
-    const a=target.obj; damageRock(a, rockDps(a, stat('laser').rate)*(1+2*heatFx.heat)*dt); laserOn=true;   // a hot beam cuts up to three times faster
+    const a=target.obj; damageRock(a, rockDps(a, stat('laser').rate)*dt); laserOn=true;   // a steady rate: the heat glow is only an effect, it no longer speeds the cut
     if (a.hp<=0){ breakRock(a, false); target=null; laserOn=false; }
   }
   autosaveT+=dt; if (autosaveT>30){ autosaveT=0; save(); }
@@ -4183,7 +4183,7 @@ function updateHud(dt){
     if (!el.station.hidden){ panelT+=0.08; if (panelT>1){ panelT=0; renderPanel(); } }
   }
   { const reach=stat('range').reach; el.laserRange.textContent=lock?`${fmt(lockDist)} / ${fmt(reach)} m`:`${fmt(reach)} m`; }   // range in metres: the locked object's distance against the beam's reach, else just the reach
-  el.laserState.textContent=(laserOn?`CUTTING · ${Math.round(heatFx.heat*100)}% heat`:firing?'FIRING':heatFx.heat>0.01?`ready · ${Math.round(heatFx.heat*100)}% heat`:'ready'); el.laserState.style.color=laserOn?'var(--amber2)':''; el.radarState.textContent=pulseCd>0?`${pulseCd.toFixed(1)}s`:'READY';
+  el.laserState.textContent=(laserOn?'CUTTING':firing?'FIRING':'ready');   // (heat is only a visual now, so it is not reported) el.laserState.style.color=laserOn?'var(--amber2)':''; el.radarState.textContent=pulseCd>0?`${pulseCd.toFixed(1)}s`:'READY';
   const T=lock?{type:lockType, obj:lock, dist:lockDist, locked:true}:target;   // the panel (top centre) follows the lock when there is one, else the crosshair target
   if (T && !docked){
     const t=T.obj, reach=stat('range').reach; el.target.classList.add('on');
