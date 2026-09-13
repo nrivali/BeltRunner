@@ -702,7 +702,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.13';
+const GAME_VERSION = '0.9.14';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D Â· v' + GAME_VERSION;
 
@@ -1194,11 +1194,8 @@ const worldEdge=new THREE.Mesh(new THREE.SphereGeometry(1, 24, 12), new THREE.Me
 
 // station
 const station=new THREE.Group();
-// note: no environment map is available, so metalness stays low everywhere or surfaces render near-black
-// carrier metals: modest metalness so diffuse light still reads on the big flat faces; the env map adds the sheen
-// (no bump maps on the carrier: it fills the screen up close, and bump shading on every one of those pixels was the
-// single most expensive thing in the game)
-// placeholder depot: plain Lambert materials (the panel texture stays), the cheapest lit shading three.js has
+// The fallback carrier uses inexpensive Lambert materials. The loaded Blender
+// model uses its PBR textures with the zone's sun, sky light and environment map.
 const metal=new THREE.MeshLambertMaterial({color:0xb4bccf, map:hullTex.map});
 const metalDark=new THREE.MeshLambertMaterial({color:0x66709a, map:hullTex.map});
 const windowMat=new THREE.MeshBasicMaterial({color:0xffd9a0});
@@ -1278,13 +1275,13 @@ function animateDish(D, firing, aiming, t){
   D.rimBeamMat.opacity=.6+Math.random()*.35; for (const b of D.rimBeams) b.visible=firing;
 }
 const depotDish=makeDishTurret(1); depotDish.yaw.position.set(MAST_X, MAST_BASE+MAST_H+60, 0); station.add(depotDish.yaw);
-const turretYaw=depotDish.yaw, turretPitch=depotDish.pitch;
+let turretYaw=depotDish.yaw, turretPitch=depotDish.pitch;
 const TURRET_PIVOT=V3(MAST_X, MAST_BASE+MAST_H+60, 0), TURRET_PITCH_OFF=V3(40,0,0), TURRET_MUZZLE=depotDish.focus.clone();
 // where the muzzles are and which way the barrels point, in world space, for a given yaw and pitch
 function turretMuzzleWorld(yaw, pitch){ return depotWorld(TURRET_MUZZLE.clone().applyAxisAngle(AZ, pitch).add(TURRET_PITCH_OFF).applyAxisAngle(AY, yaw).add(TURRET_PIVOT)); }
 function turretAnglesTo(worldPos){   // the yaw and pitch that would point the cannon at a world position
   const L=worldPos.clone().sub(depotWorld(TURRET_PIVOT)).applyQuaternion(STATION.qInv);
-  return {yaw:Math.atan2(-L.z, L.x), pitch:Math.atan2(L.y, Math.hypot(L.x, L.z))};
+  return {yaw:Math.atan2(-L.z, L.x), pitch:Math.atan2(L.y-TURRET_PITCH_OFF.y, Math.hypot(L.x, L.z)-TURRET_PITCH_OFF.x)};
 }
 const TURRET_PITCH_MIN=-0.5, TURRET_PITCH_MAX=1.45, TURRET_SLEW=0.45;   // pitch limits (radians; the deck is below) and slew rate (rad/s); yaw is unlimited
 const wrapAngle=a=>Math.atan2(Math.sin(a), Math.cos(a));
@@ -1314,7 +1311,7 @@ DEPOT.bays.forEach((b,i)=>{
   box(6,2,300, amberMat, DX-110, b.y0+1.5, DZ); box(6,2,300, amberMat, DX+110, b.y0+1.5, DZ); box(226,2,6, amberMat, DX, b.y0+1.5, DZ-150); box(226,2,6, amberMat, DX, b.y0+1.5, DZ+150);
   for (let k=0;k<5;k++) box(40,2,6, amberMat, DX-80+k*40, b.y0+1.5, DZ+(k%2?-120:120));
   box(40,120,260, metalDark, b.x1-20, b.y0+60, DZ); box(4,60,200, cyanMat, b.x1-41, b.y0+70, DZ);   // hopper with a lit intake slot
-  const dropSign=new THREE.Mesh(new THREE.PlaneGeometry(200,60), padSign()); dropSign.position.set(b.x1-42, b.y0+150, DZ); dropSign.rotation.y=-Math.PI/2; station.add(dropSign); keepStatic.push(dropSign);
+  const dropSign=new THREE.Mesh(new THREE.PlaneGeometry(200,60), padSign()); dropSign.position.set(b.x1-42, b.y0+150, DZ); dropSign.rotation.y=-Math.PI/2; dropSign.name='cargo_drop_sign_fallback'; station.add(dropSign); keepStatic.push(dropSign);
   box(6,2,L-120, amberMat, b.cx-150, b.y0+1.5, 0); box(6,2,L-120, amberMat, b.cx+150, b.y0+1.5, 0);   // lane edges
   for (let k=0;k<12;k++) box(6,2,70, whiteMat, b.cx, b.y0+1.5, -770+k*140);                        // dashed centreline
   for (const x of [b.cx-120,b.cx+120]) box(28,4,L-120, panelLightMat, x, b.y1-3, 0);               // ceiling light strips
@@ -1339,18 +1336,25 @@ function mergeStatic(group, keep){
 }
 mergeStatic(station, new Set(keepStatic));   // blinkers merge too (by phase material); signs and stencils stay separate
 scene.add(station);
-// The Blender cargo carrier (assets/cargo_carrier) replaces the welded placeholder hull once it loads: every merged static
+// The Blender cargo carrier (assets/cargo_carrier_v2) replaces the welded placeholder hull once it loads: every merged static
 // mesh goes, the model comes in, and the things the game animates or navigates by move onto the model's named anchors
 // (the dish mast, the engine glows, the pads, the drop-off pad, the drone docks). The force fields, bay signs and the
 // two hangar lights stay. Docking, collision and the cutscene cameras keep reading DEPOT.bays, which are re-anchored here.
 const carrierAsset={state:'loading', error:null, anchors:null};
-function installCarrierModel(model, anchors, materials){
-  const keep=new Set(keepStatic);
+function installCarrierModel(model, anchors, materials, rig){
+  const keep=new Set(keepStatic.filter(o=>o.name!=='cargo_drop_sign_fallback'));
   for (const c of [...station.children]) if (c.isMesh && !keep.has(c)){ station.remove(c); c.geometry.dispose(); }
   station.add(model);
   carrierAsset.anchors=anchors;
-  // the dish sits on the model's mast; the turret maths pivots there too
-  const mount=anchors.dish_mount.clone().add(V3(0,60,0)); depotDish.yaw.position.copy(mount); TURRET_PIVOT.copy(mount);
+  // Replace the procedural turret with the model's rig and its real focus marker.
+  station.remove(depotDish.yaw);
+  depotDish.yaw.traverse(o=>{ if(o.isMesh)o.geometry.dispose(); if(o.isSprite)o.material.dispose(); });
+  depotDish.rimBeamMat.dispose();
+  Object.assign(depotDish,rig); turretYaw=rig.yaw; turretPitch=rig.pitch;
+  TURRET_PIVOT.copy(anchors.dish_mount); TURRET_PITCH_OFF.copy(rig.pitchOff); TURRET_MUZZLE.copy(rig.focus);
+  turretYaw.rotation.y=depotLaser.yaw; turretPitch.rotation.z=depotLaser.pitch;
+  // Keep the existing two-light budget, placing warm light beneath the modeled ceiling.
+  stationPointLights.forEach((light,i)=>{light.position.set(0,130,i?525:-525);light.color.setHex(0xffdfb5);});
   // engine glows just behind the model's bells
   stationEngines.forEach((s,i)=>{ const a=anchors['engine_'+i]; if (a) s.position.copy(a).add(V3(-100,0,0)); });
   // pads: ships settle 38 above the pad marker, which puts the hull on the model's deck; the deck itself is the collision floor
@@ -2816,8 +2820,8 @@ function updateDepot(dt){
   const slewYaw=(cur, want)=>wrapAngle(cur+Math.max(-TURRET_SLEW*dt, Math.min(TURRET_SLEW*dt, wrapAngle(want-cur))));   // the shorter way round
   // reachable: within the pitch limits, and the beam from the mast top must not pass through the carrier's own hull box
   const inArc=(ang, pos)=>{ if (ang.pitch<TURRET_PITCH_MIN || ang.pitch>TURRET_PITCH_MAX) return false;
-    const H=DEPOT.half, L=pos.clone().sub(STATION.pos).applyQuaternion(STATION.qInv), d=L.clone().sub(TURRET_PIVOT), len=d.length(); d.divideScalar(len);
-    for (let s=150; s<Math.min(len, 7000); s+=150){ const x=TURRET_PIVOT.x+d.x*s, y=TURRET_PIVOT.y+d.y*s, z=TURRET_PIVOT.z+d.z*s; if (Math.abs(x)<H.x && Math.abs(y)<H.y && Math.abs(z)<H.z) return false; }
+    const H=DEPOT.half, L=depotLocal(pos), origin=depotLocal(turretMuzzleWorld(ang.yaw,ang.pitch)), d=L.clone().sub(origin), len=d.length(); d.divideScalar(len);
+    for (let s=0; s<Math.min(len, 7000); s+=150){ const x=origin.x+d.x*s, y=origin.y+d.y*s, z=origin.z+d.z*s; if (Math.abs(x)<H.x && Math.abs(y)<H.y && Math.abs(z)<H.z) return false; }
     return true; };
   if (!L){ dl.rock=null; dl.firing=false; dl.yaw=slewYaw(dl.yaw, 0); dl.pitch=slew(dl.pitch, 0.15); }
   else {
@@ -4185,10 +4189,10 @@ target=findTarget();
 if(window.loadBeltRunnerPlayerShip)window.loadBeltRunnerPlayerShip({renderer,install:installPlayerModel,status:playerAsset});
 else {playerAsset.state='fallback';playerAsset.error='Player asset script unavailable';}
 if(window.BeltRunnerRockSurface)BeltRunnerRockSurface.load({renderer,baseMaterials:[rockMat,rockMatSmooth,rockMatCave,barrenMat],oreMaterials:oreRockMats,ores:ORES,veinMask,veinSize:VEIN_N,asteroids:()=>asteroids,heatable});
-if (window.loadBeltRunnerCarrier) window.loadBeltRunnerCarrier({station, renderer, install:installCarrierModel, status:carrierAsset});
+if (window.loadBeltRunnerCarrier) window.loadBeltRunnerCarrier({station, renderer, glowTexture:texSoft, install:installCarrierModel, status:carrierAsset});
 else { carrierAsset.state='fallback'; carrierAsset.error='Carrier asset script unavailable'; }
 if(window.BeltRunner){
-  Object.assign(window.BeltRunner,{shipGroup,playerAsset,shipAim,shipDishAnglesTo,shipDishFocusWorld,startGame,setLaserAim:p=>{laserAim=p;}, carrierAsset, station, stationEngines, TURRET_PIVOT, forceFields, stationPointLights, droneDock});
+  Object.assign(window.BeltRunner,{shipGroup,playerAsset,shipAim,shipDishAnglesTo,shipDishFocusWorld,startGame,setLaserAim:p=>{laserAim=p;}, carrierAsset, station, stationEngines, TURRET_PIVOT, forceFields, stationPointLights, droneDock, depotDish, turretAnglesTo, turretMuzzleWorld, updateDepot, depotBeam, DROP_PAD});
   Object.defineProperties(window.BeltRunner,{playerModel:{get:()=>playerModel},shipDish:{get:()=>shipDish},exhausts:{get:()=>exhausts},navLights:{get:()=>navLights}});
 }
 requestAnimationFrame(frame);

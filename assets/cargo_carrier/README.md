@@ -10,10 +10,10 @@ Preview files: `preview_front.png`, `preview_rear.png`, `preview_hangar.png`. Th
 
 ## Game integration
 
-`belt-runner-3d.html` loads the GLB through `load-carrier.js`, using the locally vendored Three.js r158 loader and runtime. HTTP play fetches the binary directly. Opening the HTML as a local file loads `cargo_carrier.data.js`, a generated copy of the same binary, to avoid browser restrictions on local file fetches. Keep the `assets` and `vendor` directories beside the game HTML.
+The original model in this folder is retained as asset source. From v0.9.14, `load-carrier.js` loads the redesigned assembled carrier in `../cargo_carrier_v2/`; see that folder's README for current integration and build instructions.
 
-The original carrier remains visible until loading succeeds and serves as the fallback on a missing or invalid model. Successful loading replaces its static geometry while retaining the animated mining dish, engine sprites, hangar force fields, and two distance-gated interior lights. Named attachment points position docking paths, the dish, drone docks, and engines. Ships park 38 units above the pad surface markers; collision uses the actual floor height. Existing saves are compatible.
+The procedural carrier remains visible until loading succeeds and serves as the fallback on missing or invalid assets. The new integration includes the Blender dish rig, normal maps, engine sprites, hangar force fields, and two distance-gated interior lights. Existing saves remain compatible.
 
-After rebuilding the GLB, run `node vendor/three-r158/build-loader.cjs` from the project root to refresh the direct-file copy. Browser integration checks are in `tests/carrier-integration.cjs`; results are saved in `tests/carrier-results.json`. `?debug` exposes `BeltRunner.carrierAsset` with loading status and material references. Tests exercise HTTP, direct-file loading, missing-file fallback, and docking through both mouths. Overall game performance remains hardware-dependent.
+Run `node assets/cargo_carrier_v2/build-game-assets.cjs` after rebuilding the active assembled GLB to refresh its direct-file copy. `node vendor/three-r158/build-loader.cjs` refreshes the vendored runtime and the active carrier payload. Browser integration checks are in `tests/carrier-integration.cjs`; results are saved in `tests/carrier-results.json`. `?debug` exposes `BeltRunner.carrierAsset` with revision, loading source, geometry counts, and material references.
 
 Rebuild: run Blender in background with `--python build_carrier.py`. Validate with `--python validate_carrier.py`.

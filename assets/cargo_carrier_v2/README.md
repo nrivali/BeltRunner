@@ -2,7 +2,7 @@
 
 Blender reconstruction of the supplied Cargo Carrier concept for Belt Runner 3D. Pale weathered armor, beveled transverse frames, a tapered prow, warm service windows, three recessed engine bells, and a detailed through-hangar. The optional articulated dish is included in the assembled model and presentation scene.
 
-This folder is a separate asset revision. The live game's carrier model and loader have not been replaced.
+This is the active carrier revision in the game from v0.9.14. The shared `../cargo_carrier/load-carrier.js` loader installs the assembled carrier and animated dish together after validation.
 
 ## Deliverables
 
@@ -12,10 +12,12 @@ This folder is a separate asset revision. The live game's carrier model and load
 | `cargo_carrier.glb` | Carrier only: four meshes/materials and 13 game attachment points |
 | `mining_dish.glb` | Separate dish with yaw/pitch hierarchy and focus/rim anchors |
 | `cargo_carrier_assembled.glb` | Complete carrier and dish in their assembled pose |
+| `cargo_carrier_assembled.data.js` | Generated copy of the assembled binary for direct disk play and hosts without GLB support |
 | `textures/` | Shared 2048 × 2048 base color, metallic/roughness, tangent normal, and emissive PNGs |
 | `previews/preview_front.png`, `previews/preview_rear.png`, `previews/preview_profile.png` | Actual Blender Cycles exterior renders |
 | `previews/preview_hangar.png` | Cycles view through the modeled hangar |
 | `previews/preview_threejs.png` | Actual browser render using the game's Three.js r158 dependencies |
+| `previews/in-game.png`, `previews/in-game-hangar.png` | Captures from the integrated game with its own lighting |
 | `source/` | User reference, both ImageGen source textures, and generation prompts |
 | `asset_report.json`, `validation.json`, `browser_validation.json` | Geometry, attachment, UV, clearance, and loading results |
 
@@ -33,7 +35,11 @@ The dish GLB preserves its assembled world position: its yaw origin is at the ca
 
 Both ImageGen textures are projected onto modeled surfaces and baked in Blender into a single UV atlas. Base color and emissive maps use sRGB; normal and metallic/roughness maps use linear data. Metallic/roughness follows glTF channels: green = roughness, blue = metalness. The normal map is baked from surface bump derived from the source textures. The GLBs embed all four PNGs and exclude presentation lights/cameras.
 
-For later integration, the existing carrier loader's `normalMap = null` override should be removed so this revision's surface detail is visible. Its separate dish loader/rig also needs to respect the hierarchy and coordinates above. Realistic studio and hangar illumination is authored in the Blender file; game lighting must be supplied by the renderer.
+The game retains the normal maps and uses the zone's sun, fill, sky light, and environment reflections. The two existing hangar lights are warm and positioned below the modeled ceiling, with distance gating preserved. The Blender studio's additional lights stay in the source scene.
+
+The runtime loads the assembled GLB once, sharing its four textures between the hull and dish. A control pivot removes the dish's authored presentation tilt so yaw and pitch still aim along local +X. Mining rays start at the actual focus marker; the six rim glows and charging beams follow the model's emitters. Engine and warp glows, bay force fields, drone docks, parking pads, and cargo-drop coordinates retain their game behavior. The duplicate procedural turret and cargo sign are removed after successful installation. Missing or invalid assets leave the procedural carrier usable.
+
+HTTP play loads the binary directly. Direct disk play, and HTTP hosts that reject GLB, load the generated JavaScript payload containing the same bytes. Keep the `assets` and `vendor` folders beside `belt-runner-3d.html`. Existing saves remain compatible.
 
 ## Rebuild and verify
 
@@ -42,7 +48,9 @@ Run from the repository root with Blender 5.2:
 ```powershell
 & 'C:\Program Files\Blender Foundation\Blender 5.2\blender.exe' --background --factory-startup --python assets/cargo_carrier_v2/build_carrier.py
 & 'C:\Program Files\Blender Foundation\Blender 5.2\blender.exe' --background --factory-startup --python assets/cargo_carrier_v2/validate_carrier.py
+node assets/cargo_carrier_v2/build-game-assets.cjs
 node tests/cargo-carrier-v2-assets.cjs
+node tests/carrier-integration.cjs
 ```
 
-The browser verification uses the local Codex runtime's Playwright installation and installed Chrome. It loads all three GLBs with the game's loader, checks materials/anchors, ray-tests the hangar, and renders the assembled ship. The Blender validator additionally checks triangle counts, a single non-overlapping UV channel, embedded 2048-pixel PNGs, 70 passage rays, packed Blender textures, and the dish rig.
+The browser verification uses the local Codex runtime's Playwright installation and installed Chrome. Asset checks load all three GLBs, check materials/anchors, ray-test the hangar, and render the assembled ship. The Blender validator additionally checks triangle counts, a single non-overlapping UV channel, embedded 2048-pixel PNGs, 70 passage rays, packed Blender textures, and the dish rig. The integration checks exercise normal HTTP loading, direct disk loading, HTTP script fallback, missing/corrupt model fallback, mining alignment and effects, docking through both mouths, and a warp to another belt. Results are in `../../tests/carrier-results.json`.
