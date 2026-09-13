@@ -707,7 +707,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.104';
+const GAME_VERSION = '0.9.105';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -2777,17 +2777,20 @@ el.keepFlying.addEventListener('click', () => { el.win.hidden=true; });
 let resetArmed=false;
 el.reset.addEventListener('click', () => { if(resetArmed) resetSave(); else { resetArmed=true; el.reset.textContent='Click again to wipe save'; setTimeout(()=>{resetArmed=false; el.reset.textContent='Reset save';},4000); } });
 window.addEventListener('beforeunload', save);
-function startGame(){ if(started) return; SFX.init(); SFX.resume(); started=true; el.intro.hidden=true; el.center.classList.add('on'); if (state.tut===0) tutLaunch(); else if (pilotingCarrier()) startBerthApproach(); else enterHangar(DEPOT.bays[0]); }   // every start is in Dock 1 (or, at the Hub, the cargo ship berthing at the colony)
+function startGame(){ if(started) return; SFX.init(); SFX.resume(); started=true; el.intro.hidden=true; el.center.classList.add('on'); if (state.tut===0) tutLaunch(); else if (pilotingCarrier()) startBerthApproach(); else enterHangar(planetBay()); }   // every start is in the dock that faces the planet (or, at the Hub, the cargo ship berthing at the colony)
 window.addEventListener('pointerdown', ()=>{ SFX.init(); SFX.resume(); });
 const key=k=>keys[k]||false;
 
 // ---------------------------------------------------------------- station logic
 function nearStation(){ return ship.pos.distanceTo(STATION.pos) < 4500; }
 // every start (and every warp arrival) puts the ship on the pad in Bay 1; the hangar captures it on the first frame, so you begin docked
+// the dock whose mouth faces the planet (the origin): parked ships face their own mouth, so starting there means the first
+// departure heads straight for the belt round the planet rather than away into empty space
+function planetBay(){ const toPlanet=STATION.pos.clone().negate().normalize(); return DEPOT.bays.reduce((best,b)=>depotDir(V3(0,0,b.side)).dot(toPlanet)>depotDir(V3(0,0,best.side)).dot(toPlanet)?b:best, DEPOT.bays[0]); }
 function spawnAtDepot(){
   // at the Hub the carrier arrives well out from the colony, nose toward it; anywhere else the ship starts on Bay 1's pad
   if (pilotingCarrier()){ ship.pos.copy(holdApproachStart()); ship.vel.set(0,0,0); ship.q.copy(levelHeading(HOLD.park.clone().sub(ship.pos).normalize())); placeDepot(); camQ.copy(ship.q); throttle=0; resetCollectors(); return; }
-  placeDepot(); const b=DEPOT.bays[0]; ship.pos.copy(b.park); ship.vel.copy(STATION.vel); ship.q.copy(b.q); camQ.copy(ship.q); throttle=0;
+  placeDepot(); const b=planetBay(); ship.pos.copy(b.park); ship.vel.copy(STATION.vel); ship.q.copy(b.q); camQ.copy(ship.q); throttle=0;
   resetCollectors();   // the drones ride the cargo ship: once it is placed in the new zone they wait at their dock beside it
 }
 function nearestBay(){ let best=null, bd=Infinity; for (const b of DEPOT.bays){ const d=b.opening.distanceTo(ship.pos); if (d<bd){ bd=d; best=b; } } return {bay:best, dist:bd}; }
@@ -3645,7 +3648,7 @@ function warpCutUpdate(dt){
   if (!W.loaded && (W.skip || W.t>=BeltRunnerHyperspace.transitAt)){
     // The tunnel is opaque here, so replacing the zone never exposes a loading pop.
     station.scale.copy(W.scale); loadZone(W.z); spawnAtDepot(); camQ.copy(ship.q); mapSel=null; W.loaded=true;
-    dockBay=W.z.hub?null:DEPOT.bays[0];
+    dockBay=W.z.hub?null:planetBay();
   }
   warpFrame(W);
   if (W.skip || W.pose.done){
@@ -3654,7 +3657,7 @@ function warpCutUpdate(dt){
     hyperspace.reset(); shake=0; warpCut=null; warping=false;
     document.body.classList.remove('in-cut'); el.cine.classList.remove('on');
     if (W.z.hub){ docked=false; dockBay=null; toast(`Arrived · ${W.z.name}`); startHoldApproach(); }
-    else { const b=DEPOT.bays[0]; ship.pos.copy(b.park); ship.q.copy(b.q); enterHangar(b); }
+    else { const b=planetBay(); ship.pos.copy(b.park); ship.q.copy(b.q); enterHangar(b); }
     save();
   }
 }
@@ -4310,7 +4313,7 @@ const tutEl={box:$('tut'), step:$('tutStep'), title:$('tutTitle'), text:$('tutTe
 let tutShown=-1;
 function tutLaunch(){
   // start on the pad in Bay 1 and let the departure cutscene carry the ship out
-  placeDepot(); const b=DEPOT.bays[0];
+  placeDepot(); const b=planetBay();
   docked=true; dockBay=b; ship.pos.copy(b.park); ship.q.copy(b.q); ship.vel.copy(STATION.vel); camQ.copy(ship.q);
   startDeparture();
   el.cineCap.textContent=`Welcome aboard, ${state.custom.callsign} · launching from your ${CARGO_SHIP.toLowerCase()}`;
