@@ -552,7 +552,6 @@ table.manifest td.dimmed{color:var(--dim);}
 <script src="assets/asteroids_v2/mesh-collision.js"></script>
 <script src="assets/asteroids_v2/load-asteroids.js"></script>
 <script src="assets/lighting/space-lighting.js"></script>
-<script src="assets/planet_v2/load-planet.js"></script>
 <script>
 (() => {
 'use strict';
@@ -599,8 +598,13 @@ const DEPOT_ORBIT = 425000;   // the depot carrier holds station this far from t
 function inDepotLane(p, m){ m=m||0; const dO=Math.hypot(STATION.pos.x,STATION.pos.z); return Math.abs(Math.hypot(p.x,p.z)-dO)<7000+m && Math.abs(p.y-STATION.pos.y)<3500+m; }
 // A dense ring of rock at a fixed distance from the planet's centre (not its surface). Thin, crowded, mostly common ore, and
 // a good share of the rocks are plain barren stone.
-const RING_BELT = {name:'Ring belt', rMin:400000, rMax:450000, count:5600, size:[16,54], amount:[30,95], spread:9000, barren:0.55,
+const RING_BELT = {name:'Ring belt', rMin:400000, rMax:450000, count:5600, size:[16,54], amount:[30,95], spread:9000,
   ores:{iron:.48, copper:.3, gold:.12, platinum:.06, crystal:.04}};
+// Rock mix for every belt. Sizes: 30% small, 40% large, 20% giant, 10% colossal. Colossals only spawn as loose belt rocks
+// (never inside a field, they would swallow it) and loose rocks are about two thirds of the zone, so their loose-rock roll is
+// set higher to land at 10% overall. Ore: 70% of all rocks are barren, and a colossal carries ore only one time in a thousand;
+// with colossals at 10% that puts everything else at two thirds barren. The ore-bearing rest keeps each belt's ore weights.
+const COLOSSAL_LOOSE=0.146, BARREN_SHARE=2/3, COLOSSAL_ORE_SHARE=0.001;
 const WORLD_EDGE_BASE = 11800;   // zone edge, in base units beyond the planet surface
 const GRAVITY_SURFACE = 55;      // u/s² at the planet surface, falling off with the square of distance
 // Map positions are chart units (0-100 wide); light-years derive from them.
@@ -1303,7 +1307,7 @@ const stationPointLights=[]; station.traverse(o=>{ if (o.isPointLight) stationPo
 lighting.configureHangar(station);
 let frameNo=0;
 
-// planets (built per zone): procedural terrain remains visible until the Blender asset loads
+// planets (built per zone)
 // The zone's planet sits at the origin. Its surface is noise-displaced so the terminator and the horizon read as terrain from orbit.
 // Planet surface: a baked equirectangular map of lowlands, uplands, craters and, for cold worlds, polar caps, with a bump
 // map from the same height field, over a gently displaced sphere. A fresnel shell gives the limb a glowing atmosphere.
@@ -1330,7 +1334,7 @@ function buildPlanet(def){
     const h=(n-.5)*.008+(n2-.5)*.003; pos.setXYZ(i, tmp.x*p.r*(1+h), tmp.y*p.r*(1+h), tmp.z*p.r*(1+h));   // terrain stays under the 0.6% collision shell
   }
   g.computeVertexNormals();
-  const tex=planetTexture(def); tex.bump.dispose();   // unused by the temporary Lambert surface
+  const tex=planetTexture(def);
   p.group.add(new THREE.Mesh(g, new THREE.MeshLambertMaterial({map:tex.map})));   // Lambert: the planet can fill the whole screen, so its per-pixel cost matters most of all
   const light=new THREE.Color(p.tint).lerp(new THREE.Color(0xffffff), .45);
   const atm=new THREE.Mesh(new THREE.SphereGeometry(p.r*1.06, 64, 40), new THREE.MeshBasicMaterial({color:p.tint, transparent:true, opacity:.12, side:THREE.BackSide})); atm.visible=false; p.group.add(atm);
@@ -1352,15 +1356,9 @@ void main(){
   gl_FragColor=vec4(uColor, vF*.45*vDay); }`});
   p.group.add(new THREE.Mesh(new THREE.SphereGeometry(p.r*1.028, 96, 60), rimMat));
   // no planetary rings: the asteroid belts are the only rings in a zone
-  p.group.position.copy(p.pos); scene.add(p.group);
-  window.BeltRunnerPlanets?.attach(p,{renderer,sunDir});
-  return p;
+  p.group.position.copy(p.pos); scene.add(p.group); return p;
 }
-function removePlanet(p){
-  p.removed=true; scene.remove(p.group);
-  if(window.BeltRunnerPlanets) window.BeltRunnerPlanets.release(p);
-  else p.group.traverse(o=>{ if(o.geometry)o.geometry.dispose(); if(o.material){o.material.map?.dispose();o.material.dispose();} });
-}
+function removePlanet(p){ scene.remove(p.group); p.group.traverse(o=>{ if(o.geometry) o.geometry.dispose(); }); }
 
 // asteroids
 const rockAssets=window.BeltRunnerAsteroids;
@@ -1527,19 +1525,25 @@ function makeAsteroid(belt, avoid, field, opts){
   // Size classes: most rocks are small and skew toward the belt minimum; a few are large; a rare handful are giants.
   const ore=opts?opts.ore:pickOre(field?field.ores:belt.ores), roll=Math.random(), sizeT=Math.pow(Math.random(),1.7);
   let baseR, cls='small', detailBoost=0;
-  // size mix: 60% small, 35% large, 4.9% giant, 0.1% colossal (colossals only as loose belt rocks, never inside a field)
+  // size mix (see COLOSSAL_LOOSE): colossals come off the top of the roll for loose rocks only, then the rest of the roll
+  // splits giant : large : small as 2 : 4 : 3 everywhere, which lands the zone at 30% small, 40% large, 20% giant, 10% colossal
   if (opts){ cls=opts.cls; baseR=opts.r; detailBoost=cls==='colossal'?3:cls==='giant'?2:cls==='large'?1:0; }
-  else if (roll<0.0015 && !field){ cls='colossal'; baseR=belt.size[1]*rand(14,24); detailBoost=3; }   // loose rocks are ~2/3 of the zone, so this lands near 0.1% overall
-  else if (roll<0.05){ cls='giant'; baseR=belt.size[1]*rand(5,8.5); detailBoost=2; }
-  else if (roll<0.40){ cls='large'; baseR=belt.size[1]*rand(1.8,3.2); detailBoost=1; }
-  else baseR=belt.size[0]+(belt.size[1]-belt.size[0])*sizeT;
+  else {
+    let p=roll;
+    if (!field){ if (p<COLOSSAL_LOOSE) cls='colossal'; else p=(p-COLOSSAL_LOOSE)/(1-COLOSSAL_LOOSE); }
+    if (cls!=='colossal') cls=p<2/9?'giant':p<6/9?'large':'small';
+    if (cls==='colossal'){ baseR=belt.size[1]*rand(14,24); detailBoost=3; }
+    else if (cls==='giant'){ baseR=belt.size[1]*rand(5,8.5); detailBoost=2; }
+    else if (cls==='large'){ baseR=belt.size[1]*rand(1.8,3.2); detailBoost=1; }
+    else baseR=belt.size[0]+(belt.size[1]-belt.size[0])*sizeT;
+  }
   // large and giant rocks are sometimes hollows you can fly into; giants are otherwise big rounded, pocked or blocky bodies
   let shape;
   if (cls!=='small' && Math.random()<0.22) shape='hollow';
   else if (cls==='giant'||cls==='colossal'){ const q=Math.random(); shape=q<.45?'cratered':q<.7?'boulder':q<.85?'potato':'bean'; }
   else shape=pickShape();
   const amount=opts?Math.round(opts.amount):Math.round((belt.amount[0]+(belt.amount[1]-belt.amount[0])*Math.min(1,(baseR-belt.size[0])/(belt.size[1]-belt.size[0])))*Math.max(1,baseR/belt.size[1])*belt.amountMult*rand(.85,1.15));
-  const barren=opts?!!opts.barren:(!!belt.barren && Math.random()<belt.barren);   // a share of this belt's rocks carry no ore at all
+  const barren=opts?!!opts.barren:(Math.random()<(cls==='colossal'?1-COLOSSAL_ORE_SHARE:BARREN_SHARE));   // most rock is worthless; see BARREN_SHARE
   const group=new THREE.Group(); group.position.copy(pos);
   const S=ROCK_SHAPES[shape], mat=barren?barrenMat:rockMaterialFor(ore, S), seed=Math.random()*100, cave={};
   const bodyGeo=rockAssets?.ready ? null : rockGeometry(baseR, shape, seed, detailBoost, cave);
