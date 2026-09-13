@@ -1,0 +1,106 @@
+{
+  "passed": true,
+  "gameSHA256": "8918e3092a323e6d19b285a5e559a3935e822b6f8e8949dfb9567f9f052d445b",
+  "setup": {
+    "version": "v0.9.50",
+    "carrier": "ready",
+    "player": "ready",
+    "lighting": {
+      "zone": "kessler",
+      "shadowSize": 2048,
+      "shadowExtent": 5600,
+      "sunVisible": 1,
+      "exposure": 1.05
+    },
+    "calls": 306
+  },
+  "rocks": {
+    "state": "ready",
+    "error": null,
+    "drawCalls": 5,
+    "triangles": 25092,
+    "visible": 5,
+    "lodCounts": [
+      2,
+      3,
+      0
+    ],
+    "source": "binary",
+    "models": 84,
+    "textures": 6,
+    "oreTypes": 17,
+    "lighting": {
+      "zone": "kessler",
+      "shadowSize": 2048,
+      "shadowExtent": 2400,
+      "sunVisible": 1,
+      "exposure": 1.05
+    },
+    "calls": 55
+  },
+  "sun": {
+    "zone": "kessler",
+    "shadowSize": 2048,
+    "shadowExtent": 2400,
+    "sunVisible": 1,
+    "exposure": 1.05
+  },
+  "hangar": {
+    "lights": [
+      {
+        "intensity": 2600,
+        "color": "ffc98c"
+      },
+      {
+        "intensity": 2600,
+        "color": "ffc98c"
+      }
+    ],
+    "zone": "kessler",
+    "shadowSize": 2048,
+    "shadowExtent": 5600,
+    "sunVisible": 1,
+    "exposure": 1.05
+  },
+  "physical": {
+    "shadow": 37,
+    "lit": 222.33333333333334,
+    "eclipse": 37,
+    "qualities": [
+      {
+        "quality": "low",
+        "size": 1024
+      },
+      {
+        "quality": "high",
+        "size": 4096
+      },
+      {
+        "quality": "balanced",
+        "size": 2048
+      }
+    ]
+  },
+  "zones": [
+    {
+      "zone": "hub",
+      "exposure": 1.05,
+      "shadowMap": true,
+      "models": 84
+    },
+    {
+      "zone": "kessler",
+      "exposure": 1.05,
+      "shadowMap": true,
+      "models": 84
+    }
+  ],
+  "gameplay": {
+    "heldDamage": 128.57500000001164,
+    "heat": 0.23333333333333386,
+    "releasedDamage": 0,
+    "lightingAndBatchCpuMs": 7.643333331743876,
+    "drawCalls": 143
+  },
+  "errors": []
+}

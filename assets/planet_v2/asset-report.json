@@ -1,0 +1,27 @@
+{
+  "source_size": [
+    1774,
+    887
+  ],
+  "vertices": 73346,
+  "triangles": 146688,
+  "radius_min": 0.9986238479614258,
+  "radius_max": 1.0025,
+  "collision_radius": 1.006,
+  "textures": {
+    "surface_albedo.jpg": [
+      4096,
+      2048
+    ],
+    "surface_normal.png": [
+      4096,
+      2048
+    ],
+    "surface_roughness.png": [
+      2048,
+      1024
+    ]
+  },
+  "fine_detail": "3D regolith noise and secondary impact rims baked natively into the 4096x2048 color and normal maps",
+  "lighting": "Blender Cycles, directional sun with 0.009 rad angular diameter, AgX, dark environment; no emissive surface"
+}

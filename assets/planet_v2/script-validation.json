@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "mode": "script",
+  "gameSHA256": "8918e3092a323e6d19b285a5e559a3935e822b6f8e8949dfb9567f9f052d445b",
+  "assetSHA256": "973642345b3c79da84f818f3869750e6895ca83ea0568d6c1f6f1817e8a49792",
+  "setup": {
+    "version": "v0.9.50",
+    "asset": "ready",
+    "radius": 225000
+  },
+  "checks": [],
+  "errors": []
+}

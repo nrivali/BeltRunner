@@ -1,0 +1,37 @@
+{
+  "baseCommit": "46864bde09664bc4298fb9244dde070cc6a87eb6",
+  "baseVersion": "0.9.49",
+  "version": "0.9.50",
+  "beforeSHA256": "5add66d72e5c20b89dc6efa66c59385cdf26175ca9c997676c19d88b52d67f5c",
+  "afterSHA256": "8918e3092a323e6d19b285a5e559a3935e822b6f8e8949dfb9567f9f052d445b",
+  "backup": "C:\\Users\\rival\\Documents\\BeltRunner\\backups\\planet-base-2026-09-13T07-10-42-966Z.html",
+  "immediateBackup": "C:\\Users\\rival\\Documents\\BeltRunner\\backups\\planet-before-version-2026-09-13T07-10-42-966Z.html",
+  "immediateBeforeSHA256": "34c6b4ee88a94817e4899c107f63592b44afd86e734919bb6e0588dcf9bb7a75",
+  "preservedConcurrentChange": "Claude shelved the other zones in a8e2524, then increased Kessler density and revised asteroid size distribution in 46864bd.",
+  "edits": [
+    {
+      "from": "<script src=\"assets/lighting/space-lighting.js\"></script>",
+      "to": "<script src=\"assets/lighting/space-lighting.js\"></script>\r\n<script src=\"assets/planet_v2/load-planet.js\"></script>"
+    },
+    {
+      "from": "// planets (built per zone)",
+      "to": "// planets (built per zone): procedural terrain remains visible until the Blender asset loads"
+    },
+    {
+      "from": "  const tex=planetTexture(def);",
+      "to": "  const tex=planetTexture(def); tex.bump.dispose();   // unused by the temporary Lambert surface"
+    },
+    {
+      "from": "  p.group.position.copy(p.pos); scene.add(p.group); return p;",
+      "to": "  p.group.position.copy(p.pos); scene.add(p.group);\r\n  window.BeltRunnerPlanets?.attach(p,{renderer,sunDir});\r\n  return p;"
+    },
+    {
+      "from": "function removePlanet(p){ scene.remove(p.group); p.group.traverse(o=>{ if(o.geometry) o.geometry.dispose(); }); }",
+      "to": "function removePlanet(p){\r\n  p.removed=true; scene.remove(p.group);\r\n  if(window.BeltRunnerPlanets) window.BeltRunnerPlanets.release(p);\r\n  else p.group.traverse(o=>{ if(o.geometry)o.geometry.dispose(); if(o.material){o.material.map?.dispose();o.material.dispose();} });\r\n}"
+    },
+    {
+      "from": "const GAME_VERSION = '0.9.49'",
+      "to": "const GAME_VERSION = '0.9.50'"
+    }
+  ]
+}
