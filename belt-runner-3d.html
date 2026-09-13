@@ -53,6 +53,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);fon
 .chip{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;background:rgba(14,18,36,.85);border:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--text);}
 .chip i{width:7px;height:7px;display:inline-block;transform:rotate(45deg);}
 .hud-tr{top:18px;right:20px;width:270px;display:flex;flex-direction:column;align-items:flex-end;gap:8px;text-align:right;}
+.hud-tc{top:18px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;text-align:center;}   /* target info, top middle */
 .readout{display:flex;gap:16px;font-family:var(--mono);font-size:12px;color:var(--muted);}
 .readout b{color:var(--text);font-weight:500;}
 .target{background:rgba(14,18,36,.85);border:1px solid var(--line);padding:10px 12px;min-width:200px;display:none;}
@@ -336,7 +337,7 @@ table.manifest td.dimmed{color:var(--dim);}
 @media (max-width:760px){.panel-body{grid-template-columns:1fr;}.panel-body .col + .col{border-left:none;border-top:1px solid var(--line);}.hud-tr,.hud-bl{display:none;}}
 @media (prefers-reduced-motion:reduce){.toast{animation-duration:0.01s;animation-delay:3s;}}
 /* HUD size (Settings): each pane scales about the corner or edge it hangs from. Last in the sheet so it wins. */
-.hud-tl{transform:scale(var(--hudScale));transform-origin:100% 100%;} .hud-tr{transform:scale(var(--hudScale));transform-origin:100% 0;} .hud-bl{transform:scale(var(--hudScale));transform-origin:0 100%;}
+.hud-tl{transform:scale(var(--hudScale));transform-origin:100% 100%;} .hud-tr{transform:scale(var(--hudScale));transform-origin:100% 0;} .hud-tc{transform:translateX(-50%) scale(var(--hudScale));transform-origin:50% 0;} .hud-bl{transform:scale(var(--hudScale));transform-origin:0 100%;}
 .hud-center{transform:translate(-50%,-50%) scale(var(--hudScale));}
 .prompt,.notice,.dockbox{transform:translateX(-50%) scale(var(--hudScale));transform-origin:50% 100%;} .toasts{transform:translateX(-50%) scale(var(--hudScale));transform-origin:50% 0;}
 </style>
@@ -364,8 +365,12 @@ table.manifest td.dimmed{color:var(--dim);}
     <div class="readout"><span>ZONE <b id="zoneName"></b></span><span>SPD <b id="spd">0</b></span><span id="distLbl">CARGO SHIP <b id="dist">0</b></span><span>FIELD <b id="fieldState">â€”</b></span></div>
     <div class="readout"><span>LASER <b id="laserState">off</b></span><span>RANGE <b id="laserRange">2500</b></span><span>RADAR <b id="radarState">READY</b></span><span>THREAT <b id="threatState">none</b></span></div>
   </div>
+</div>
+
+<!-- target info, top middle: the locked object if there is one, otherwise whatever the crosshair is on -->
+<div class="hud hud-tc">
   <div class="target" id="target">
-    <div class="eyebrow">Target</div>
+    <div class="eyebrow" id="tEyebrow">Target</div>
     <div class="t-name" id="tName"></div>
     <div class="t-sub" id="tSub"></div>
     <div class="t-hp" id="tHpRow"><div class="bar"><i id="tHp"></i></div><span class="mono" id="tHpT"></span></div>
@@ -496,7 +501,7 @@ table.manifest td.dimmed{color:var(--dim);}
       <span><kbd>A</kbd> <kbd>D</kbd> <kbd>â†‘</kbd> <kbd>â†“</kbd></span><span>Roll left and right Â· pitch up and down on keys.</span>
       <span><kbd>R</kbd></span><span>Radar pulse Â· marks every rock in scanner range</span>
       <span><kbd>LMB</kbd></span><span>Hold to fire the mining laser (Space or L too). While you hold it, the dish under the nose swings onto whatever the crosshair is on and cuts it until it breaks. It never picks targets by itself: keep the nose on the rock.</span>
-      <span><kbd>Q</kbd></span><span>Hover the mouse over a rock or raider to see how far away it is, then press Q to lock the crosshair on it. The ship steers itself to keep it in the crosshair (you keep the throttle and roll) until you press Q again, or it breaks up or falls far out of range. A locked object always shows its range.</span>
+      <span><kbd>Q</kbd></span><span>Hover the mouse over a rock or raider to see how far away it is, then press Q to lock the crosshair on it. The ship steers itself to keep it in the crosshair (you keep the throttle and roll) until you press Q again, or it breaks up or goes beyond 100,000 units. A locked object always shows its range, and its details sit top centre.</span>
       <span><kbd>F</kbd></span><span>Flashlight: a spot beam from the nose, on or off. While docked F opens the cargo ship services instead.</span>
       <span><kbd>P</kbd></span><span>Park beside a rock or planet Â· thrust to leave</span>
       <span>Docking</span><span>Fly slowly into either mouth of the cargo ship's through-hangar, or press <kbd>E</kbd> within 4,500 of it and approach control flies you in. You taxi to the pad at the far end and park nose-out, so you leave straight ahead. Fuel and repairs flow while you sit on the pad, and the services panel moves ore between your hold and the cargo ship's 50-slot storage. The cargo ship warps with you; ore only sells at the Hub.</span>
@@ -715,7 +720,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.28';
+const GAME_VERSION = '0.9.29';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D Â· v' + GAME_VERSION;
 
@@ -2178,6 +2183,7 @@ const SHIP_DISH_POS=V3(0,-4.5,7), SHIP_DISH_ARC=Math.PI/2, shipDishQ=new THREE.Q
 let shipDish=null, shipDishMount=null; const shipAim={yaw:0, pitch:0, aimed:false};
 let lock=null;   // Q: the rock the crosshair is locked on; the ship steers itself to keep the crosshair on it until Q again, or it breaks or falls far out of range
 let hover=null, lockType='rock', lockDist=0;   // hover: what the mouse is over this frame ({type, obj, dist}); lockType/lockDist describe the lock
+const LOCK_RANGE=100000;   // a lock holds out to this distance (well beyond laser reach: it is for navigating to things too)
 const hoverName=h=>h.type==='pirate'?'Raider':rockName(h.obj);
 function toggleLock(){
   if (lock){ lock=null; toast('Lock released'); }
@@ -2631,7 +2637,7 @@ function resetSave(){ resetting=true; try{ localStorage.removeItem(SAVE_KEY); }c
 const $=id=>document.getElementById(id);
 const BLIPS=36; { const c=$('blips'); for (let i=0;i<BLIPS;i++){ const d=document.createElement('div'); d.className='blip'; d.innerHTML='<i></i><span></span>'; c.appendChild(d); } }
 const el={credits:$('credits'),goalFill:$('goalFill'),goalPct:$('goalPct'),fuelText:$('fuelText'),fuelFill:$('fuelFill'),cargoText:$('cargoText'),cargoFill:$('cargoFill'),chips:$('chips'),
-  spd:$('spd'),dist:$('dist'),inv:$('inv'),invBody:$('invBody'),invCap:$('invCap'),invFill:$('invFill'),invClose:$('invClose'),target:$('target'),tName:$('tName'),tSub:$('tSub'),tWarn:$('tWarn'),tHp:$('tHp'),tHpT:$('tHpT'),prompt:$('prompt'),toasts:$('toasts'),
+  spd:$('spd'),dist:$('dist'),inv:$('inv'),invBody:$('invBody'),invCap:$('invCap'),invFill:$('invFill'),invClose:$('invClose'),target:$('target'),tEyebrow:$('tEyebrow'),tName:$('tName'),tSub:$('tSub'),tWarn:$('tWarn'),tHp:$('tHp'),tHpT:$('tHpT'),prompt:$('prompt'),toasts:$('toasts'),
   center:$('center'),reticle:$('reticle'),rLbl:$('rLbl'),hoverLbl:$('hoverLbl'),lockLbl:$('lockLbl'),marker:$('marker'),mArr:$('mArr'),mLbl:$('mLbl'),fullNotice:$('fullNotice'),
   station:$('station'),pCredits:$('pCredits'),manifest:$('manifest'),upgrades:$('upgrades'),closeSvc:$('closeSvc'),reset:$('reset'),
   dockbox:$('dockbox'),dbTitle:$('dbTitle'),dbCargo:$('dbCargo'),dbCargoT:$('dbCargoT'),dbFuel:$('dbFuel'),dbFuelT:$('dbFuelT'),dbHull:$('dbHull'),dbHullT:$('dbHullT'),
@@ -3822,7 +3828,7 @@ function update(dt){
   if (lock){   // Q lock: the ship steers itself to keep the crosshair on the locked object (see steering); the laser still only cuts what the crosshair is on
     const gone=lockType==='pirate'?!pirates.includes(lock):lock.dead;
     lockDist=Math.max(0, lock.pos.distanceTo(laserOrigin())-(lock.asset?lock.boundR:lock.r));
-    if (gone || lockDist>stat('scanner').mine*3){ toast(gone?(lockType==='pirate'?'Lock lost Â· raider destroyed':'Lock lost Â· rock broke up'):'Lock lost Â· out of range', true); lock=null; }   // lapses when it is destroyed or falls far out of range
+    if (gone || lockDist>LOCK_RANGE){ toast(gone?(lockType==='pirate'?'Lock lost Â· raider destroyed':'Lock lost Â· rock broke up'):'Lock lost Â· out of range', true); lock=null; }   // lapses when it is destroyed or falls far out of range
     else if (target && target.obj===lock) target.locked=true;
   }
   // the beam always goes to the centre of its target; the heat, sparks and scorch sit where it enters the surface on the dish's side
@@ -4088,14 +4094,16 @@ function updateHud(dt){
   }
   { const reach=stat('scanner').mine; el.laserRange.textContent=lock?`${Math.round(lockDist)} / ${reach}`:`${reach}`; }   // range: the locked object's distance against the beam's reach, else just the reach
   el.laserState.textContent=(laserOn?`CUTTING Â· ${Math.round(heatFx.heat*100)}% heat Â· ${Math.round(laserPower(target.dist)*100)}% power`:firing?'FIRING':heatFx.heat>0.01?`ready Â· ${Math.round(heatFx.heat*100)}% heat`:'ready'); el.laserState.style.color=laserOn?'var(--amber2)':''; el.radarState.textContent=pulseCd>0?`${pulseCd.toFixed(1)}s`:'READY';
-  if (target && !docked){
-    const t=target.obj; el.target.classList.add('on');
-    el.target.classList.toggle('pirate', target.type==='pirate');
-    if (target.type==='pirate'){ el.tName.textContent='Pirate raider'; el.tSub.textContent=`${Math.max(0,Math.ceil(t.hp))} / ${t.maxHp} hp Â· bounty ${fmt(t.bounty)} cr`; el.tWarn.textContent=t.state==='attack'?'Hostile Â· laser cuts it':''; el.tWarn.style.display=t.state==='attack'?'block':'none'; }
+  const T=lock?{type:lockType, obj:lock, dist:lockDist, locked:true}:target;   // the panel (top centre) follows the lock when there is one, else the crosshair target
+  if (T && !docked){
+    const t=T.obj; el.target.classList.add('on');
+    el.target.classList.toggle('pirate', T.type==='pirate');
+    el.tEyebrow.textContent=T.locked?`Locked Â· ${Math.round(T.dist).toLocaleString()} u${T.dist<=stat('scanner').mine?' Â· in reach':''}`:'Target';
+    if (T.type==='pirate'){ el.tName.textContent='Pirate raider'; el.tSub.textContent=`${Math.max(0,Math.ceil(t.hp))} / ${t.maxHp} hp Â· bounty ${fmt(t.bounty)} cr`; el.tWarn.textContent=t.state==='attack'?'Hostile Â· laser cuts it':''; el.tWarn.style.display=t.state==='attack'?'block':'none'; }
     else {
       el.tName.textContent=rockName(t); el.tSub.textContent=t.barren?'plain stone Â· scrap only':`${Math.round(t.max)} u ${ORES[t.ore].name} inside Â· hardness ${ORES[t.ore].hardness}`;
       el.tHp.style.width=(100*Math.max(0,t.hp)/t.hpMax)+'%'; el.tHpT.textContent=`${Math.ceil(Math.max(0,t.hp))} / ${t.hpMax}`;
-      const r=mineReason(target); el.tWarn.textContent=r||''; el.tWarn.style.display=r?'block':'none';
+      const r=mineReason(T); el.tWarn.textContent=r||''; el.tWarn.style.display=r?'block':'none';
     }
   } else el.target.classList.remove('on');
   el.threatState.textContent=threat>0?`${threat} raider${threat>1?'s':''}`:'none'; el.threatState.style.color=threat>0?'var(--red)':'';
