@@ -1,0 +1,80 @@
+{
+  "triangles": 38130,
+  "meshes": [
+    "hull",
+    "interior",
+    "emissive",
+    "glass"
+  ],
+  "empties": {
+    "dish_mount": [
+      -40.0,
+      995.0,
+      -0.0
+    ],
+    "engine_0": [
+      -3480.0,
+      0.0,
+      -540.0
+    ],
+    "engine_1": [
+      -3480.0,
+      0.0,
+      -0.0
+    ],
+    "engine_2": [
+      -3480.0,
+      0.0,
+      540.0
+    ],
+    "drone_dock_0": [
+      760.0,
+      -60.0,
+      1500.0
+    ],
+    "drone_dock_1": [
+      850.0,
+      -60.0,
+      1500.0
+    ],
+    "drone_dock_2": [
+      940.0,
+      -60.0,
+      1500.0
+    ],
+    "hangar_mouth_pos": [
+      0.0,
+      0.0,
+      900.0
+    ],
+    "hangar_mouth_neg": [
+      0.0,
+      0.0,
+      -900.0
+    ],
+    "pad_pos": [
+      0.0,
+      -138.0,
+      525.0
+    ],
+    "pad_neg": [
+      0.0,
+      -138.0,
+      -525.0
+    ],
+    "drop_pad": [
+      250.0,
+      -130.0,
+      -0.0
+    ],
+    "bridge_windows": [
+      900.0,
+      734.0,
+      -0.0
+    ]
+  },
+  "atlas_size": 2048,
+  "forward": "+X",
+  "up": "+Y",
+  "dish": "Separate asset 4; carrier includes mast and dish_mount."
+}

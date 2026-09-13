@@ -1,0 +1,64 @@
+{
+  "status": "PASS",
+  "assets": [
+    {
+      "asset": "01_needle",
+      "triangles": 444,
+      "height": 20,
+      "embeddedTextures": 4,
+      "textureSize": 512,
+      "uvOverlaps": 0,
+      "bytes": 979432
+    },
+    {
+      "asset": "02_fan",
+      "triangles": 584,
+      "height": 30,
+      "embeddedTextures": 4,
+      "textureSize": 512,
+      "uvOverlaps": 0,
+      "bytes": 926504
+    },
+    {
+      "asset": "03_crown",
+      "triangles": 514,
+      "height": 40,
+      "embeddedTextures": 4,
+      "textureSize": 512,
+      "uvOverlaps": 0,
+      "bytes": 837800
+    },
+    {
+      "asset": "04_split_spire",
+      "triangles": 444,
+      "height": 60,
+      "embeddedTextures": 4,
+      "textureSize": 512,
+      "uvOverlaps": 0,
+      "bytes": 852500
+    },
+    {
+      "asset": "05_ridge",
+      "triangles": 444,
+      "height": 25,
+      "embeddedTextures": 4,
+      "textureSize": 512,
+      "uvOverlaps": 0,
+      "bytes": 918476
+    },
+    {
+      "asset": "06_bloom",
+      "triangles": 584,
+      "height": 45,
+      "embeddedTextures": 4,
+      "textureSize": 512,
+      "uvOverlaps": 0,
+      "bytes": 844828
+    }
+  ],
+  "threeRevision": "158",
+  "loaded": 6,
+  "rendered": true,
+  "drawCalls": 36,
+  "pageErrors": []
+}

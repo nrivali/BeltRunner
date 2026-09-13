@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "threeRevision": "158",
+  "configurations": 324,
+  "triangleRange": [
+    6290,
+    6570
+  ],
+  "maxRadius": 14.037272202298569,
+  "componentCount": 26,
+  "sceneCount": 2,
+  "rendered": true,
+  "pageErrors": []
+}

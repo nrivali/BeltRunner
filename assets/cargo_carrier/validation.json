@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "triangles": 38130,
+  "materials": 4,
+  "embedded_images": 4,
+  "attachment_points_checked": 13,
+  "through_hangar_raycast": "clear",
+  "camera_and_lights_in_glb": false
+}

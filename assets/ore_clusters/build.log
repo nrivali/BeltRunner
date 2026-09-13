@@ -1,0 +1,111 @@
+C:\Users\rival\Documents\BeltRunner\assets\ore_clusters\build_ore_clusters.py:29: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  rock=kind=='asteroid_matrix';m=bpy.data.materials.new('source_'+kind);m.use_nodes=True
+C:\Users\rival\Documents\BeltRunner\assets\ore_clusters\build_ore_clusters.py:122: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m=bpy.data.materials.new(kind);m.use_nodes=True;nt=m.node_tree;bs=nt.nodes.get('Principled BSDF');ore=kind!='asteroid_matrix'
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+INFO Draco is available, use library at C:\Program Files\Blender Foundation\Blender 5.2\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_draco_bridge.dll
+INFO MeshOptimizer is available, use library at C:\Program Files\Blender Foundation\Blender 5.2\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_meshopt_bridge.dll
+15:22:02 | INFO: Starting glTF 2.0 export
+15:22:02 | INFO: Extracting primitive: ore_cluster_01_needle
+15:22:02 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+15:22:02 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+15:22:02 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+15:22:02 | INFO: Primitives created: 3
+15:22:02 | INFO: Finished glTF 2.0 export in 0.049306631088256836 s
+C:\Users\rival\Documents\BeltRunner\assets\ore_clusters\build_ore_clusters.py:137: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  scene.world.use_nodes=True;bg=scene.world.node_tree.nodes.get('Background');bg.inputs[0].default_value=(.1,.13,.18,1);bg.inputs[1].default_value=.5
+C:\Users\rival\Documents\BeltRunner\assets\ore_clusters\build_ore_clusters.py:143: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  mat=bpy.data.materials.new('Studio charcoal');mat.use_nodes=True;bs=mat.node_tree.nodes.get('Principled BSDF');bs.inputs['Base Color'].default_value=(.022,.028,.039,1);bs.inputs['Roughness'].default_value=.74;floor.data.materials.append(mat)
+00:19.453  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\ore_clusters\01_needle\preview_front.png'
+00:38.968  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\ore_clusters\01_needle\preview_rear.png'
+00:38.984  image.write      | ERROR OpenImageIO write failed: Could not open file "C:\Users\rival\.thumbnails\large\blender_15068_3dde1173ef3355fa83c98ce86bf059f1.png.png"
+
+Info: Saved as "ore_cluster_01_needle.blend"
+ASSET_DONE 01_needle 444
+C:\Users\rival\Documents\BeltRunner\assets\ore_clusters\build_ore_clusters.py:29: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  rock=kind=='asteroid_matrix';m=bpy.data.materials.new('source_'+kind);m.use_nodes=True
+C:\Users\rival\Documents\BeltRunner\assets\ore_clusters\build_ore_clusters.py:122: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m=bpy.data.materials.new(kind);m.use_nodes=True;nt=m.node_tree;bs=nt.nodes.get('Principled BSDF');ore=kind!='asteroid_matrix'
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+15:22:39 | INFO: Starting glTF 2.0 export
+15:22:39 | INFO: Extracting primitive: ore_cluster_02_fan
+15:22:39 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+15:22:39 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+15:22:39 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+15:22:39 | INFO: Primitives created: 3
+15:22:39 | INFO: Finished glTF 2.0 export in 0.012073516845703125 s
+00:57.047  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\ore_clusters\02_fan\preview_front.png'
+01:16.656  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\ore_clusters\02_fan\preview_rear.png'
+01:16.672  image.write      | ERROR OpenImageIO write failed: Could not open file "C:\Users\rival\.thumbnails\large\blender_15068_1bc1940362f5f129311823d6d672943b.png.png"
+
+Info: Saved as "ore_cluster_02_fan.blend"
+ASSET_DONE 02_fan 584
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+15:23:17 | INFO: Starting glTF 2.0 export
+15:23:17 | INFO: Extracting primitive: ore_cluster_03_crown
+15:23:17 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+15:23:17 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+15:23:17 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+15:23:17 | INFO: Primitives created: 3
+15:23:17 | INFO: Finished glTF 2.0 export in 0.015455484390258789 s
+01:34.359  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\ore_clusters\03_crown\preview_front.png'
+01:53.922  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\ore_clusters\03_crown\preview_rear.png'
+01:53.937  image.write      | ERROR OpenImageIO write failed: Could not open file "C:\Users\rival\.thumbnails\large\blender_15068_682c7a56f6a7d0b2bbb31487e08c911e.png.png"
+
+Info: Saved as "ore_cluster_03_crown.blend"
+ASSET_DONE 03_crown 514
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+15:23:54 | INFO: Starting glTF 2.0 export
+15:23:54 | INFO: Extracting primitive: ore_cluster_04_split_spire
+15:23:54 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+15:23:54 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+15:23:54 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+15:23:54 | INFO: Primitives created: 3
+15:23:54 | INFO: Finished glTF 2.0 export in 0.0157320499420166 s
+02:11.015  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\ore_clusters\04_split_spire\preview_front.png'
+02:29.640  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\ore_clusters\04_split_spire\preview_rear.png'
+02:29.656  image.write      | ERROR OpenImageIO write failed: Could not open file "C:\Users\rival\.thumbnails\large\blender_15068_3e2f676823407a5b8ec85d36ef71d7c3.png.png"
+
+Info: Saved as "ore_cluster_04_split_spire.blend"
+ASSET_DONE 04_split_spire 444
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+15:24:30 | INFO: Starting glTF 2.0 export
+15:24:30 | INFO: Extracting primitive: ore_cluster_05_ridge
+15:24:30 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+15:24:30 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+15:24:30 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+15:24:30 | INFO: Primitives created: 3
+15:24:30 | INFO: Finished glTF 2.0 export in 0.01125025749206543 s
+02:46.531  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\ore_clusters\05_ridge\preview_front.png'
+03:03.734  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\ore_clusters\05_ridge\preview_rear.png'
+03:03.734  image.write      | ERROR OpenImageIO write failed: Could not open file "C:\Users\rival\.thumbnails\large\blender_15068_7c593a496157c0fda3025ae79390801c.png.png"
+
+Info: Saved as "ore_cluster_05_ridge.blend"
+ASSET_DONE 05_ridge 444
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+15:25:04 | INFO: Starting glTF 2.0 export
+15:25:04 | INFO: Extracting primitive: ore_cluster_06_bloom
+15:25:04 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+15:25:04 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+15:25:04 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+15:25:04 | INFO: Primitives created: 3
+15:25:04 | INFO: Finished glTF 2.0 export in 0.01384282112121582 s
+03:23.203  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\ore_clusters\06_bloom\preview_front.png'

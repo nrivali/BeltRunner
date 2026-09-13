@@ -1,0 +1,10 @@
+00:01.234  blend            | Read blend: "C:\Users\rival\Documents\BeltRunner\assets\player_ship\player_ship.blend"
+00:09.016  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\player_ship\wings_delta.png'
+00:16.469  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\player_ship\wings_swept.png'
+00:24.656  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\player_ship\wings_forward.png'
+00:33.141  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\player_ship\wings_twin.png'
+00:33.156  image.write      | ERROR OpenImageIO write failed: Could not open file "C:\Users\rival\.thumbnails\large\blender_30380_58bae6b50f9bb5f3dcf4f59a5185478d.png.png"
+Info: Saved as "player_ship.blend"
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+Blender quit

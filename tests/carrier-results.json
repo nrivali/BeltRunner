@@ -1,0 +1,162 @@
+[
+  {
+    "mode": "http",
+    "state": "ready",
+    "error": null,
+    "triangles": 38130,
+    "meshes": 4,
+    "model": true,
+    "engines": [
+      [
+        -3580,
+        0,
+        -540
+      ],
+      [
+        -3580,
+        0,
+        0
+      ],
+      [
+        -3580,
+        0,
+        540
+      ]
+    ],
+    "pivot": [
+      -40,
+      1055,
+      0
+    ],
+    "pads": [
+      [
+        0,
+        -100,
+        -525
+      ],
+      [
+        0,
+        -100,
+        525
+      ]
+    ],
+    "floor": -150,
+    "fields": [
+      true,
+      true
+    ],
+    "lights": 2,
+    "anchors": 13,
+    "docking": [
+      [
+        8.322554569317801e-15,
+        -100.00000000000001,
+        524.9999999999754
+      ],
+      [
+        -6.31855746652428e-14,
+        -100.00000000000001,
+        -524.9999999999729
+      ]
+    ],
+    "pageErrors": []
+  },
+  {
+    "mode": "file",
+    "state": "ready",
+    "error": null,
+    "triangles": 38130,
+    "meshes": 4,
+    "model": true,
+    "engines": [
+      [
+        -3580,
+        0,
+        -540
+      ],
+      [
+        -3580,
+        0,
+        0
+      ],
+      [
+        -3580,
+        0,
+        540
+      ]
+    ],
+    "pivot": [
+      -40,
+      1055,
+      0
+    ],
+    "pads": [
+      [
+        0,
+        -100,
+        -525
+      ],
+      [
+        0,
+        -100,
+        525
+      ]
+    ],
+    "floor": -150,
+    "fields": [
+      true,
+      true
+    ],
+    "lights": 2,
+    "anchors": 13,
+    "pageErrors": []
+  },
+  {
+    "mode": "missing",
+    "state": "fallback",
+    "error": "Carrier HTTP 404",
+    "model": false,
+    "engines": [
+      [
+        -3800,
+        0,
+        -540
+      ],
+      [
+        -3800,
+        0,
+        0
+      ],
+      [
+        -3800,
+        0,
+        540
+      ]
+    ],
+    "pivot": [
+      -500,
+      1360,
+      0
+    ],
+    "pads": [
+      [
+        0,
+        -138,
+        -525
+      ],
+      [
+        0,
+        -138,
+        525
+      ]
+    ],
+    "floor": -176,
+    "fields": [
+      true,
+      true
+    ],
+    "lights": 2,
+    "anchors": null,
+    "pageErrors": []
+  }
+]

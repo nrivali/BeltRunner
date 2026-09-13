@@ -1,0 +1,23 @@
+{
+  "asset": "ore_cluster_05_ridge",
+  "mesh": "ore_cluster_05_ridge",
+  "empties": [],
+  "triangles": 444,
+  "shards": 3,
+  "dimensions_xyz": [
+    50.69913291931152,
+    25.0,
+    19.00480556488037
+  ],
+  "height": 25,
+  "origin": "mounting footprint centre at ground plane",
+  "up": "+Y",
+  "forward": "+Z",
+  "materials": [
+    "crystal_body",
+    "crystal_emissive",
+    "asteroid_matrix"
+  ],
+  "textures": 512,
+  "color": "#467BE8"
+}

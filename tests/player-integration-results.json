@@ -1,0 +1,50 @@
+[
+  {
+    "mode": "http",
+    "state": "ready",
+    "error": null,
+    "refits": 2400,
+    "maxTriangles": 6570,
+    "aimChecks": [
+      0.9999946045595518,
+      0.9999988120319678,
+      0.9999975464553692
+    ],
+    "engines": 2,
+    "navLights": 2,
+    "scale": [
+      3,
+      3,
+      3
+    ],
+    "departureAndDocking": true,
+    "errors": []
+  },
+  {
+    "mode": "file",
+    "state": "ready",
+    "error": null,
+    "refits": 2400,
+    "maxTriangles": 6570,
+    "aimChecks": [
+      0.9999946045595518,
+      0.9999988120319678,
+      0.9999975464553692
+    ],
+    "engines": 2,
+    "navLights": 2,
+    "scale": [
+      3,
+      3,
+      3
+    ],
+    "departureAndDocking": true,
+    "errors": []
+  },
+  {
+    "mode": "missing",
+    "state": "fallback",
+    "error": "Player ship HTTP 404",
+    "errors": []
+  }
+]

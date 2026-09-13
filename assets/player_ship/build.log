@@ -1,0 +1,191 @@
+C:\Users\rival\Documents\BeltRunner\assets\player_ship\build_player_ship.py:17: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m=bpy.data.materials.new('source_'+name);m.use_nodes=True;MATS[name]=m
+Warning: No mesh data to join
+Warning: No mesh data to join
+GEOMETRY_READY
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+BAKED basecolor
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+BAKED metallic_roughness
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+BAKED emissive
+C:\Users\rival\Documents\BeltRunner\assets\player_ship\build_player_ship.py:241: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m=bpy.data.materials.new(kind);m.use_nodes=True;nt=m.node_tree;bs=nt.nodes.get('Principled BSDF')
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+Info: Baking map saved to internal image, save it externally or pack it
+TRIANGLE_COUNTS {"hull": 640, "hull_trim": 1080, "emissive": 548, "canopy": 10, "cockpit_frame": 240, "cockpit": 312, "engine_core": 344, "engine_nacelle_1": 688, "engine_nacelle_2": 688, "engine_nacelle_3": 688, "wings_delta": 352, "wings_swept": 376, "wings_forward": 360, "wings_twin": 600, "cargo_pod_1": 512, "cargo_pod_2": 544, "cargo_pod_3": 528, "dish_base": 128, "dish_yoke": 164, "mining_dish": 780, "laser_barrel_1": 288, "laser_barrel_2": 288, "laser_barrel_3": 288, "scanner_dish_1": 204, "scanner_dish_2": 204, "scanner_dish_3": 204}
+INFO Draco is available, use library at C:\Program Files\Blender Foundation\Blender 5.2\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_draco_bridge.dll
+INFO MeshOptimizer is available, use library at C:\Program Files\Blender Foundation\Blender 5.2\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_meshopt_bridge.dll
+14:47:54 | INFO: Starting glTF 2.0 export
+14:47:54 | INFO: Extracting primitive: canopy
+14:47:54 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+14:47:54 | INFO: Primitives created: 1
+14:47:54 | INFO: Extracting primitive: cargo_pod_1
+14:47:54 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+14:47:54 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+14:47:54 | INFO: Primitives created: 2
+14:47:54 | INFO: Extracting primitive: cargo_pod_2
+14:47:54 | INFO: Primitives created: 2
+14:47:54 | INFO: Extracting primitive: cargo_pod_3
+14:47:54 | INFO: Primitives created: 2
+14:47:54 | INFO: Extracting primitive: cockpit
+14:47:54 | INFO: Primitives created: 1
+14:47:54 | INFO: Extracting primitive: Cylinder
+14:47:54 | INFO: Primitives created: 1
+14:47:54 | INFO: Extracting primitive: dish_base
+14:47:54 | INFO: Primitives created: 1
+14:47:54 | INFO: Extracting primitive: emissive
+14:47:54 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+14:47:54 | INFO: Primitives created: 1
+14:47:54 | INFO: Extracting primitive: engine_core
+14:47:54 | INFO: Primitives created: 1
+14:47:54 | INFO: Extracting primitive: engine_nacelle_1
+14:47:54 | INFO: Primitives created: 2
+14:47:54 | INFO: Extracting primitive: engine_nacelle_2
+14:47:54 | INFO: Primitives created: 2
+14:47:54 | INFO: Extracting primitive: engine_nacelle_3
+14:47:54 | INFO: Primitives created: 2
+14:47:54 | INFO: Extracting primitive: hull
+14:47:54 | INFO: Primitives created: 2
+14:47:54 | INFO: Extracting primitive: hull_trim
+14:47:54 | INFO: Primitives created: 1
+14:47:54 | INFO: Extracting primitive: laser_barrel_2
+14:47:54 | INFO: Primitives created: 2
+14:47:54 | INFO: Extracting primitive: laser_barrel_3
+14:47:54 | INFO: Primitives created: 2
+14:47:54 | INFO: Extracting primitive: dish_yoke
+14:47:54 | INFO: Primitives created: 1
+14:47:54 | INFO: Extracting primitive: laser_barrel_1
+14:47:54 | INFO: Primitives created: 2
+14:47:54 | INFO: Extracting primitive: mining_dish
+14:47:54 | INFO: Primitives created: 1
+14:47:54 | INFO: Extracting primitive: scanner_dish_1
+14:47:54 | INFO: Primitives created: 1
+14:47:54 | INFO: Extracting primitive: scanner_dish_2
+14:47:54 | INFO: Primitives created: 1
+14:47:54 | INFO: Extracting primitive: scanner_dish_3
+14:47:54 | INFO: Primitives created: 1
+14:47:54 | INFO: Extracting primitive: wings_delta
+14:47:54 | INFO: Primitives created: 3
+14:47:54 | INFO: Extracting primitive: wings_forward
+14:47:54 | INFO: Primitives created: 3
+14:47:54 | INFO: Extracting primitive: wings_swept
+14:47:54 | INFO: Primitives created: 3
+14:47:54 | INFO: Extracting primitive: wings_twin
+14:47:54 | INFO: Primitives created: 3
+14:47:54 | INFO: Finished glTF 2.0 export in 0.09955167770385742 s
+C:\Users\rival\Documents\BeltRunner\assets\player_ship\build_player_ship.py:307: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  scene.world.use_nodes=True;bg=scene.world.node_tree.nodes.get('Background');bg.inputs['Color'].default_value=(.14,.18,.25,1);bg.inputs['Strength'].default_value=.4
+00:19.719  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\player_ship\preview_front.png'
+00:27.828  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\player_ship\preview_rear.png'
+00:40.312  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\player_ship\wings_delta.png'
+00:52.437  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\player_ship\wings_swept.png'
+01:04.672  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\player_ship\wings_forward.png'
+01:17.062  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\player_ship\wings_twin.png'
+01:25.344  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\player_ship\preview_level_3.png'
+01:25.359  image.write      | ERROR OpenImageIO write failed: Could not open file "C:\Users\rival\.thumbnails\large\blender_16556_58bae6b50f9bb5f3dcf4f59a5185478d.png.png"
+
+Info: Saved as "player_ship.blend"
+PLAYER_SHIP_COMPLETE {"triangles_by_mesh": {"hull": 640, "hull_trim": 1080, "emissive": 548, "canopy": 10, "cockpit_frame": 240, "cockpit": 312, "engine_core": 344, "engine_nacelle_1": 688, "engine_nacelle_2": 688, "engine_nacelle_3": 688, "wings_delta": 352, "wings_swept": 376, "wings_forward": 360, "wings_twin": 600, "cargo_pod_1": 512, "cargo_pod_2": 544, "cargo_pod_3": 528, "dish_base": 128, "dish_yoke": 164, "mining_dish": 780, "laser_barrel_1": 288, "laser_barrel_2": 288, "laser_barrel_3": 288, "scanner_dish_1": 204, "scanner_dish_2": 204, "scanner_dish_3": 204}, "triangles_all_components": 11058, "assembled_triangle_counts": {"delta_level_1": 6290, "delta_level_2": 6322, "delta_level_3": 6306, "swept_level_1": 6314, "swept_level_2": 6346, "swept_level_3": 6330, "forward_level_1": 6298, "forward_level_2": 6330, "forward_level_3": 6314, "twin_level_1": 6538, "twin_level_2": 6570, "twin_level_3": 6554}, "max_radius": 14.037272292996755, "forward": "+Z", "up": "+Y", "dimensions_approx": [24, 10.5, 26], "default_components": ["hull", "hull_trim", "emissive", "canopy", "cockpit_frame", "cockpit", "engine_core", "engine_nacelle_1", "wings_delta", "cargo_pod_1", "dish_base", "dish_yoke", "mining_dish", "laser_barrel_1", "scanner_dish_1"], "optional_components": ["engine_nacelle_2", "engine_nacelle_3", "wings_swept", "wings_forward", "wings_twin", "cargo_pod_2", "cargo_pod_3", "laser_barrel_2", "laser_barrel_3", "scanner_dish_2", "scanner_dish_3"], "attachments": {"dish_mount": [0.0, -4.5, 7.0], "engine_l": [4.400000095367432, 0.0, -12.850000381469727], "engine_r": [-4.400000095367432, 0.0, -12.850000381469727], "nav_l": [12.039999961853027, -0.03999999910593033, -4.849999904632568], "nav_r": [-12.039999961853027, -0.03999999910593033, -4.849999904632568]}, "textures": "1024 x 1024; shared atlas baked in Blender from ImageGen source"}
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+Blender quit

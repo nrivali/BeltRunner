@@ -1,0 +1,23 @@
+{
+  "asset": "ore_cluster_04_split_spire",
+  "mesh": "ore_cluster_04_split_spire",
+  "empties": [],
+  "triangles": 444,
+  "shards": 3,
+  "dimensions_xyz": [
+    32.75045967102051,
+    60.0,
+    18.35855007171631
+  ],
+  "height": 60,
+  "origin": "mounting footprint centre at ground plane",
+  "up": "+Y",
+  "forward": "+Z",
+  "materials": [
+    "crystal_body",
+    "crystal_emissive",
+    "asteroid_matrix"
+  ],
+  "textures": 512,
+  "color": "#AE80ED"
+}

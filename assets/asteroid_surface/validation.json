@@ -1,0 +1,31 @@
+[
+  {
+    "mode": "http",
+    "state": "ready",
+    "error": null,
+    "width": 1254,
+    "height": 1254,
+    "sharedTextures": 1,
+    "rockTypes": 4,
+    "heatShaders": 4,
+    "cloneSupport": true,
+    "errors": []
+  },
+  {
+    "mode": "file",
+    "state": "ready",
+    "error": null,
+    "width": 1254,
+    "height": 1254,
+    "sharedTextures": 1,
+    "rockTypes": 4,
+    "heatShaders": 4,
+    "cloneSupport": true,
+    "errors": []
+  },
+  {
+    "mode": "missing",
+    "state": "fallback",
+    "errors": []
+  }
+]

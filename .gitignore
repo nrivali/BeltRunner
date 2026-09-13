@@ -1,0 +1,11 @@
+﻿# secrets
+elevenlabs.key
+*.key
+# scratch, packages and Blender autosaves (the .blend and .glb sources themselves are tracked)
+backups/
+*.zip
+*.blend1
+*.tmp
+node_modules/
+Thumbs.db
+.DS_Store

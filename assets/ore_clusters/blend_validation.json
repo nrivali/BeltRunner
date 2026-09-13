@@ -1,0 +1,47 @@
+{
+  "status": "PASS",
+  "assets": [
+    {
+      "asset": "ore_cluster_01_needle",
+      "packed_textures": true,
+      "normal_connection": true,
+      "triangulated": true,
+      "studio_lighting": true
+    },
+    {
+      "asset": "ore_cluster_02_fan",
+      "packed_textures": true,
+      "normal_connection": true,
+      "triangulated": true,
+      "studio_lighting": true
+    },
+    {
+      "asset": "ore_cluster_03_crown",
+      "packed_textures": true,
+      "normal_connection": true,
+      "triangulated": true,
+      "studio_lighting": true
+    },
+    {
+      "asset": "ore_cluster_04_split_spire",
+      "packed_textures": true,
+      "normal_connection": true,
+      "triangulated": true,
+      "studio_lighting": true
+    },
+    {
+      "asset": "ore_cluster_05_ridge",
+      "packed_textures": true,
+      "normal_connection": true,
+      "triangulated": true,
+      "studio_lighting": true
+    },
+    {
+      "asset": "ore_cluster_06_bloom",
+      "packed_textures": true,
+      "normal_connection": true,
+      "triangulated": true,
+      "studio_lighting": true
+    }
+  ]
+}

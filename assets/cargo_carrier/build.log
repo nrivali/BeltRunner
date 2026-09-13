@@ -1,0 +1,36 @@
+C:\Users\rival\Documents\BeltRunner\assets\cargo_carrier\build_carrier.py:18: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m=bpy.data.materials.new(name); m.diffuse_color=(*rgb,1); m.use_nodes=True
+C:\Users\rival\Documents\BeltRunner\assets\cargo_carrier\build_carrier.py:191: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  mat=bpy.data.materials.new('cargo_'+o.name); mat.use_nodes=True; nt=mat.node_tree; bs=nt.nodes.get('Principled BSDF')
+INFO Draco is available, use library at C:\Program Files\Blender Foundation\Blender 5.2\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_draco_bridge.dll
+INFO MeshOptimizer is available, use library at C:\Program Files\Blender Foundation\Blender 5.2\5.2\scripts\addons_core\io_scene_gltf2\bf_intern_meshopt_bridge.dll
+14:18:39 | INFO: Starting glTF 2.0 export
+14:18:39 | INFO: Extracting primitive: field_emitter
+14:18:39 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+14:18:39 | INFO: Primitives created: 1
+14:18:39 | INFO: Extracting primitive: window
+14:18:39 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+14:18:39 | INFO: Primitives created: 1
+14:18:39 | INFO: Extracting primitive: aft_pressure_hull
+14:18:39 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+14:18:39 | INFO: Primitives created: 1
+14:18:39 | INFO: Extracting primitive: hangar_floor
+14:18:39 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.
+14:18:39 | INFO: Primitives created: 1
+14:18:39 | INFO: Finished glTF 2.0 export in 0.0733640193939209 s
+C:\Users\rival\Documents\BeltRunner\assets\cargo_carrier\build_carrier.py:216: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  scene.world.color=(.13,.13,.13); scene.world.use_nodes=True
+00:02.859  image.write      | ERROR OpenImageIO write failed: Could not open file "C:\Users\rival\.thumbnails\large\blender_24984_25122f37ab03845e133a8990238c3b77.png.png"
+00:09.469  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\cargo_carrier\preview_front.png'
+00:09.484  image.write      | ERROR OpenImageIO write failed: Could not open file "C:\Users\rival\.thumbnails\large\blender_24984_25122f37ab03845e133a8990238c3b77.png.png"
+00:15.922  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\cargo_carrier\preview_rear.png'
+00:15.922  image.write      | ERROR OpenImageIO write failed: Could not open file "C:\Users\rival\.thumbnails\large\blender_24984_25122f37ab03845e133a8990238c3b77.png.png"
+00:47.109  render           | Saved: 'C:\Users\rival\Documents\BeltRunner\assets\cargo_carrier\preview_hangar.png'
+
+Info: Saved as "cargo_carrier.blend"
+Info: Saved as "cargo_carrier.blend"
+Info: Saved as "cargo_carrier.blend"
+ASSET_COMPLETE {"triangles": 38130, "meshes": ["hull", "interior", "emissive", "glass"], "empties": {"dish_mount": [-40.0, 995.0, -0.0], "engine_0": [-3480.0, 0.0, -540.0], "engine_1": [-3480.0, 0.0, -0.0], "engine_2": [-3480.0, 0.0, 540.0], "drone_dock_0": [760.0, -60.0, 1500.0], "drone_dock_1": [850.0, -60.0, 1500.0], "drone_dock_2": [940.0, -60.0, 1500.0], "hangar_mouth_pos": [0.0, 0.0, 900.0], "hangar_mouth_neg": [0.0, 0.0, -900.0], "pad_pos": [0.0, -138.0, 525.0], "pad_neg": [0.0, -138.0, -525.0], "drop_pad": [250.0, -130.0, -0.0], "bridge_windows": [900.0, 734.0, -0.0]}, "atlas_size": 2048, "forward": "+X", "up": "+Y", "dish": "Separate asset 4; carrier includes mast and dish_mount."}
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+Blender quit

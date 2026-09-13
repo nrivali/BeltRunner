@@ -1,0 +1,23 @@
+{
+  "asset": "ore_cluster_02_fan",
+  "mesh": "ore_cluster_02_fan",
+  "empties": [],
+  "triangles": 584,
+  "shards": 5,
+  "dimensions_xyz": [
+    34.033058166503906,
+    30.0,
+    14.280843257904053
+  ],
+  "height": 30,
+  "origin": "mounting footprint centre at ground plane",
+  "up": "+Y",
+  "forward": "+Z",
+  "materials": [
+    "crystal_body",
+    "crystal_emissive",
+    "asteroid_matrix"
+  ],
+  "textures": 512,
+  "color": "#35D6C2"
+}
