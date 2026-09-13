@@ -8,8 +8,11 @@ $ErrorActionPreference='Stop'
 $root=Split-Path -Parent $MyInvocation.MyCommand.Path
 $key=(Get-Content (Join-Path $root 'elevenlabs.key') -Raw).Trim()
 $out=Join-Path $root 'sfx'; New-Item -ItemType Directory -Force $out | Out-Null
-$VOICE_CONTROL='SAz9YHcvj6GT2YYXdXww'   # River: relaxed, neutral, calm - the colony and approach controllers
-$VOICE_OPS='EXAVITQu4vr4xnSDxMaL'       # Sarah: mature, reassuring, confident - Flight Ops, the tutorial voice (a clip's `voice` key overrides River)
+# One voice for everything spoken in the game since 2026-09-13: the user's own "Nick Walkie Talkie Voice" clone (male,
+# American, radio-flavoured). Both the controllers and Flight Ops use it; a clip's `voice` key can still override per line.
+$VOICE_GAME='qJNvazAFWgdySz9n6ZlZ'
+$VOICE_CONTROL=$VOICE_GAME   # the colony and approach controllers (was River SAz9YHcvj6GT2YYXdXww)
+$VOICE_OPS=$VOICE_GAME       # Flight Ops, the tutorial voice (was Sarah EXAVITQu4vr4xnSDxMaL)
 $clips=@(
   # --- continuous layers (seamless loops): the engine, the laser, the space hum
   @{name='engine_idle';   kind='sfx'; dur=4.0; loop=$true; text='spaceship engine idling, low steady hum with a soft turbine whir, seamless loop, no music'},
