@@ -727,7 +727,7 @@ const depotDir = l => l.clone().applyQuaternion(STATION.q);   // a local directi
 DEPOT.bays.forEach((b,i)=>b.name=`Dock ${i+1}`);
 const SAVE_KEY = 'belt-runner-3d-save-v1';
 // the build number shown bottom-left and on the menu; bump it with every published change
-const GAME_VERSION = '0.9.39';
+const GAME_VERSION = '0.9.40';
 document.getElementById('version').textContent = 'v' + GAME_VERSION;
 document.getElementById('menuVersion').textContent = 'Belt Runner 3D · v' + GAME_VERSION;
 
@@ -4098,12 +4098,12 @@ function updateHud(dt){
     el.tEyebrow.textContent=T.locked?'Locked target':'Target';
     el.tRange.textContent=`${fmt(T.dist)} m`+(T.dist<=reach?'':' · beyond reach');
     if (T.type==='pirate'){
-      el.tName.textContent='Pirate raider'; el.tSize.textContent='ship';
+      el.tName.textContent='Pirate raider'; el.tSize.textContent='Ship';
       el.tHp.style.width=(100*Math.max(0,t.hp)/t.maxHp)+'%'; el.tHpT.textContent=`${Math.max(0,Math.ceil(t.hp))} / ${t.maxHp}`;
       el.tWarn.textContent=t.state==='attack'?'Hostile · laser cuts it':''; el.tWarn.style.display=t.state==='attack'?'block':'none';
     } else {
       // name ("Iron Rock": the ore says what it is, SIZE says how big), size, range, then the health bar; warnings only when the laser cannot cut it
-      el.tName.textContent=`${t.barren?'Barren':ORES[t.ore].name} Rock`; el.tSize.textContent=t.cls;   // small / large / giant / colossal, no measurement
+      el.tName.textContent=`${t.barren?'Barren':ORES[t.ore].name} Rock`; el.tSize.textContent=t.cls.charAt(0).toUpperCase()+t.cls.slice(1);   // Small / Large / Giant / Colossal, no measurement
       el.tHp.style.width=(100*Math.max(0,t.hp)/t.hpMax)+'%'; el.tHpT.textContent=`${Math.ceil(Math.max(0,t.hp))} / ${t.hpMax}`;
       const r=mineReason(T); el.tWarn.textContent=r||''; el.tWarn.style.display=r?'block':'none';
     }
